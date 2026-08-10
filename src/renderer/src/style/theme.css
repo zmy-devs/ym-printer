@@ -49,8 +49,7 @@
 
 .dark {
   --background: #191919;
-
-  --foreground: rgba(255, 255, 255, 0.9);
+  --foreground: oklch(0.985 0 0);
 
   --card: oklch(0.145 0 0);
   --card-foreground: var(--foreground);
