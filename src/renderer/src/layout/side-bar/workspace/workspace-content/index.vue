@@ -1,5 +1,5 @@
 <template>
-  <ScrollArea class="min-h-0 h-full px-2">
+  <ScrollArea class="min-h-0 h-full">
     <ContextMenu>
       <ContextMenuTrigger as-child>
         <VueDraggable

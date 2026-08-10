@@ -3,7 +3,10 @@
     <TitleBar />
 
     <ResizablePanelGroup
-      class="pb-2"
+      class="px-2 pb-2"
+      :class="{
+        'gap-1': panelRef?.isExpanded,
+      }"
       direction="horizontal"
       autoSaveId="layout"
     >
@@ -20,16 +23,8 @@
 
       <ResizableHandle class="bg-transparent!" />
 
-      <ResizablePanel
-        class="pr-2"
-        :class="{
-          'pl-2': panelRef?.isCollapsed,
-        }"
-        :min-size="50"
-      >
-        <RouterView
-          class="h-full bg-background border rounded-lg overflow-hidden"
-        />
+      <ResizablePanel :min-size="50">
+        <RouterView class="h-full bg-background border rounded-lg" />
       </ResizablePanel>
     </ResizablePanelGroup>
   </div>

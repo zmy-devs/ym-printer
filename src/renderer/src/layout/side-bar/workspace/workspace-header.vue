@@ -1,5 +1,5 @@
 <template>
-  <section class="pl-3 pr-2 flex items-center">
+  <section class="flex items-center">
     <span class="text-xs text-muted-foreground">工作空间</span>
 
     <Tooltip label="新建工作空间 Ctrl+N">

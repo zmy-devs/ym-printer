@@ -2,7 +2,7 @@
   <section class="flex flex-col bg-sidebar">
     <Workspace />
 
-    <div class="p-2">
+    <div class="py-2">
       <Separator />
     </div>
 
