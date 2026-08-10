@@ -11,7 +11,7 @@
     "start": "electron-vite preview",
     "dev": "chcp 65001 && electron-vite dev",
     "build": "npm run typecheck && electron-vite build",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-builder install-app-deps && pnpm run rebuild",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win ",
     "release": "node ./scripts/publish.mjs",
@@ -58,6 +58,8 @@
     "zod": "^3.25.76"
   },
   "volta": {
-    "node": "24.18.0"
+    "node": "24.18.0",
+    "pnpm": "11.20.0"
   }
 }
+
