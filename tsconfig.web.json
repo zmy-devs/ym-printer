@@ -3,13 +3,14 @@
   "include": [
     "src/renderer/**/*",
     "src/preload/index.d.ts",
-    "src/shared/type.ts"
+    "src/shared/**/*"
   ],
   "compilerOptions": {
     "composite": true,
     "paths": {
       "@/*": ["./src/renderer/src/*"],
-      "@type": ["./src/shared/type.ts"]
+      "@type": ["./src/shared/type.ts"],
+      "@shared/*": ["./src/shared/*"]
     }
   }
 }

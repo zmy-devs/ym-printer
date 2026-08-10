@@ -4,7 +4,7 @@ import type {
   PDFDocumentProxy,
   PDFPageProxy,
   PageViewport,
-} from 'pdfjs-dist';
+} from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { PasswordRequestParams, Source } from './types';
 import { releaseChildCanvases } from './utils';
 import { useVuePdfEmbed } from './composables';
@@ -171,10 +171,7 @@ const renderPage = async (
 ) => {
   canvas.width = viewport.width;
   canvas.height = viewport.height;
-  await page.render({
-    canvasContext: canvas.getContext('2d')!,
-    viewport,
-  }).promise;
+  await page.render({ canvas, viewport }).promise;
 };
 
 watch(

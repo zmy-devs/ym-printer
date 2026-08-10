@@ -95,7 +95,7 @@ const [printTestLock, handlePrintTest] = useLockFn(
       successMsg: '打印测试页完成',
       errorMsg: '打印测试页失败',
       cb: async () => {
-        await ipcRenderer.invoke('printTest', selectedPrinter.value, cartridge);
+        await ipc.printTest(selectedPrinter.value, cartridge);
       },
     });
   },

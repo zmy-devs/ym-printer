@@ -18,31 +18,6 @@
           </ItemActions>
         </Item>
 
-        <Item size="sm">
-          <ItemContent>
-            <ItemTitle>远程数据源</ItemTitle>
-
-            <ItemDescription> 配置远程更新数据源</ItemDescription>
-          </ItemContent>
-
-          <ItemActions>
-            <Select v-model="config.repo">
-              <SelectTrigger class="w-40">
-                <SelectValue placeholder="请选择数据源" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem
-                  v-for="item in Object.keys(repoMap)"
-                  :key="item"
-                  :value="item"
-                >
-                  {{ repoMap[item].label }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </ItemActions>
-        </Item>
       </ItemGroup>
 
       <ItemGroup>
@@ -93,13 +68,6 @@
 </template>
 
 <script setup lang="ts">
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import {
   Item,
@@ -133,9 +101,7 @@ const updateLabel = computed(() => {
 
 //查看更新内容
 const handleUpdateContent = () => {
-  const url = repoMap[config.value.repo].updateContentUrl;
-
-  api.openUrl(url);
+  ipc.openUrl(repoMap.gitee.updateContentUrl);
 };
 </script>
 

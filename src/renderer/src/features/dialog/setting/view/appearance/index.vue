@@ -83,7 +83,7 @@ import {
 } from '@/components/ui/item';
 import Container from '@/components/container/index.vue';
 import { previewThemeMap, baseThemeMap } from '@/map';
-import { productName } from '@/services/info';
+import { productName } from '@shared/app-info';
 import { useThemeStore } from '@/stores/useThemeStore';
 
 const { baseTheme, previewThemeRaw } = storeToRefs(useThemeStore());

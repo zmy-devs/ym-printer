@@ -86,7 +86,7 @@ const handleUnCombine = () => {
 
 //打开文档
 const handleOpen = () => {
-  api.startApp(props.data.path);
+  ipc.openPath(props.data.path);
 };
 
 //删除文档

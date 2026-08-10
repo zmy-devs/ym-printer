@@ -1,10 +1,10 @@
 .vscode
-node_modules
-dist
-out
-
-resources/cache
-auto-imports.d.ts
-
 .agents
 .codegraph
+dist
+node_modules
+out
+resources/cache
+auto-imports.d.ts
+plugin-electron-ipc.d.ts
+dev-app-update.yml

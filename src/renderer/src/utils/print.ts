@@ -16,7 +16,7 @@ const print = async (config: Doc, range: number[]) => {
   return new Promise<void>((resolve, reject) => {
     printQueue = printQueue
       .then(async () => {
-        await ipcRenderer.invoke('print', config, range);
+        await ipc.print(config, range);
       })
       .then(() => {
         resolve();

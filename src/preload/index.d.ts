@@ -1,7 +1,9 @@
 import type { Api } from '.';
-import type { IpcRenderer } from '../main/ipc/ipcRenderer';
+import type { ElectronIpc } from 'plugin-electron-ipc';
 
 declare global {
   const api: Api;
-  const ipcRenderer: IpcRenderer;
+  const ipc: ElectronIpc;
 }
+
+export {};

@@ -7,15 +7,15 @@
     ym-printer 是一款专门为喷墨打印机做的打印桌面应用。
     <br>
     <br>
-    <a href="https://gitee.com/yxingyus/ym-printer/releases">
+    <a href="https://gitee.com/zmy-devs/ym-printer/releases">
     Gitee
     </a>
     &middot;
-    <a href="https://github.com/2514765066/ym-printer">
+    <a href="https://github.com/zmy-devs/ym-printer">
     Github
     </a>
     &middot;
-    <a href="https://github.com/2514765066/ym-printer/blob/main/docs/release-note.md">
+    <a href="https://github.com/zmy-devs/ym-printer/blob/main/docs/release-note.md">
     更新内容
     </a>
   </p>

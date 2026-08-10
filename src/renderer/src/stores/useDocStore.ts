@@ -1,5 +1,6 @@
 import eventEmitter from '@/hooks/eventEmitter';
 import { Doc } from '@type';
+import { isSupportedDocument } from '@shared/document';
 import { useWorkspaceStore } from './useWorkspaceStore';
 import { nanoid } from 'nanoid';
 
@@ -54,14 +55,26 @@ export const useDocStore = defineStore('doc', () => {
   };
 
   //添加文件
-  const addDoc = (file: File[]) => {
-    const paths = api.getFilePath(file);
+  const addDoc = (files: File[]) => {
+    // 仅保留支持导入的拖拽或粘贴文件
+    const documentFiles = files.filter((file) => {
+      return isSupportedDocument(file.name);
+    });
+
+    // 在预加载上下文中转换有效文件的原生路径
+    const paths = documentFiles
+      .map((file) => {
+        return api.getFilePath(file);
+      })
+      .filter((path) => {
+        return path !== '';
+      });
 
     if (paths.length == 0) {
       return;
     }
 
-    ipcRenderer.invoke('addDoc', {
+    ipc.addDoc({
       workspaceId: selectedWorkspaceID.value,
       paths,
     });
@@ -102,7 +115,7 @@ export const useDocStore = defineStore('doc', () => {
   };
 
   //文件获取完成
-  ipcRenderer.on('addDocFinish', (_, data) => {
+  ipc.on('addDocFinish', (_, data: Doc[]) => {
     const paths = docs.value.map((item) => item.path);
 
     for (const item of data) {
@@ -115,8 +128,8 @@ export const useDocStore = defineStore('doc', () => {
 
       const doc = getDoc(item.id)!;
 
-      ipcRenderer
-        .invoke('parserDoc', item)
+      ipc
+        .parserDoc(item)
         .then(() => {
           doc.status = 'init';
         })

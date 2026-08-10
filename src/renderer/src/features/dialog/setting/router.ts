@@ -11,7 +11,7 @@ import Price from './view/price/index.vue';
 import Update from './view/update/index.vue';
 import About from './view/about/index.vue';
 import Preset from './view/preset/index.vue';
-import { appVersion } from '@/services/info';
+import { appVersion } from '@shared/app-info';
 
 export interface Route {
   id: string;

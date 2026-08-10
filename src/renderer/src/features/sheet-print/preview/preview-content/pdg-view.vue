@@ -16,7 +16,7 @@
 import { usePdfStore } from '@/stores/usePdfStore';
 import { useDocStore } from '@/stores/useDocStore';
 import VuePdfEmbed, { useVuePdfEmbed } from '@/components/vue-pdf-embed';
-import { PDFDocumentProxy } from 'pdfjs-dist';
+import type { PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { Form } from '../../index';
 import { parserRange } from '@/utils/range';
 
@@ -28,7 +28,7 @@ const form: Form = inject('form')!;
 const visible = ref(false);
 
 //pdf数据
-const buffer = shallowRef<Buffer<ArrayBuffer>>();
+const buffer = shallowRef<Uint8Array | null>(null);
 
 const { doc } = useVuePdfEmbed({
   source: buffer,
@@ -66,7 +66,7 @@ onMounted(async () => {
     return;
   }
 
-  buffer.value = await ipcRenderer.invoke('getPdf', selectedDoc.value.md5);
+  buffer.value = await ipc.getPdf(selectedDoc.value.md5);
 
   //等待400ms在渲染防止动画卡顿
   setTimeout(() => {

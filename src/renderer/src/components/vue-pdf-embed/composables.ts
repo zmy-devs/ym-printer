@@ -16,7 +16,7 @@ import type {
   OnProgressParameters,
   PDFDocumentLoadingTask,
   PDFDocumentProxy,
-} from 'pdfjs-dist';
+} from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 import type { PasswordRequestParams, Source } from './types';
 import { isDocument } from './utils';
@@ -47,7 +47,9 @@ export function useVuePdfEmbed({
 
     try {
       docLoadingTask.value = getDocument(
-        sourceValue as Parameters<typeof getDocument>[0],
+        sourceValue instanceof Uint8Array
+          ? { data: sourceValue }
+          : (sourceValue as Parameters<typeof getDocument>[0]),
       );
 
       if (onPasswordRequest) {
@@ -79,7 +81,7 @@ export function useVuePdfEmbed({
   });
 
   watch(doc, (_, oldDoc) => {
-    oldDoc?.destroy();
+    oldDoc?.cleanup();
   });
 
   onBeforeUnmount(() => {
@@ -93,7 +95,7 @@ export function useVuePdfEmbed({
     }
     docLoadingTask.value?.destroy();
     if (!isDocument(toValue(source))) {
-      doc.value?.destroy();
+      doc.value?.cleanup();
     }
   });
 

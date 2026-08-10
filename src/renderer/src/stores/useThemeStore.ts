@@ -26,7 +26,7 @@ export const useThemeStore = defineStore('theme', () => {
   };
 
   watchEffect(() => {
-    ipcRenderer.invoke('toggleTheme', baseTheme.value as Theme);
+    ipc.toggleTheme(baseTheme.value as Theme);
   });
 
   return {

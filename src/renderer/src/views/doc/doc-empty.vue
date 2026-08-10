@@ -42,7 +42,7 @@ import Tooltip from '@/components/tooltip.vue';
 const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());
 
 const handleAdd = () => {
-  ipcRenderer.invoke('addDoc', {
+  ipc.addDoc({
     workspaceId: selectedWorkspaceID.value,
   });
 };

@@ -4,30 +4,44 @@ import vue from '@vitejs/plugin-vue';
 import { version, name, productName } from './package.json';
 import AutoImport from 'unplugin-auto-import/vite';
 import tailwindcss from '@tailwindcss/vite';
+import { createIpcChannelsPlugin } from 'plugin-electron-ipc/vite';
+
+const ipcOptions = {
+  input: ['src/main/ipc/index.ts'],
+  dts: 'src/renderer/plugin-electron-ipc.d.ts',
+};
 
 export default defineConfig({
   main: {
+    define: {
+      __APP_VERSION__: JSON.stringify(version),
+      __APP_NAME__: JSON.stringify(name),
+      __APP_PRODUCT_NAME__: JSON.stringify(productName),
+    },
     resolve: {
       alias: {
         '@': resolve('src/main'),
+        '@resources': resolve('resources'),
         '@type': resolve('src/shared/type.ts'),
+        '@shared': resolve('src/shared'),
       },
     },
-    define: {
-      __APP_VERSION__: JSON.stringify(version),
-    },
+    plugins: [createIpcChannelsPlugin(ipcOptions)],
   },
-  preload: {},
+  preload: {
+    plugins: [createIpcChannelsPlugin(ipcOptions)],
+  },
   renderer: {
     define: {
       __APP_VERSION__: JSON.stringify(version),
       __APP_NAME__: JSON.stringify(name),
-      __PRODUCT_NAME__: JSON.stringify(productName),
+      __APP_PRODUCT_NAME__: JSON.stringify(productName),
     },
     resolve: {
       alias: {
         '@': resolve('src/renderer/src'),
         '@type': resolve('src/shared/type.ts'),
+        '@shared': resolve('src/shared'),
       },
     },
 

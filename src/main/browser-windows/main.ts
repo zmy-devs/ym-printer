@@ -1,6 +1,5 @@
 import { join } from 'path';
 import { BrowserWindow } from 'electron';
-import { load } from './index';
 import Store from 'electron-store';
 import { is } from '@electron-toolkit/utils';
 
@@ -13,7 +12,6 @@ let lastSize = store.get('window-size', {
 
 export const createMainWindow = () => {
   const mainWindow = new BrowserWindow({
-    show: false,
     width: lastSize.width,
     height: lastSize.height,
 
@@ -33,15 +31,6 @@ export const createMainWindow = () => {
     },
   });
 
-  //准备就绪打开窗口和开发者选项
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show();
-
-    if (is.dev) {
-      mainWindow.webContents.openDevTools({ mode: 'detach' });
-    }
-  });
-
   //处理窗口调整大小
   mainWindow.on('resized', () => {
     const [width, height] = mainWindow.getSize();
@@ -52,7 +41,12 @@ export const createMainWindow = () => {
     });
   });
 
-  load(mainWindow);
+  if (is.dev) {
+    mainWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}`);
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
+  } else {
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
+  }
 
   return mainWindow;
 };

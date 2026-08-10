@@ -1,14 +1,13 @@
-import { isSecondeInstanceStart } from 'ym-electron.js';
 import { createMainWindow } from '@/browser-windows/main';
-import '@/ipc/index';
 import { createWord, exitWord } from './service/doc';
 import { app } from 'electron';
 import { optimizer } from '@electron-toolkit/utils';
 import { cachePath } from './service/path';
 import { existsSync, rmSync } from 'fs';
+import '@/utils/update';
 
 //禁止多开
-if (isSecondeInstanceStart()) {
+if (!app.requestSingleInstanceLock()) {
   app.exit();
 }
 

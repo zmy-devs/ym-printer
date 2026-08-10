@@ -62,19 +62,16 @@ import {
 } from '@/components/ui/item';
 import Container from '@/components/container/index.vue';
 import { Button } from '@/components/ui/button';
-import { appVersion } from '@/services/info';
+import { appVersion } from '@shared/app-info';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { repoMap } from '@/map';
 import MessageBox from '@/components/ui/message-box';
 
-const { config } = storeToRefs(useConfigStore());
 const { resetConfig } = useConfigStore();
 
 //反馈bug
 const handleIssue = () => {
-  const url = repoMap[config.value.repo].issueUrl;
-
-  api.openUrl(url);
+  ipc.openUrl(repoMap.gitee.issueUrl);
 };
 
 //重置

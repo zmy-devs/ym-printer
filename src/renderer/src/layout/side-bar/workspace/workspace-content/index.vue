@@ -89,7 +89,7 @@ const handleAdd = () => {
     return;
   }
 
-  ipcRenderer.invoke('addDoc', {
+  ipc.addDoc({
     workspaceId: selectedItem.value.id,
   });
 };

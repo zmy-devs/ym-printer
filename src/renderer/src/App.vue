@@ -82,7 +82,7 @@ useEventListener('keydown', (e) => {
 
   //添加文档
   if (e.ctrlKey && e.key == 'o') {
-    ipcRenderer.invoke('addDoc', {
+    ipc.addDoc({
       workspaceId: selectedWorkspaceID.value,
     });
     return;

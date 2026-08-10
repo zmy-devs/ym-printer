@@ -1,19 +1,12 @@
+const { name, productName } = require('./package.json');
+
 /**
  * @type {import('electron-builder').Configuration}
  */
 module.exports = {
-  appId: `com.2514765066.ym-printer`,
-  artifactName: 'ym-printer',
-  productName: 'ym-printer',
-  files: [
-    'out',
-    'resources/pdfium.dll',
-    'resources/printer.exe',
-    'resources/getPrinters.ps1',
-    'resources/getPrinterTasks.ps1',
-    'resources/test-black.pdf',
-    'resources/test-color.pdf',
-  ],
+  appId: `com.2514765066.${name}`,
+  productName,
+  files: ['out', 'resources', '!resources/cache'],
   asar: false,
   electronLanguages: ['zh-CN'],
   directories: {
@@ -25,9 +18,9 @@ module.exports = {
     differentialPackage: false,
     oneClick: false,
     allowToChangeInstallationDirectory: true,
-    artifactName: '${productName}-${version}.${ext}',
-    shortcutName: 'Ym Printer',
-    uninstallDisplayName: 'Ym Printer',
+    artifactName: name + '-${version}.${ext}',
+    shortcutName: '${productName}',
+    uninstallDisplayName: '${productName}',
     deleteAppDataOnUninstall: true,
   },
 };

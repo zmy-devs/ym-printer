@@ -1,15 +1,13 @@
 import { useConfigStore } from '@/stores/useConfigStore';
 import eventEmitter from '@/hooks/eventEmitter';
 import MessageBox from '@/components/ui/message-box';
-import { repoMap } from '@/map';
 import { useStorage } from '@vueuse/core';
 import { isOverOneDay } from '@/utils/date';
 
 type Status =
   | 'init'
   | 'checking'
-  | 'updateAvailable'
-  | 'updateNotAvailable'
+  | 'update-not-available'
   | 'downloading'
   | 'downloaded'
   | 'error';
@@ -31,6 +29,8 @@ export const useUpdateStore = defineStore('update', () => {
 
   //安装更新
   const installUpdate = async () => {
+    status.value = 'downloaded';
+
     //安装
     const res = await MessageBox.confirm({
       title: '安装新版本',
@@ -42,7 +42,7 @@ export const useUpdateStore = defineStore('update', () => {
       return;
     }
 
-    await ipcRenderer.invoke('installUpdate');
+    await ipc.installUpdate();
   };
 
   //检查更新
@@ -51,30 +51,17 @@ export const useUpdateStore = defineStore('update', () => {
       status.value = 'checking';
 
       //更新地址
-      const updateUrl = repoMap[config.value.repo].updateUrl;
-
-      const checkRes = await ipcRenderer.invoke('checkUpdata', updateUrl);
+      const checkRes = await ipc.checkUpdate();
 
       //没有更新
       if (checkRes == false) {
-        status.value = 'updateNotAvailable';
+        status.value = 'update-not-available';
         return;
       }
 
       latestVersion.value = checkRes;
 
       status.value = 'downloading';
-
-      const downloadRes = await ipcRenderer.invoke('downloadUpdate');
-
-      if (!downloadRes) {
-        eventEmitter.emit('error:show', '下载更新失败,请检查网络');
-        return;
-      }
-
-      status.value = 'downloaded';
-
-      installUpdate();
     } catch (e) {
       eventEmitter.emit('error:show', '更新失败,请检查网络');
 
@@ -97,13 +84,11 @@ export const useUpdateStore = defineStore('update', () => {
   };
 
   //监听下载进度
-  ipcRenderer.addListener('updateProgress', (_, percrent) => {
-    downloadProgress.value = percrent;
-
-    if (percrent == 100) {
-      status.value = 'init';
-    }
+  ipc.on('download-progress', (_, percent: number) => {
+    downloadProgress.value = Math.floor(percent);
   });
+
+  ipc.on('update-downloaded', installUpdate);
 
   init();
 

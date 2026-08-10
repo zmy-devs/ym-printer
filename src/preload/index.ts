@@ -1,44 +1,14 @@
-import { contextBridge, shell, webUtils } from 'electron';
-import { ipcRenderer } from '../main/ipc/ipcRenderer';
-import { extname } from 'path';
+import { contextBridge, webUtils } from 'electron';
+import { electronIpc } from 'plugin-electron-ipc';
 
 const api = {
-  //打开网页
-  openUrl(url: string) {
-    shell.openExternal(url);
-  },
-
-  //打开文件
-  startApp(path: string) {
-    shell.openPath(path);
-  },
-
-  //获取文件路径
-  getFilePath(files: File[]) {
-    const res: string[] = [];
-
-    for (const file of files) {
-      const path = webUtils.getPathForFile(file);
-
-      const ext = extname(path).slice(1);
-
-      if (!['docx', 'doc', 'pdf', 'wps'].includes(ext)) {
-        continue;
-      }
-
-      res.push(path);
-    }
-
-    return res;
+  // File 的原生路径只可在预加载上下文通过 webUtils 获取。
+  getFilePath(file: File) {
+    return webUtils.getPathForFile(file);
   },
 };
 
 export type Api = typeof api;
 
+contextBridge.exposeInMainWorld('ipc', electronIpc);
 contextBridge.exposeInMainWorld('api', api);
-contextBridge.exposeInMainWorld('ipcRenderer', {
-  send: ipcRenderer.send,
-  on: ipcRenderer.on,
-  invoke: ipcRenderer.invoke,
-  addListener: ipcRenderer.addListener,
-});

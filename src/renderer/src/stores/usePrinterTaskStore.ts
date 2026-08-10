@@ -15,10 +15,7 @@ export const usePrinterTaskStore = defineStore('printer-task', () => {
       return;
     }
 
-    printerTasks.value = await ipcRenderer.invoke(
-      'getPrinterTask',
-      selectedPrinter.value,
-    );
+    printerTasks.value = await ipc.getPrinterTask(selectedPrinter.value);
   };
 
   //初始化任务
@@ -37,7 +34,7 @@ export const usePrinterTaskStore = defineStore('printer-task', () => {
 
   //删除打印任务
   const removePrinterTask = async (id: number) => {
-    await ipcRenderer.invoke('removePrinterTask', {
+    await ipc.removePrinterTask({
       printer: selectedPrinter.value,
       id,
     });
@@ -47,7 +44,7 @@ export const usePrinterTaskStore = defineStore('printer-task', () => {
 
   //删除全部的打印任务
   const removeAllPrinterTasks = async () => {
-    await ipcRenderer.invoke('removePrinterTask', {
+    await ipc.removePrinterTask({
       printer: selectedPrinter.value,
     });
 

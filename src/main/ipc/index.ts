@@ -1,36 +1,35 @@
-import { ipcMain } from './ipcMain';
 import { join } from 'path';
 import {
-  cachePath,
-  printerPath,
-  resources,
-  testBlackPath,
-  testColorPath,
-  update,
-  updatePath,
-} from '@/service/path';
+  isSupportedDocument,
+  supportedDocumentExtensions,
+} from '@shared/document';
+import { cachePath } from '../service/path';
+import getPrintersScriptPath from '@resources/getPrinters.ps1?asset';
+import getPrinterTasksScriptPath from '@resources/getPrinterTasks.ps1?asset';
+import printerPath from '@resources/printer.exe?asset';
+import testBlackPath from '@resources/test-black.pdf?asset';
+import testColorPath from '@resources/test-color.pdf?asset';
 import { copyFile, mkdir, readFile } from 'fs/promises';
-import { toPdf } from '@/service/doc';
+import { toPdf } from '../service/doc';
 import { existsSync } from 'fs';
-import { Doc, PrinterTask } from '@type';
-import { BrowserWindow, dialog, nativeTheme } from 'electron';
-import { parseDoc } from '@/utils/doc';
+import type { Doc, PrinterTask } from '@type';
+import {
+  BrowserWindow,
+  dialog,
+  nativeTheme,
+  type IpcMainInvokeEvent,
+  shell,
+} from 'electron';
+import { parseDoc } from '../utils/doc';
 import { exec, execFile } from 'child_process';
-import { checkUpdate, downloadUpdate, installUpdate } from 'ym-publish';
-import { getMd5 } from '@/utils/md5';
-import { formatPrinterTask } from '@/utils/format';
-
-declare global {
-  const __APP_VERSION__: string;
-}
+import { formatPrinterTask } from '../utils/format';
+import { autoUpdater } from 'electron-updater';
 
 //获取打印机信息
-ipcMain.handle('getPrinters', () => {
+export const getPrinters = (_: IpcMainInvokeEvent) => {
   const { promise, resolve } = Promise.withResolvers<string[]>();
 
-  const path = join(resources, 'getPrinters.ps1');
-
-  const cmd = `powershell -NoProfile -ExecutionPolicy Bypass -File "${path}"`;
+  const cmd = `powershell -NoProfile -ExecutionPolicy Bypass -File "${getPrintersScriptPath}"`;
 
   exec(cmd, (err, stdout) => {
     if (err) {
@@ -46,11 +45,14 @@ ipcMain.handle('getPrinters', () => {
   });
 
   return promise;
-});
+};
 
 //添加文档
-ipcMain.handle('addDoc', async (e, option) => {
-  const win = BrowserWindow.fromWebContents(e.sender)!;
+export const addDoc = async (
+  { sender }: IpcMainInvokeEvent,
+  option: { workspaceId: string; paths?: string[] },
+) => {
+  const win = BrowserWindow.fromWebContents(sender)!;
 
   let { workspaceId, paths = [] } = option;
 
@@ -62,7 +64,7 @@ ipcMain.handle('addDoc', async (e, option) => {
       filters: [
         {
           name: '文档文件',
-          extensions: ['doc', 'docx', 'pdf', 'wps'],
+          extensions: supportedDocumentExtensions,
         },
       ],
     });
@@ -73,6 +75,11 @@ ipcMain.handle('addDoc', async (e, option) => {
 
     paths = result.filePaths;
   }
+
+  // 过滤 IPC 传入的非文档路径
+  paths = paths.filter((path) => {
+    return isSupportedDocument(path);
+  });
 
   if (paths.length == 0) {
     return;
@@ -88,17 +95,17 @@ ipcMain.handle('addDoc', async (e, option) => {
   );
 
   win.webContents.send('addDocFinish', res);
-});
+};
 
 //读取pdf
-ipcMain.handle('getPdf', async (_, md5: string) => {
+export const getPdf = async (_: IpcMainInvokeEvent, md5: string) => {
   const path = join(cachePath, `${md5}.pdf`);
 
   return await readFile(path);
-});
+};
 
 //解析文件
-ipcMain.handle('parserDoc', async (_, file) => {
+export const parserDoc = async (_: IpcMainInvokeEvent, file: Doc) => {
   const { md5, ext, path } = file;
 
   if (!existsSync(cachePath)) {
@@ -122,10 +129,14 @@ ipcMain.handle('parserDoc', async (_, file) => {
 
     console.timeEnd(md5);
   }
-});
+};
 
 //打印
-ipcMain.handle('print', async (_, config, range) => {
+export const print = async (
+  _: IpcMainInvokeEvent,
+  config: Doc,
+  range: number[],
+) => {
   const { promise, resolve, reject } = Promise.withResolvers<boolean>();
 
   execFile(
@@ -151,10 +162,14 @@ ipcMain.handle('print', async (_, config, range) => {
   );
 
   return promise;
-});
+};
 
 //打印测试页面
-ipcMain.handle('printTest', (_, printer, cartridge) => {
+export const printTest = (
+  _: IpcMainInvokeEvent,
+  printer: string,
+  cartridge: 'color' | 'black',
+) => {
   const { promise, resolve, reject } = Promise.withResolvers<boolean>();
 
   const testPath = cartridge == 'color' ? testColorPath : testBlackPath;
@@ -178,67 +193,35 @@ ipcMain.handle('printTest', (_, printer, cartridge) => {
   );
 
   return promise;
-});
-
-let checkUpdateInfo = {
-  md5: '',
-  version: '',
-  url: '',
 };
 
 //检查更新
-ipcMain.handle('checkUpdata', async (_, url) => {
-  const res = await checkUpdate(url, __APP_VERSION__);
+export const checkUpdate = async (_: IpcMainInvokeEvent) => {
+  const result = await autoUpdater.checkForUpdates();
 
-  if (res == false) {
-    return false;
-  }
+  return result?.isUpdateAvailable ? result.updateInfo.version : false;
+};
 
-  checkUpdateInfo = res;
+//安装更新
+export const installUpdate = (_: IpcMainInvokeEvent) => {
+  autoUpdater.quitAndInstall(true, true);
+};
 
-  return res.version;
-});
+//用系统默认应用打开文件
+export const openPath = (_: IpcMainInvokeEvent, path: string) => {
+  return shell.openPath(path);
+};
 
-//下载并安装
-ipcMain.handle('downloadUpdate', async (e) => {
-  const win = BrowserWindow.fromWebContents(e.sender)!;
-
-  //不存在更新文件夹就创建
-  if (!existsSync(update)) {
-    await mkdir(update, { recursive: true });
-  }
-
-  //如果下载完成就安装
-  const md5 = await getMd5(updatePath);
-
-  if (md5 == checkUpdateInfo.md5) {
-    return true;
-  }
-
-  //下载
-  try {
-    await downloadUpdate(checkUpdateInfo.url, updatePath, (percent) => {
-      win.webContents.send('updateProgress', Math.floor(percent));
-    });
-  } catch {
-    return false;
-  }
-
-  return true;
-});
-
-//安装
-ipcMain.handle('installUpdate', () => {
-  installUpdate(updatePath, ['--currentuser']);
-});
+//打开外部链接
+export const openUrl = (_: IpcMainInvokeEvent, url: string) => {
+  return shell.openExternal(url);
+};
 
 //获取打印机状态
-ipcMain.handle('getPrinterTask', (_, printer) => {
+export const getPrinterTask = (_: IpcMainInvokeEvent, printer: string) => {
   const { promise, resolve } = Promise.withResolvers<PrinterTask[]>();
 
-  const path = join(resources, 'getPrinterTasks.ps1');
-
-  const cmd = `powershell -NoProfile -ExecutionPolicy Bypass -File "${path}" -PrinterName "${printer}"`;
+  const cmd = `powershell -NoProfile -ExecutionPolicy Bypass -File "${getPrinterTasksScriptPath}" -PrinterName "${printer}"`;
 
   exec(cmd, (err, stdout) => {
     if (err) {
@@ -264,10 +247,13 @@ ipcMain.handle('getPrinterTask', (_, printer) => {
   });
 
   return promise;
-});
+};
 
 //删除打印机任务
-ipcMain.handle('removePrinterTask', (_, option) => {
+export const removePrinterTask = (
+  _: IpcMainInvokeEvent,
+  option: { printer: string; id?: number },
+) => {
   const { printer, id } = option;
 
   const { promise, resolve } = Promise.withResolvers<boolean>();
@@ -288,10 +274,13 @@ ipcMain.handle('removePrinterTask', (_, option) => {
   });
 
   return promise;
-});
+};
 
 //切换主题色
-ipcMain.handle('toggleTheme', ({ sender }, theme) => {
+export const toggleTheme = (
+  { sender }: IpcMainInvokeEvent,
+  theme: 'light' | 'dark',
+) => {
   const win = BrowserWindow.fromWebContents(sender)!;
 
   nativeTheme.themeSource = theme;
@@ -299,4 +288,4 @@ ipcMain.handle('toggleTheme', ({ sender }, theme) => {
   win.setTitleBarOverlay({
     symbolColor: theme == 'light' ? '#000000' : '#d4d4d4',
   });
-});
+};
