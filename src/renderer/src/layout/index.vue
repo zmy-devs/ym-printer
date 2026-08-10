@@ -45,8 +45,8 @@ import {
 } from '@/components/ui/resizable';
 import SideBar from './side-bar/index.vue';
 import TitleBar from './title-bar/index.vue';
-import vDrag from '@/hooks/useDrag';
-import { useDocStore } from '@/stores/useDocStore';
+import vDrag from '@/hooks/use-drag';
+import { useDocStore } from '@/stores/doc';
 import Overlay from '@/components/overlay.vue';
 //@ts-ignore
 import { panelRef } from '.';

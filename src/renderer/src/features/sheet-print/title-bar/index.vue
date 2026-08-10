@@ -34,11 +34,11 @@
 <script setup lang="ts">
 import { SheetClose } from '@/components/ui/sheet';
 import FileIcon from '@/components/file-icon.vue';
-import { useDocStore } from '@/stores/useDocStore';
+import { useDocStore } from '@/stores/doc';
 import { Button } from '@/components/ui/button';
 import { MoonIcon, SunIcon, XIcon } from '@lucide/vue';
 import Tooltip from '@/components/tooltip.vue';
-import { useThemeStore } from '@/stores/useThemeStore';
+import { useThemeStore } from '@/stores/theme';
 
 const { selectedDoc } = storeToRefs(useDocStore());
 const { previewTheme } = storeToRefs(useThemeStore());

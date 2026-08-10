@@ -15,11 +15,11 @@
 <script setup lang="ts">
 import Tooltip from '@/components/tooltip.vue';
 import { Button } from '@/components/ui/button';
-import eventEmitter from '@/hooks/eventEmitter';
+import { eventBus } from '@/utils/event-bus';
 import { PlusIcon } from '@lucide/vue';
 
 const handleAdd = () => {
-  eventEmitter.emit('dialog-workspace:show', {
+  eventBus.emit('dialog-workspace:show', {
     type: 'add',
   });
 };

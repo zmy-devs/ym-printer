@@ -36,7 +36,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { useWorkspaceStore } from '@/stores/workspace';
 import Tooltip from '@/components/tooltip.vue';
 
 const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());

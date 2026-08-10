@@ -45,9 +45,9 @@ import {
   NumberFieldIncrement,
   NumberFieldInput,
 } from '@/components/ui/number-field';
-import { usePdfStore } from '@/stores/usePdfStore';
+import { usePdfStore } from '@/stores/pdf';
 import { Button } from '@/components/ui/button';
-import { useDocStore } from '@/stores/useDocStore';
+import { useDocStore } from '@/stores/doc';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { viewMap } from '@/map';
 

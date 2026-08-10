@@ -34,26 +34,26 @@ import {
   SettingsIcon,
 } from '@lucide/vue';
 import NavItem from './nav-item.vue';
-import eventEmitter from '@/hooks/eventEmitter';
+import { eventBus } from '@/utils/event-bus';
 
 //打开打印机任务队列
 const handlePrintTask = () => {
-  eventEmitter.emit('dialog-print-task:show');
+  eventBus.emit('dialog-print-task:show');
 };
 
 //打开打印范围预设
 const handlePreset = () => {
-  eventEmitter.emit('dialog-setting:show', 'preset');
+  eventBus.emit('dialog-preset:show');
 };
 
 //打开打印范围预设
 const handlePrice = () => {
-  eventEmitter.emit('dialog-setting:show', 'price');
+  eventBus.emit('dialog-setting:show', 'price');
 };
 
 //打开设置
 const handleSettings = () => {
-  eventEmitter.emit('dialog-setting:show');
+  eventBus.emit('dialog-setting:show');
 };
 </script>
 

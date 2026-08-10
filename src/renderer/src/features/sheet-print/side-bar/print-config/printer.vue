@@ -37,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { usePrinterStore } from '@/stores/usePrinterStore';
+import { usePrinterStore } from '@/stores/printer';
 
 const { printers } = storeToRefs(usePrinterStore());
 </script>

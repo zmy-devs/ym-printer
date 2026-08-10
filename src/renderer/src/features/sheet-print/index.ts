@@ -1,4 +1,4 @@
-import eventEmitter from '@/hooks/eventEmitter';
+import { eventBus } from '@/utils/event-bus';
 import { FormContext } from 'vee-validate';
 
 export const open = ref(false);
@@ -7,7 +7,7 @@ export const close = () => {
   open.value = false;
 };
 
-eventEmitter.on('dialog-print:show', () => {
+eventBus.on('dialog-print:show', () => {
   open.value = true;
 });
 

@@ -33,7 +33,7 @@ import Printer from '@/components/printer.vue';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
-import { usePrinterStore } from '@/stores/usePrinterStore';
+import { usePrinterStore } from '@/stores/printer';
 
 const { selectPrinter } = usePrinterStore();
 

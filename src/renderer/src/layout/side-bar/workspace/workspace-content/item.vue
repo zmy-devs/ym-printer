@@ -24,10 +24,10 @@
 </template>
 
 <script setup lang="ts">
-import { Workspace } from '@/stores/useWorkspaceStore';
+import { Workspace } from '@/stores/workspace';
 import { FolderClosedIcon, FolderOpenIcon } from '@lucide/vue';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { useDocStore } from '@/stores/useDocStore';
+import { useWorkspaceStore } from '@/stores/workspace';
+import { useDocStore } from '@/stores/doc';
 import { totalCount } from '@/utils/total';
 
 const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());

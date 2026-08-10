@@ -35,8 +35,8 @@ import { PrinterTask } from '@type';
 import { printStatusMap } from '@/map/index';
 import { FileTextIcon, Trash2Icon } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
-import { usePrinterTaskStore } from '@/stores/usePrinterTaskStore';
-import eventEmitter from '@/hooks/eventEmitter';
+import { usePrinterTaskStore } from '@/stores/printer-task';
+import { eventBus } from '@/utils/event-bus';
 import Tooltip from '@/components/tooltip.vue';
 
 const { removePrinterTask } = usePrinterTaskStore();
@@ -52,7 +52,7 @@ const statusLabel = computed(() => {
 
 //删除
 const handleRemove = async () => {
-  eventEmitter.emit('loading:show', {
+  eventBus.emit('loading:show', {
     loadingMsg: `正在删除 "${props.data.name}"`,
     successMsg: `已删除 "${props.data.name}"`,
     errorMsg: `"${props.data.name}" 删除失败`,

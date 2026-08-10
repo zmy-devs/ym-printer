@@ -35,10 +35,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
-import { usePrinterStore } from '@/stores/usePrinterStore';
+import { usePrinterStore } from '@/stores/printer';
 import { PrinterIcon, RotateCwIcon } from '@lucide/vue';
 import { Button } from './ui/button';
-import { useLockFn } from '@/hooks/useLock';
+import { useLockFn } from '@/hooks/use-lock';
 import { ClassValue } from 'clsx';
 
 const { printers } = storeToRefs(usePrinterStore());

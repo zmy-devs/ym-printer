@@ -33,20 +33,9 @@ export const printStatusMap = {
   Completed: '已完成',
 };
 
-export const repoMap = {
-  gitee: {
-    label: 'Gitee',
-    repoUrl: `https://gitee.com/zmy-devs/${appName}`,
-    updateContentUrl: `https://gitee.com/zmy-devs/${appName}/blob/main/docs/release-note.md`,
-    issueUrl: `https://gitee.com/zmy-devs/${appName}/issues`,
-  },
-  github: {
-    label: 'GitHub',
-    repoUrl: `https://github.com/zmy-devs/${appName}`,
-    updateContentUrl: `https://github.com/zmy-devs/${appName}/blob/main/docs/release-note.md`,
-    issueUrl: `https://github.com/zmy-devs/${appName}/issues`,
-  },
-};
+export const issueUrl = `https://github.com/zmy-devs/${appName}/issues`;
+
+export const updateContentUrl = `https://github.com/zmy-devs/${appName}/blob/main/docs/release-note.md`;
 
 export const updateMap = {
   checking: '正在检查更新...',

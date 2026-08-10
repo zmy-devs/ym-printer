@@ -70,10 +70,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import eventEmitter from '@/hooks/eventEmitter';
-import { useLockFn } from '@/hooks/useLock';
-import { usePrinterStore } from '@/stores/usePrinterStore';
-import { usePrinterTaskStore } from '@/stores/usePrinterTaskStore';
+import { eventBus } from '@/utils/event-bus';
+import { useLockFn } from '@/hooks/use-lock';
+import { usePrinterStore } from '@/stores/printer';
+import { usePrinterTaskStore } from '@/stores/printer-task';
 import {
   MoreHorizontalIcon,
   RotateCwIcon,
@@ -90,7 +90,7 @@ const [reloadLock, handleReload] = useLockFn(startPrinterTasks);
 //打印测试页
 const [printTestLock, handlePrintTest] = useLockFn(
   async (cartridge: 'color' | 'black') => {
-    eventEmitter.emit('loading:show', {
+    eventBus.emit('loading:show', {
       loadingMsg: `正在打印机测试页（${cartridge == 'black' ? '黑白' : '彩色'}）`,
       successMsg: '打印测试页完成',
       errorMsg: '打印测试页失败',
@@ -103,7 +103,7 @@ const [printTestLock, handlePrintTest] = useLockFn(
 
 //删除所有任务
 const handleRemoveAll = async () => {
-  eventEmitter.emit('loading:show', {
+  eventBus.emit('loading:show', {
     loadingMsg: '正在删除打印机所有任务',
     successMsg: '已删除打印机所有任务',
     errorMsg: '打印机所有任务删除失败',

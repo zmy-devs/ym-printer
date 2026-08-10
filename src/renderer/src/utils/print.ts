@@ -1,6 +1,6 @@
 import { Doc } from '@type';
 import { parserRange } from './range';
-import { printPromise } from '@/stores/usePrintStore';
+import { printPromise } from '@/stores/print';
 
 let printQueue = Promise.resolve();
 

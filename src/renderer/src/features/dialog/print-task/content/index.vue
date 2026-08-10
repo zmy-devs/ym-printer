@@ -20,7 +20,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import ContentHeader from './content-header/index.vue';
 import ContentBody from './content-body/index.vue';
 import ContentEmpty from './content-empty.vue';
-import { usePrinterTaskStore } from '@/stores/usePrinterTaskStore';
+import { usePrinterTaskStore } from '@/stores/printer-task';
 
 const { printerTasks } = storeToRefs(usePrinterTaskStore());
 const { startPrinterTasks, stopPrinterTasks } = usePrinterTaskStore();

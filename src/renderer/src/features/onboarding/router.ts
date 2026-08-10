@@ -3,8 +3,8 @@ import { Component } from 'vue';
 import PrinterView from './views/printer.vue';
 import WorkspaceView from './views/workspace.vue';
 import { FolderClosedIcon, PrinterIcon } from '@lucide/vue';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { usePrinterStore } from '@/stores/usePrinterStore';
+import { useWorkspaceStore } from '@/stores/workspace';
+import { usePrinterStore } from '@/stores/printer';
 
 export interface OnboardingRoute {
   title: string;

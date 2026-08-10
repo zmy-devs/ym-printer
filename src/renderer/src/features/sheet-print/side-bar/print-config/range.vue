@@ -67,7 +67,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { ClipboardListIcon } from '@lucide/vue';
-import { usePresetStore } from '@/stores/usePresetStore';
+import { usePresetStore } from '@/stores/preset';
 
 const { presets } = storeToRefs(usePresetStore());
 </script>

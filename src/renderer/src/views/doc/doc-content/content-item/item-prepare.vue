@@ -38,7 +38,7 @@ import { Doc } from '@type';
 import { Button } from '@/components/ui/button';
 import { PrinterIcon, XIcon } from '@lucide/vue';
 import Tooltip from '@/components/tooltip.vue';
-import { printNext, printCancel } from '@/stores/usePrintStore';
+import { printNext, printCancel } from '@/stores/print';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { status } from '../../index';
 import { checked, toggleCheck } from '../../check.js';

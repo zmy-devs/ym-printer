@@ -37,11 +37,11 @@
 <script setup lang="ts">
 import ContentItem from './content-item/index.vue';
 import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu';
-import { useDocStore } from '@/stores/useDocStore';
+import { useDocStore } from '@/stores/doc';
 import { VueDraggable } from 'vue-draggable-plus';
 import { status } from '../index';
-import eventEmitter from '@/hooks/eventEmitter';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { eventBus } from '@/utils/event-bus';
+import { useWorkspaceStore } from '@/stores/workspace';
 import { Doc } from '@type';
 import ContextMenuDefault from './context-menu/context-menu-default.vue';
 import ContextMenuCheck from './context-menu/context-menu-check.vue';
@@ -100,7 +100,7 @@ const handlePrint = (id: string) => {
 
   selectDoc(id);
 
-  eventEmitter.emit('dialog-print:show');
+  eventBus.emit('dialog-print:show');
 };
 
 provide('handlePrint', handlePrint);

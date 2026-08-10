@@ -43,13 +43,13 @@ import {
 import TitleBar from './title-bar/index.vue';
 import SideBar from './side-bar/index.vue';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import eventEmitter from '@/hooks/eventEmitter';
+import { eventBus } from '@/utils/event-bus';
 import { VisuallyHidden } from 'reka-ui';
 import Content from './content/index.vue';
 
 const open = ref(false);
 
-eventEmitter.on('dialog-print-task:show', () => {
+eventBus.on('dialog-print-task:show', () => {
   open.value = true;
 });
 </script>

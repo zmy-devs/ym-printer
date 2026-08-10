@@ -58,8 +58,8 @@ import {
   ContextMenuRadioGroup,
   ContextMenuRadioItem,
 } from '@/components/ui/context-menu';
-import eventEmitter from '@/hooks/eventEmitter';
-import { useDocStore } from '@/stores/useDocStore';
+import { eventBus } from '@/utils/event-bus';
+import { useDocStore } from '@/stores/doc';
 import { Doc } from '@type';
 import {
   CornerUpRightIcon,
@@ -68,7 +68,7 @@ import {
   LayersIcon,
 } from '@lucide/vue';
 import { status } from '../../index';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { useWorkspaceStore } from '@/stores/workspace';
 
 const { workspace } = storeToRefs(useWorkspaceStore());
 const { setDocWorkspaceId, setDocGroupId } = useDocStore();
@@ -93,7 +93,7 @@ const handleOpen = () => {
 const handleRemove = () => {
   removeDoc(props.data.id);
 
-  eventEmitter.emit('success:show', `已删除 "${props.data.name}"`);
+  eventBus.emit('success:show', `已删除 "${props.data.name}"`);
 };
 </script>
 

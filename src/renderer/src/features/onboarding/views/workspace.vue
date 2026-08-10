@@ -46,8 +46,8 @@ import Printer from '@/components/printer.vue';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { usePrinterStore } from '@/stores/usePrinterStore';
+import { useWorkspaceStore } from '@/stores/workspace';
+import { usePrinterStore } from '@/stores/printer';
 
 const { selectedPrinter } = storeToRefs(usePrinterStore());
 const { firstAddWorkspace } = useWorkspaceStore();

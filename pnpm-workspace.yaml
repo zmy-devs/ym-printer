@@ -7,3 +7,4 @@ allowBuilds:
   winax: false
 minimumReleaseAgeExclude:
   - '@lucide/vue@1.31.0'
+

@@ -67,12 +67,12 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { useDocStore } from '@/stores/useDocStore';
+import { useDocStore } from '@/stores/doc';
 import { printAuto, printEven, printOdd } from '@/utils/print';
-import eventEmitter from '@/hooks/eventEmitter';
+import { eventBus } from '@/utils/event-bus';
 import { close, Form } from '../index';
 import { parserRange } from '@/utils/range';
-import { printPromise } from '@/stores/usePrintStore';
+import { printPromise } from '@/stores/print';
 
 const { selectedDoc, selectedDocID } = storeToRefs(useDocStore());
 const { getDoc } = useDocStore();
@@ -102,12 +102,12 @@ const handlePrint = form.handleSubmit(async (values) => {
     printFinish() {
       doc.status = 'printed';
 
-      eventEmitter.emit('success:show', `打印完成 "${doc.name}"`);
+      eventBus.emit('success:show', `打印完成 "${doc.name}"`);
     },
     printCancel() {
       doc.status = 'init';
 
-      eventEmitter.emit('error:show', `取消打印 "${doc.name}"`);
+      eventBus.emit('error:show', `取消打印 "${doc.name}"`);
     },
     printBefore() {
       doc.status = 'upload';
@@ -136,7 +136,7 @@ const handlePrePrint = form.handleSubmit(async (values) => {
   if (!result) {
     doc.status = 'init';
 
-    eventEmitter.emit('error:show', `取消打印 "${doc.name}"`);
+    eventBus.emit('error:show', `取消打印 "${doc.name}"`);
     return;
   }
 
@@ -144,12 +144,12 @@ const handlePrePrint = form.handleSubmit(async (values) => {
     printFinish() {
       doc.status = 'printed';
 
-      eventEmitter.emit('success:show', `打印完成 "${doc.name}"`);
+      eventBus.emit('success:show', `打印完成 "${doc.name}"`);
     },
     printCancel() {
       doc.status = 'init';
 
-      eventEmitter.emit('error:show', `取消打印 "${doc.name}"`);
+      eventBus.emit('error:show', `取消打印 "${doc.name}"`);
     },
     printBefore() {
       doc.status = 'upload';
@@ -173,7 +173,7 @@ const handlePrintFinish = form.handleSubmit(async (values) => {
 
   doc.status = 'printed';
 
-  eventEmitter.emit('success:show', `打印完成 "${doc.name}"`);
+  eventBus.emit('success:show', `打印完成 "${doc.name}"`);
 });
 
 //打印单页
@@ -184,7 +184,7 @@ const handlePrintSimplex = form.handleSubmit(async (values) => {
 
   isPrinting.value = true;
 
-  eventEmitter.emit('loading:show', {
+  eventBus.emit('loading:show', {
     loadingMsg: '正在打印单页',
     successMsg: `打印单页完成 "${doc.name}"`,
     errorMsg: '打印单页失败',
@@ -204,7 +204,7 @@ const handlePrintEven = form.handleSubmit(async (values) => {
 
   isPrinting.value = true;
 
-  eventEmitter.emit('loading:show', {
+  eventBus.emit('loading:show', {
     loadingMsg: '正在打印偶数页',
     successMsg: `打印偶数页完成 "${doc.name}"`,
     errorMsg: '打印偶数页失败',
@@ -224,7 +224,7 @@ const handlePrintOdd = form.handleSubmit(async (values) => {
 
   isPrinting.value = true;
 
-  eventEmitter.emit('loading:show', {
+  eventBus.emit('loading:show', {
     loadingMsg: '正在打印奇数页',
     successMsg: `打印奇数页完成 "${doc.name}"`,
     errorMsg: '打印奇数页失败',

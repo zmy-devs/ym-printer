@@ -39,10 +39,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import { usePrinterTaskStore } from '@/stores/usePrinterTaskStore';
-import { useLockFn } from '@/hooks/useLock';
+import { usePrinterTaskStore } from '@/stores/printer-task';
+import { useLockFn } from '@/hooks/use-lock';
 import { Spinner } from '@/components/ui/spinner';
-import { usePrinterStore } from '@/stores/usePrinterStore';
+import { usePrinterStore } from '@/stores/printer';
 
 const { startPrinterTasks } = usePrinterTaskStore();
 const { selectedPrinter } = storeToRefs(usePrinterStore());

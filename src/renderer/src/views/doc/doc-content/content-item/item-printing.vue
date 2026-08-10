@@ -47,7 +47,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
 import { ArrowRightIcon, XIcon } from '@lucide/vue';
 import Tooltip from '@/components/tooltip.vue';
-import { printNext, printCancel } from '@/stores/usePrintStore';
+import { printNext, printCancel } from '@/stores/print';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { checked, toggleCheck } from '../../check.js';
 import { status } from '../../index';

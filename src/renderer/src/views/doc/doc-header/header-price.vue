@@ -28,9 +28,9 @@
 import { Button } from '@/components/ui/button';
 import { SquareCheckIcon, SquareIcon } from '@lucide/vue';
 import { cancelCheck, checkAll, checked } from '../check';
-import { useDocStore } from '@/stores/useDocStore';
+import { useDocStore } from '@/stores/doc';
 import { getPrice } from '@/utils/price';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { useWorkspaceStore } from '@/stores/workspace';
 
 const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());
 const { docs } = storeToRefs(useDocStore());

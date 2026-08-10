@@ -1,14 +1,13 @@
-import '@/assets/tailwind.css';
-import '@/assets/global.css';
+import '@/style/global.css';
 
+import { createPinia } from 'pinia';
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import pinia from './stores';
 
 const app = createApp(App);
 
-app.use(pinia);
+app.use(createPinia());
 app.use(router);
 
 app.mount('#app');

@@ -10,7 +10,7 @@
       </span>
     </Button>
 
-    <div class="ml-auto" v-if="config.price">
+    <div class="ml-auto" v-if="settings.price">
       <Button
         size="sm"
         variant="destructive"
@@ -43,14 +43,14 @@
 import { DollarSignIcon, XIcon, SquareCheckIcon } from '@lucide/vue';
 import { setStatus, status } from '../index';
 import { cancelCheckAll } from '../check';
-import { useDocStore } from '@/stores/useDocStore';
+import { useDocStore } from '@/stores/doc';
 import { Button } from '@/components/ui/button';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { useWorkspaceStore } from '@/stores/workspace';
 import { totalCount } from '@/utils/total';
-import { useConfigStore } from '@/stores/useConfigStore';
+import { useSettingsStore } from '@/stores/settings';
 import { ButtonGroup } from '@/components/ui/button-group';
 
-const { config } = storeToRefs(useConfigStore());
+const { settings } = storeToRefs(useSettingsStore());
 const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());
 const { docs } = storeToRefs(useDocStore());
 

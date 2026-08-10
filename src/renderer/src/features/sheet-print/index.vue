@@ -50,9 +50,9 @@ import { open, close } from './index';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
-import { useDocStore } from '@/stores/useDocStore';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { usePdfStore } from '@/stores/usePdfStore';
+import { useDocStore } from '@/stores/doc';
+import { useWorkspaceStore } from '@/stores/workspace';
+import { usePdfStore } from '@/stores/pdf';
 import { useEventListener } from '@vueuse/core';
 
 const { selectedDoc } = storeToRefs(useDocStore());

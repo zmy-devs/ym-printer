@@ -2,113 +2,73 @@
   <Dialog v-model:open="open">
     <DialogContent
       :aria-describedby="undefined"
-      @close-auto-focus="handleClose"
+      class="h-[min(70vh,35rem)] max-w-xl! overflow-hidden p-0!"
     >
-      <DialogHeader>
-        <DialogTitle>
-          {{ presetTypeMap[dialogType] }}
-        </DialogTitle>
+      <DialogHeader class="border-b px-6 py-4">
+        <DialogTitle>打印范围预设</DialogTitle>
       </DialogHeader>
 
-      <Form />
+      <Container class="h-[calc(100%-65px)] flex flex-col gap-8">
+        <PresetEmpty v-if="presets.length === 0" />
 
-      <DialogFooter>
-        <Button @click="handleClick">确定</Button>
-      </DialogFooter>
+        <ItemGroup v-else>
+          <div class="flex items-center">
+            <p class="px-4 py-3">打印范围预设</p>
+
+            <Button class="ml-auto w-fit" size="sm" @click="handleAdd">
+              <PlusIcon />
+
+              <span>新建预设</span>
+            </Button>
+          </div>
+
+          <ItemSeparator class="mb-4" />
+
+          <PresetItem
+            v-for="preset in presets"
+            :key="preset.id"
+            :data="preset"
+          />
+        </ItemGroup>
+      </Container>
     </DialogContent>
   </Dialog>
+
+  <PresetFormDialog />
 </template>
 
 <script setup lang="ts">
-import Form from './form/index.vue';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogTitle,
   DialogHeader,
-  DialogFooter,
+  DialogTitle,
 } from '@/components/ui/dialog';
-import eventEmitter from '@/hooks/eventEmitter';
-import { useForm } from 'vee-validate';
-import * as z from 'zod';
-import { toTypedSchema } from '@vee-validate/zod';
-import { usePresetStore } from '@/stores/usePresetStore';
-import { presetTypeMap } from '@/map/index';
+import { ItemGroup, ItemSeparator } from '@/components/ui/item';
+import Container from '@/components/container.vue';
+import { eventBus } from '@/utils/event-bus';
+import { usePresetStore } from '@/stores/preset';
+import { PlusIcon } from '@lucide/vue';
+import PresetEmpty from './preset-empty.vue';
+import PresetFormDialog from './form-dialog.vue';
+import PresetItem from './preset-item.vue';
 
-const { addPreset, editPreset } = usePresetStore();
-
+// 预设管理弹窗开关状态
 const open = ref(false);
 
-//dialog类型
-const dialogType = ref<'add' | 'edit'>('add');
+// 当前预设列表
+const { presets } = storeToRefs(usePresetStore());
 
-const { handleSubmit, setValues } = useForm({
-  validationSchema: toTypedSchema(
-    z.object({
-      id: z.string(),
-      name: z
-        .string({
-          message: '请输入名称',
-        })
-        .min(1, '请输入名称'),
-      value: z
-        .string()
-        .min(1, '请输入打印范围')
-        .superRefine((value, ctx) => {
-          //允许空值
-          if (value === '') {
-            return;
-          }
-
-          //验证格式
-          const reg = /^(\d*?-\d*?|\d+)([,，](\d*?-\d*?|\d+))*$/;
-
-          if (!reg.test(value)) {
-            ctx.addIssue({
-              code: 'custom',
-              message: '格式有误',
-            });
-            return;
-          }
-        }),
-    }),
-  ),
-  initialValues: {
-    id: '',
-    name: '',
-    value: '',
-  },
-});
-
-//关闭
-const handleClose = () => {
-  open.value = false;
+// 打开新建预设弹窗
+const handleAdd = () => {
+  eventBus.emit('dialog-preset-form:show', {
+    type: 'add',
+  });
 };
 
-//处理提交
-const handleClick = handleSubmit((values) => {
-  switch (dialogType.value) {
-    case 'add':
-      addPreset(values);
-      break;
-    case 'edit':
-      editPreset(values);
-      break;
-  }
-
-  handleClose();
-});
-
-eventEmitter.on('dialog-preset:show', (option) => {
-  dialogType.value = option.type;
-
-  switch (dialogType.value) {
-    case 'edit':
-      setValues(option.data!);
-      break;
-  }
-
+// 响应预设管理弹窗打开事件
+eventBus.on('dialog-preset:show', () => {
   open.value = true;
 });
 </script>

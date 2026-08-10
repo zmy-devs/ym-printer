@@ -13,8 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import { usePdfStore } from '@/stores/usePdfStore';
-import { useDocStore } from '@/stores/useDocStore';
+import { usePdfStore } from '@/stores/pdf';
+import { useDocStore } from '@/stores/doc';
 import VuePdfEmbed, { useVuePdfEmbed } from '@/components/vue-pdf-embed';
 import type { PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { Form } from '../../index';

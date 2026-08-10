@@ -67,10 +67,10 @@ import {
 import { PlusIcon, PencilLineIcon, Trash2Icon } from '@lucide/vue';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Item from './item.vue';
-import { useWorkspaceStore, Workspace } from '@/stores/useWorkspaceStore';
+import { useWorkspaceStore, Workspace } from '@/stores/workspace';
 import { VueDraggable } from 'vue-draggable-plus';
-import { useDocStore } from '@/stores/useDocStore.js';
-import eventEmitter from '@/hooks/eventEmitter.js';
+import { useDocStore } from '@/stores/doc.js';
+import { eventBus } from '@/utils/event-bus.js';
 
 const { workspace } = storeToRefs(useWorkspaceStore());
 const { removeWorkspace } = useWorkspaceStore();
@@ -100,7 +100,7 @@ const handleEdit = () => {
     return;
   }
 
-  eventEmitter.emit('dialog-workspace:show', {
+  eventBus.emit('dialog-workspace:show', {
     type: 'edit',
     data: selectedItem.value,
   });
@@ -114,7 +114,7 @@ const handleRemoveDocs = () => {
 
   clearDoc(selectedItem.value.id);
 
-  eventEmitter.emit('success:show', '已删除全部文档');
+  eventBus.emit('success:show', '已删除全部文档');
 };
 
 //处理删除
@@ -127,7 +127,7 @@ const handleRemove = () => {
 
   removeWorkspace(selectedItem.value.id);
 
-  eventEmitter.emit('success:show', `已删除 "${selectedItem.value.name}"`);
+  eventBus.emit('success:show', `已删除 "${selectedItem.value.name}"`);
 };
 </script>
 

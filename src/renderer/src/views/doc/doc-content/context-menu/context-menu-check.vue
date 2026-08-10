@@ -57,9 +57,9 @@ import {
   ContextMenuRadioGroup,
   ContextMenuRadioItem,
 } from '@/components/ui/context-menu';
-import eventEmitter from '@/hooks/eventEmitter';
-import { useDocStore } from '@/stores/useDocStore';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { eventBus } from '@/utils/event-bus';
+import { useDocStore } from '@/stores/doc';
+import { useWorkspaceStore } from '@/stores/workspace';
 import { CornerUpRightIcon, LayersIcon, Trash2Icon } from '@lucide/vue';
 import { cancelCheckAll, checked } from '../../check';
 import { setStatus } from '../../index';
@@ -93,7 +93,7 @@ const handleRemoveChecked = () => {
 
   removeDoc(ids);
 
-  eventEmitter.emit('success:show', `已删除 "${ids.length} 个文档"`);
+  eventBus.emit('success:show', `已删除 "${ids.length} 个文档"`);
 
   setStatus();
   cancelCheckAll();

@@ -29,12 +29,12 @@ import {
   DialogHeader,
   DialogFooter,
 } from '@/components/ui/dialog';
-import eventEmitter from '@/hooks/eventEmitter';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { eventBus } from '@/utils/event-bus';
+import { useWorkspaceStore } from '@/stores/workspace';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
-import { usePrinterStore } from '@/stores/usePrinterStore';
+import { usePrinterStore } from '@/stores/printer';
 import { workspaceTypeMap } from '@/map/index';
 
 const { selectedPrinter } = storeToRefs(usePrinterStore());
@@ -88,7 +88,7 @@ const handleClick = handleSubmit((values) => {
   handleClose();
 });
 
-eventEmitter.on('dialog-workspace:show', (option) => {
+eventBus.on('dialog-workspace:show', (option) => {
   dialogType.value = option.type;
 
   switch (dialogType.value) {

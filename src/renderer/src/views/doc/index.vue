@@ -23,12 +23,12 @@ import DocHeader from './doc-header/index.vue';
 import DocContent from './doc-content/index.vue';
 import DocEmpty from './doc-empty.vue';
 import DocFooter from './doc-footer/index.vue';
-import { useDocStore } from '@/stores/useDocStore';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
-import { useConfigStore } from '@/stores/useConfigStore';
+import { useDocStore } from '@/stores/doc';
+import { useWorkspaceStore } from '@/stores/workspace';
+import { useSettingsStore } from '@/stores/settings';
 import { setStatus } from './index';
 
-const { config } = storeToRefs(useConfigStore());
+const { settings } = storeToRefs(useSettingsStore());
 const { docs } = storeToRefs(useDocStore());
 const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());
 
@@ -38,7 +38,7 @@ const hasDocs = computed(() =>
 
 //防止进入计价后关闭计价模式
 watch(
-  () => config.value.price,
+  () => settings.value.price,
   (value) => {
     if (!value) {
       setStatus();

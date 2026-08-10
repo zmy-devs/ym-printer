@@ -1,0 +1,36 @@
+@import './theme.css';
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50 font-normal select-none;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family:
+      'Inter', 'Segoe UI', 'Microsoft YaHei UI', 'Microsoft YaHei', sans-serif;
+  }
+}
+
+.app-drag {
+  -webkit-app-region: drag;
+}
+
+.app-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+.flex-center {
+  @apply flex justify-center items-center;
+}
+
+.wh-screen {
+  @apply w-screen h-screen;
+}
+
+.wh-full {
+  @apply w-full h-full;
+}
+
+.disabled {
+  @apply opacity-60 pointer-events-none!;
+}

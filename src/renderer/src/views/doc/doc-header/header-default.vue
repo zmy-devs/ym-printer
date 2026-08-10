@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import Printer from '@/components/printer.vue';
-import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { useWorkspaceStore } from '@/stores/workspace';
 
 const { selectedWorkspace } = storeToRefs(useWorkspaceStore());
 </script>
