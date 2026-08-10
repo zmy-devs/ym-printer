@@ -2,18 +2,25 @@ import { createMainWindow } from '@/browser-windows/main';
 import { createWord, exitWord } from './service/doc';
 import { app } from 'electron';
 import { optimizer } from '@electron-toolkit/utils';
-import { cachePath } from './service/path';
+import { cachePath } from './utils/path';
 import { existsSync, rmSync } from 'fs';
 import '@/utils/update';
 
+// 是否成功获取单实例锁
+const isPrimaryInstance = app.requestSingleInstanceLock();
+
 //禁止多开
-if (!app.requestSingleInstanceLock()) {
+if (!isPrimaryInstance) {
   app.exit();
 }
 
-app.whenReady().then(async () => {
-  createWord();
+if (isPrimaryInstance) {
+  createWord().catch((error) => {
+    console.error('Word 预热失败:', error);
+  });
+}
 
+app.whenReady().then(async () => {
   const mainWindow = createMainWindow();
 
   //多开窗口

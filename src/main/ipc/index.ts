@@ -3,7 +3,7 @@ import {
   isSupportedDocument,
   supportedDocumentExtensions,
 } from '@shared/document';
-import { cachePath } from '../service/path';
+import { cachePath } from '../utils/path';
 import getPrintersScriptPath from '@resources/getPrinters.ps1?asset';
 import getPrinterTasksScriptPath from '@resources/getPrinterTasks.ps1?asset';
 import printerPath from '@resources/printer.exe?asset';
@@ -125,7 +125,7 @@ export const parserDoc = async (_: IpcMainInvokeEvent, file: Doc) => {
   } else {
     console.time(md5);
 
-    await toPdf(path, pdfPath, md5);
+    await toPdf(path, pdfPath);
 
     console.timeEnd(md5);
   }
