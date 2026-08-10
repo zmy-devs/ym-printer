@@ -12,7 +12,7 @@ import testColorPath from '@resources/test-color.pdf?asset';
 import { copyFile, mkdir, readFile } from 'fs/promises';
 import { toPdf } from '../service/doc';
 import { existsSync } from 'fs';
-import type { Doc, PrinterTask } from '@type';
+import type { Doc } from '@type';
 import {
   BrowserWindow,
   dialog,
@@ -21,30 +21,25 @@ import {
   shell,
 } from 'electron';
 import { parseDoc } from '../utils/doc';
-import { exec, execFile } from 'child_process';
 import { formatPrinterTask } from '../utils/format';
 import { autoUpdater } from 'electron-updater';
+import { exec, execFile } from '@/utils/exec';
 
 //获取打印机信息
-export const getPrinters = (_: IpcMainInvokeEvent) => {
-  const { promise, resolve } = Promise.withResolvers<string[]>();
-
+export const getPrinters = async (_: IpcMainInvokeEvent) => {
   const cmd = `powershell -NoProfile -ExecutionPolicy Bypass -File "${getPrintersScriptPath}"`;
 
-  exec(cmd, (err, stdout) => {
-    if (err) {
-      resolve([]);
-      return;
-    }
+  try {
+    const { stdout } = await exec(cmd);
 
     const rawPrinters = JSON.parse(stdout);
 
     const printers = Array.isArray(rawPrinters) ? rawPrinters : [rawPrinters];
 
-    resolve(printers);
-  });
-
-  return promise;
+    return printers;
+  } catch {
+    return [];
+  }
 };
 
 //添加文档
@@ -137,62 +132,69 @@ export const print = async (
   config: Doc,
   range: number[],
 ) => {
-  const { promise, resolve, reject } = Promise.withResolvers<boolean>();
+  // 打印程序执行参数
+  const args = [
+    `--docName=${config.name}`,
+    `--file=${join(cachePath, `${config.md5}.pdf`)}`,
+    `--printer=${config.printer}`,
+    `--range=${range.join(',')}`,
+    `--orientation=${config.orientation}`,
+    `--count=${config.count}`,
+    `--cartridge=${config.cartridge}`,
+    `--dpi=300`,
+  ];
 
-  execFile(
-    printerPath,
-    [
-      `--docName=${config.name}`,
-      `--file=${join(cachePath, `${config.md5}.pdf`)}`,
-      `--printer=${config.printer}`,
-      `--range=${range.join(',')}`,
-      `--orientation=${config.orientation}`,
-      `--count=${config.count}`,
-      `--cartridge=${config.cartridge}`,
-      `--dpi=300`,
-    ],
-    (e) => {
-      if (e && e.code != 3221225477) {
-        reject(false);
-        return;
-      }
+  try {
+    await execFile(printerPath, args);
 
-      resolve(true);
-    },
-  );
+    return true;
+  } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 3221225477
+    ) {
+      return true;
+    }
 
-  return promise;
+    throw false;
+  }
 };
 
 //打印测试页面
-export const printTest = (
+export const printTest = async (
   _: IpcMainInvokeEvent,
   printer: string,
   cartridge: 'color' | 'black',
 ) => {
-  const { promise, resolve, reject } = Promise.withResolvers<boolean>();
-
+  // 测试页文件路径
   const testPath = cartridge == 'color' ? testColorPath : testBlackPath;
 
-  execFile(
-    printerPath,
-    [
-      `--docName=测试页`,
-      `--file=${testPath}`,
-      `--printer=${printer}`,
-      `--cartridge=${cartridge}`,
-    ],
-    (e) => {
-      if (e && e.code != 3221225477) {
-        reject(false);
-        return;
-      }
+  // 测试页打印程序执行参数
+  const args = [
+    `--docName=测试页`,
+    `--file=${testPath}`,
+    `--printer=${printer}`,
+    `--cartridge=${cartridge}`,
+  ];
 
-      resolve(true);
-    },
-  );
+  try {
+    await execFile(printerPath, args);
 
-  return promise;
+    return true;
+  } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 3221225477
+    ) {
+      return true;
+    }
+
+    throw false;
+  }
 };
 
 //检查更新
@@ -218,45 +220,37 @@ export const openUrl = (_: IpcMainInvokeEvent, url: string) => {
 };
 
 //获取打印机状态
-export const getPrinterTask = (_: IpcMainInvokeEvent, printer: string) => {
-  const { promise, resolve } = Promise.withResolvers<PrinterTask[]>();
-
+export const getPrinterTask = async (
+  _: IpcMainInvokeEvent,
+  printer: string,
+) => {
   const cmd = `powershell -NoProfile -ExecutionPolicy Bypass -File "${getPrinterTasksScriptPath}" -PrinterName "${printer}"`;
 
-  exec(cmd, (err, stdout) => {
-    if (err) {
-      console.error(err);
-      return resolve([]);
-    }
+  try {
+    const { stdout } = await exec(cmd);
 
-    try {
-      //原始任务
-      const rawTask = JSON.parse(stdout);
+    //原始任务
+    const rawTask = JSON.parse(stdout);
 
-      const tasks = Array.isArray(rawTask) ? rawTask : [rawTask];
+    const tasks = Array.isArray(rawTask) ? rawTask : [rawTask];
 
-      //格式化任务
-      const res = tasks.map((item) => {
-        return formatPrinterTask(item);
-      });
+    //格式化任务
+    return tasks.map((item) => {
+      return formatPrinterTask(item);
+    });
+  } catch (error) {
+    console.error(error);
 
-      resolve(res);
-    } catch {
-      return resolve([]);
-    }
-  });
-
-  return promise;
+    return [];
+  }
 };
 
 //删除打印机任务
-export const removePrinterTask = (
+export const removePrinterTask = async (
   _: IpcMainInvokeEvent,
   option: { printer: string; id?: number },
 ) => {
   const { printer, id } = option;
-
-  const { promise, resolve } = Promise.withResolvers<boolean>();
 
   let cmd = `powershell -NoProfile "Remove-PrintJob -PrinterName '${printer}' -ID ${id}"`;
 
@@ -264,16 +258,15 @@ export const removePrinterTask = (
     cmd = `powershell -NoProfile "Get-PrintJob -PrinterName '${printer}' | Remove-PrintJob"`;
   }
 
-  exec(cmd, (err) => {
-    if (err) {
-      console.error(err);
-      return resolve(false);
-    }
+  try {
+    await exec(cmd);
 
-    resolve(true);
-  });
+    return true;
+  } catch (error) {
+    console.error(error);
 
-  return promise;
+    return false;
+  }
 };
 
 //切换主题色
