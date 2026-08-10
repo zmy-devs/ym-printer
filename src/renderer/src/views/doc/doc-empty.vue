@@ -14,11 +14,11 @@
     </EmptyHeader>
 
     <EmptyContent>
-      <Tooltip label="在当前工作空间下新增文档 Ctrl+O">
+      <Tooltip label="在当前工作空间下新增文档" shortcut="Ctrl+O">
         <Button @click="handleAdd">
           <PlusIcon />
 
-          <span>新增文档 </span>
+          <span>新增文档</span>
         </Button>
       </Tooltip>
     </EmptyContent>

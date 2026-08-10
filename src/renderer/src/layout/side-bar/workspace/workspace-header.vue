@@ -2,7 +2,7 @@
   <section class="flex items-center">
     <span class="text-xs text-muted-foreground">工作空间</span>
 
-    <Tooltip label="新建工作空间 Ctrl+N">
+    <Tooltip label="新建工作空间" shortcut="Ctrl+N">
       <Button class="ml-auto" variant="outline" size="xs" @click="handleAdd">
         <PlusIcon class="size-4" />
 

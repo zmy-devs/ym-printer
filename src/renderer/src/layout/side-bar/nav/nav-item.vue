@@ -1,5 +1,5 @@
 <template>
-  <Tooltip :label="description" side="right">
+  <Tooltip :label="description" :shortcut="shortcut" side="right">
     <section
       class="h-8 px-2 flex items-center gap-2 rounded hover:bg-accent dark:hover:bg-accent/50 transition-colors"
       @click="$emit('click')"
@@ -17,6 +17,7 @@ import Tooltip from '@/components/tooltip.vue';
 defineProps<{
   label: string;
   description?: string;
+  shortcut?: string;
 }>();
 
 defineEmits<{

@@ -5,7 +5,9 @@
     </TooltipTrigger>
 
     <TooltipContent :side="side">
-      <p>{{ label }}</p>
+      {{ label }}
+
+      <Kbd class="ml-2" v-if="shortcut">{{ shortcut }}</Kbd>
     </TooltipContent>
   </Tooltip>
 </template>
@@ -16,10 +18,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { Kbd } from '@/components/ui/kbd';
 
 defineProps<{
   label?: string;
   side?: 'right' | 'left' | 'top' | 'bottom';
   disabled?: boolean;
+  shortcut?: string;
 }>();
 </script>

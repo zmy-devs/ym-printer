@@ -20,7 +20,12 @@
       <CircleDollarSignIcon class="size-4.5" />
     </NavItem>
 
-    <NavItem label="设置" description="打开设置 Ctrl+," @click="handleSettings">
+    <NavItem
+      label="设置"
+      description="打开设置"
+      shortcut="Ctrl+,"
+      @click="handleSettings"
+    >
       <SettingsIcon class="size-4.5" />
     </NavItem>
   </section>
