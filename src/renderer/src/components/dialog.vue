@@ -5,7 +5,7 @@
       :class="
         cn(
           $attrs.class,
-          'sm:max-w-200 h-150 p-0! flex flex-col gap-0 bg-sidebar',
+          'sm:max-w-200 h-150 p-0! flex flex-col gap-0 bg-sidebar overflow-hidden',
         )
       "
       @open-auto-focus.prevent

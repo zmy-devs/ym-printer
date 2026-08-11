@@ -1,9 +1,8 @@
 <template>
   <Dialog v-model="visible">
-    <TitleBar />
+    <TitleBar class="border-b" />
 
     <ResizablePanelGroup
-      class="px-2 pb-2 gap-1"
       direction="horizontal"
       auto-save-id="ym-printer:settings-layout"
     >
@@ -11,12 +10,12 @@
         <SideBar class="h-full" />
       </ResizablePanel>
 
-      <ResizableHandle class="bg-transparent!" />
+      <ResizableHandle />
 
       <ResizablePanel :min-size="50">
         <component
           :is="selectedRoute?.component"
-          class="h-full rounded-lg border bg-background"
+          class="h-full bg-background"
         />
       </ResizablePanel>
     </ResizablePanelGroup>

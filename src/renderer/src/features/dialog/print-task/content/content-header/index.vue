@@ -32,7 +32,7 @@
         >
           <Spinner v-if="printTestLock" />
 
-          <TestTubeDiagonalIcon v-else />
+          <PrinterIcon v-else />
 
           <span>打印测试页（黑白）</span>
         </DropdownMenuItem>
@@ -43,7 +43,7 @@
         >
           <Spinner v-if="printTestLock" />
 
-          <TestTubeDiagonalIcon v-else />
+          <PrinterIcon v-else />
 
           <span>打印测试页（彩色）</span>
         </DropdownMenuItem>
@@ -76,8 +76,8 @@ import { usePrinterStore } from '@/stores/printer';
 import { usePrinterTaskStore } from '@/stores/printer-task';
 import {
   MoreHorizontalIcon,
+  PrinterIcon,
   RotateCwIcon,
-  TestTubeDiagonalIcon,
   Trash2Icon,
 } from '@lucide/vue';
 

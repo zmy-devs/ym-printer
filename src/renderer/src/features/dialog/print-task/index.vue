@@ -1,20 +1,19 @@
 <template>
   <Dialog v-model="visible">
-    <TitleBar />
+    <TitleBar class="border-b" />
 
     <ResizablePanelGroup
-      class="px-2 pb-2"
       direction="horizontal"
       autoSaveId="ym-printer:print-task-layout"
     >
       <ResizablePanel :min-size="160" :default-size="200" size-unit="px">
-        <SideBar class="h-full pr-1.5" />
+        <SideBar class="h-full" />
       </ResizablePanel>
 
-      <ResizableHandle class="bg-transparent!" />
+      <ResizableHandle />
 
       <ResizablePanel :min-size="50">
-        <Content class="h-full bg-background border rounded-lg" />
+        <Content class="h-full bg-background" />
       </ResizablePanel>
     </ResizablePanelGroup>
   </Dialog>

@@ -1,5 +1,5 @@
 <template>
-  <SideBar>
+  <SideBar view-class="py-2">
     <SideBarItem
       v-for="item in printers"
       :key="item"
@@ -7,7 +7,7 @@
       :title="item"
       @click="selectPrinter(item)"
     >
-      <Printer />
+      <PrinterIcon />
 
       <span>{{ item }}</span>
     </SideBarItem>
@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { SideBar, SideBarItem } from '@/components/side-bar';
 import { usePrinterStore } from '@/stores/printer';
-import { Printer } from '@lucide/vue';
+import { PrinterIcon } from '@lucide/vue';
 
 const printerStore = usePrinterStore();
 

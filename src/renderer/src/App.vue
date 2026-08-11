@@ -20,7 +20,7 @@
 import SheetPrint from '@/features/sheet-print/index.vue';
 import DialogSetting from '@/features/settings/index.vue';
 import DialogWorkspace from '@/features/dialog/workspace/index.vue';
-import DialogPreset from '@/features/dialog/preset/index.vue';
+import DialogPreset from '@/features/dialog/preset/form-dialog.vue';
 import DialogPrintTask from '@/features/dialog/print-task/index.vue';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { eventBus } from '@/utils/event-bus';

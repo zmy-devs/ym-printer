@@ -1,5 +1,5 @@
 <template>
-  <SideBar class="size-full min-h-0!">
+  <SideBar view-class="py-2">
     <SideBarItem
       v-for="route in router"
       :key="route.id"
