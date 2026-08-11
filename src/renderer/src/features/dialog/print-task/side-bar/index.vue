@@ -1,17 +1,28 @@
 <template>
-  <ScrollArea>
-    <div class="px-2 flex flex-col gap-1">
-      <Item v-for="item in printers" :key="item" :data="item" />
-    </div>
-  </ScrollArea>
+  <SideBar>
+    <SideBarItem
+      v-for="item in printers"
+      :key="item"
+      :is-active="selectedPrinter == item"
+      :title="item"
+      @click="selectPrinter(item)"
+    >
+      <Printer />
+
+      <span>{{ item }}</span>
+    </SideBarItem>
+  </SideBar>
 </template>
 
 <script setup lang="ts">
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { SideBar, SideBarItem } from '@/components/side-bar';
 import { usePrinterStore } from '@/stores/printer';
-import Item from './item.vue';
+import { Printer } from '@lucide/vue';
 
-const { printers } = storeToRefs(usePrinterStore());
+const printerStore = usePrinterStore();
+
+const { printers, selectedPrinter } = storeToRefs(printerStore);
+const { selectPrinter } = printerStore;
 </script>
 
 <style scoped lang="scss"></style>

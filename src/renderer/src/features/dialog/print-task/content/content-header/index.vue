@@ -4,7 +4,7 @@
       variant="ghost"
       :disabled="reloadLock"
       @click="handleReload"
-      v-if="selectedPrinter"
+      v-if="printerTasks.length"
     >
       <Spinner v-if="reloadLock" />
 
@@ -18,7 +18,7 @@
         <Button
           class="ml-auto"
           variant="ghost"
-          size="icon"
+          size="icon-xs"
           :disabled="!selectedPrinter"
         >
           <MoreHorizontalIcon />
@@ -82,6 +82,7 @@ import {
 } from '@lucide/vue';
 
 const { selectedPrinter } = storeToRefs(usePrinterStore());
+const { printerTasks } = storeToRefs(usePrinterTaskStore());
 const { startPrinterTasks, removeAllPrinterTasks } = usePrinterTaskStore();
 
 //刷新打印任务列表

@@ -8,14 +8,6 @@
       <PrinterIcon class="size-4.5" />
     </NavItem>
 
-    <NavItem
-      label="打印范围预设"
-      description="打开打印范围预设"
-      @click="handlePreset"
-    >
-      <ClipboardListIcon class="size-4.5" />
-    </NavItem>
-
     <NavItem label="价格" description="打开价格设置" @click="handlePrice">
       <CircleDollarSignIcon class="size-4.5" />
     </NavItem>
@@ -32,23 +24,13 @@
 </template>
 
 <script setup lang="ts">
-import {
-  CircleDollarSignIcon,
-  ClipboardListIcon,
-  PrinterIcon,
-  SettingsIcon,
-} from '@lucide/vue';
+import { CircleDollarSignIcon, PrinterIcon, SettingsIcon } from '@lucide/vue';
 import NavItem from './nav-item.vue';
 import { eventBus } from '@/utils/event-bus';
 
 //打开打印机任务队列
 const handlePrintTask = () => {
   eventBus.emit('dialog-print-task:show');
-};
-
-//打开打印范围预设
-const handlePreset = () => {
-  eventBus.emit('dialog-preset:show');
 };
 
 //打开打印范围预设

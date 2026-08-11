@@ -22,16 +22,16 @@ export interface Route {
 // 设置页导航配置
 const router: Route[] = [
   {
-    id: 'appearance',
-    name: '外观',
-    icon: PaletteIcon,
-    component: Appearance,
-  },
-  {
     id: 'price',
     name: '价格',
     icon: CircleDollarSignIcon,
     component: Price,
+  },
+  {
+    id: 'appearance',
+    name: '外观',
+    icon: PaletteIcon,
+    component: Appearance,
   },
   {
     id: 'update',

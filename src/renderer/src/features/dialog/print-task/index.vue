@@ -1,40 +1,27 @@
 <template>
-  <Dialog v-model:open="open">
-    <DialogContent
-      :aria-describedby="undefined"
-      class="max-w-none! w-[90vw] h-[calc(100vh-100px)] p-0! overflow-hidden border-[1.5px]"
-      @open-auto-focus.prevent
+  <Dialog v-model="visible">
+    <TitleBar />
+
+    <ResizablePanelGroup
+      class="px-2 pb-2"
+      direction="horizontal"
+      autoSaveId="ym-printer:print-task-layout"
     >
-      <VisuallyHidden as-child>
-        <DialogTitle />
-      </VisuallyHidden>
+      <ResizablePanel :min-size="160" :default-size="200" size-unit="px">
+        <SideBar class="h-full pr-1.5" />
+      </ResizablePanel>
 
-      <div class="print-task wh-full grid bg-sidebar">
-        <TitleBar />
+      <ResizableHandle class="bg-transparent!" />
 
-        <ResizablePanelGroup
-          class="pb-2"
-          direction="horizontal"
-          autoSaveId="print-task-layout"
-        >
-          <ResizablePanel :min-size="160" :default-size="260" size-unit="px">
-            <SideBar class="h-full" />
-          </ResizablePanel>
-
-          <ResizableHandle class="bg-transparent!" />
-
-          <ResizablePanel class="pr-2" :min-size="50">
-            <Content
-              class="h-full bg-background border rounded-lg overflow-hidden"
-            />
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </div>
-    </DialogContent>
+      <ResizablePanel :min-size="50">
+        <Content class="h-full bg-background border rounded-lg" />
+      </ResizablePanel>
+    </ResizablePanelGroup>
   </Dialog>
 </template>
 
 <script setup lang="ts">
+import Dialog from '@/components/dialog.vue';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -42,15 +29,13 @@ import {
 } from '@/components/ui/resizable';
 import TitleBar from './title-bar/index.vue';
 import SideBar from './side-bar/index.vue';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { eventBus } from '@/utils/event-bus';
-import { VisuallyHidden } from 'reka-ui';
 import Content from './content/index.vue';
 
-const open = ref(false);
+const visible = ref(false);
 
 eventBus.on('dialog-print-task:show', () => {
-  open.value = true;
+  visible.value = true;
 });
 </script>
 
