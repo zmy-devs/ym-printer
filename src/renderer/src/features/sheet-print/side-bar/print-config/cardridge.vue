@@ -1,41 +1,39 @@
 <template>
-  <FormField v-slot="{ componentField }" name="cartridge">
-    <FormItem>
-      <FormLabel>墨盒颜色</FormLabel>
+  <Field
+    name="cartridge"
+    label="墨盒颜色"
+    :icon="PaletteIcon"
+    v-slot="{ componentField }"
+  >
+    <Select v-bind="componentField">
+      <SelectTrigger class="min-w-0 w-full">
+        <SelectValue placeholder="请选择墨盒颜色" />
+      </SelectTrigger>
 
-      <FormControl>
-        <ToggleGroup
-          class="w-full shadow-xs"
-          variant="outline"
-          type="single"
-          v-bind="componentField"
+      <SelectContent>
+        <SelectItem
+          v-for="item in Object.keys(cartridgeMap)"
+          :key="item"
+          :value="item"
         >
-          <ToggleGroupItem
-            class="flex-1"
-            v-for="item in Object.keys(cartridgeMap)"
-            :key="item"
-            :value="item"
-          >
-            {{ cartridgeMap[item] }}
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </FormControl>
-
-      <FormMessage />
-    </FormItem>
-  </FormField>
+          {{ cartridgeMap[item] }}
+        </SelectItem>
+      </SelectContent>
+    </Select>
+  </Field>
 </template>
 
 <script setup lang="ts">
+import Field from '@/components/field.vue';
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cartridgeMap } from '@/map';
+import { PaletteIcon } from '@lucide/vue';
 </script>
 
 <style scoped lang="scss"></style>

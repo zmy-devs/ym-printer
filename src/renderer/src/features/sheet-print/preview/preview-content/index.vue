@@ -1,9 +1,9 @@
 <template>
   <ScrollArea
     ref="scrollAreaRef"
-    class="min-h-0"
+    class="flex-1 min-h-0 ring-0"
     :view-class="
-      cn('pb-10 *:flex *:items-center cursor-grab', {
+      cn('pt-1 pb-10 *:flex *:items-center cursor-grab', {
         'cursor-grabbing': panning,
       })
     "

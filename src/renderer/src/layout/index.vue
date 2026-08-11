@@ -24,7 +24,9 @@
       <ResizableHandle class="bg-transparent!" />
 
       <ResizablePanel :min-size="50">
-        <RouterView class="h-full bg-background border rounded-lg" />
+        <RouterView
+          class="h-full bg-background border rounded-lg overflow-hidden"
+        />
       </ResizablePanel>
     </ResizablePanelGroup>
   </div>

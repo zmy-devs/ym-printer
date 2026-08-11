@@ -37,7 +37,7 @@ import { useWorkspaceStore } from '@/stores/workspace';
 useUpdateStore();
 usePrinterStore();
 useThemeStore();
-const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());
+const { selectedWorkspace, selectedWorkspaceID } = storeToRefs(useWorkspaceStore());
 
 eventBus.on('success:show', (message) => {
   toast.success(message, {
@@ -67,9 +67,7 @@ eventBus.on('error:show', (message) => {
 useEventListener('keydown', (e) => {
   //添加工作区
   if (e.ctrlKey && e.key == 'n') {
-    eventBus.emit('dialog-workspace:show', {
-      type: 'add',
-    });
+    eventBus.emit('dialog-workspace:add:show');
 
     return;
   }
@@ -90,9 +88,7 @@ useEventListener('keydown', (e) => {
 
   //添加文档
   if (e.ctrlKey && e.key == 'e') {
-    eventBus.emit('dialog-workspace:show', {
-      type: 'edit',
-    });
+    eventBus.emit('dialog-workspace:edit:show', selectedWorkspace.value);
     return;
   }
 });

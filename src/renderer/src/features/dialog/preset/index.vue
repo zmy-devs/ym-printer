@@ -1,75 +1,136 @@
 <template>
-  <Dialog v-model:open="open">
+  <Dialog v-model:open="visible">
     <DialogContent
       :aria-describedby="undefined"
-      class="h-[min(70vh,35rem)] max-w-xl! overflow-hidden p-0!"
+      @close-auto-focus="handleClose"
     >
-      <DialogHeader class="border-b px-6 py-4">
-        <DialogTitle>打印范围预设</DialogTitle>
+      <DialogHeader>
+        <DialogTitle>{{ presetTitleMap[dialogType] }}</DialogTitle>
+
+        <DialogDescription>
+          {{ presetDescriptionMap[dialogType] }}
+        </DialogDescription>
       </DialogHeader>
 
-      <Container class="h-[calc(100%-65px)] flex flex-col gap-8">
-        <PresetEmpty v-if="presets.length === 0" />
+      <Field name="name" label="预设名称" v-slot="{ componentField }">
+        <Input placeholder="请输入预设名称" v-bind="componentField" />
+      </Field>
 
-        <ItemGroup v-else>
-          <div class="flex items-center">
-            <p class="px-4 py-3">打印范围预设</p>
+      <Field name="value" label="打印范围" v-slot="{ componentField }">
+        <Input placeholder="请输入打印范围" v-bind="componentField" />
+      </Field>
 
-            <Button class="ml-auto w-fit" size="sm" @click="handleAdd">
-              <PlusIcon />
-
-              <span>新建预设</span>
-            </Button>
-          </div>
-
-          <ItemSeparator class="mb-4" />
-
-          <PresetItem
-            v-for="preset in presets"
-            :key="preset.id"
-            :data="preset"
-          />
-        </ItemGroup>
-      </Container>
+      <DialogFooter>
+        <Button @click="handleSubmit">确定</Button>
+      </DialogFooter>
     </DialogContent>
   </Dialog>
-
-  <PresetFormDialog />
 </template>
 
 <script setup lang="ts">
+import Field from '@/components/field.vue';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { ItemGroup, ItemSeparator } from '@/components/ui/item';
-import Container from '@/components/container.vue';
 import { eventBus } from '@/utils/event-bus';
+import { useForm } from 'vee-validate';
+import * as z from 'zod';
+import { toTypedSchema } from '@vee-validate/zod';
 import { usePresetStore } from '@/stores/preset';
-import { PlusIcon } from '@lucide/vue';
-import PresetEmpty from './preset-empty.vue';
-import PresetFormDialog from './form-dialog.vue';
-import PresetItem from './preset-item.vue';
+import { presetTitleMap, presetDescriptionMap } from '@/map';
 
-// 预设管理弹窗开关状态
-const open = ref(false);
+// 预设数据操作方法
+const { addPreset, editPreset } = usePresetStore();
 
-// 当前预设列表
-const { presets } = storeToRefs(usePresetStore());
+// 预设表单弹窗开关状态
+const visible = ref(false);
 
-// 打开新建预设弹窗
-const handleAdd = () => {
-  eventBus.emit('dialog-preset-form:show', {
-    type: 'add',
-  });
+// 当前预设表单操作类型
+const dialogType = ref<'add' | 'edit'>('add');
+
+// 预设表单校验和提交控制器
+const {
+  handleSubmit: validateSubmit,
+  resetForm,
+  setValues,
+} = useForm({
+  validationSchema: toTypedSchema(
+    z.object({
+      id: z.string(),
+      name: z.string({ message: '请输入名称' }).min(1, '请输入名称'),
+      value: z
+        .string()
+        .min(1, '请输入打印范围')
+        .superRefine((value, context) => {
+          if (value === '') {
+            return;
+          }
+
+          // 合法打印范围的匹配规则
+          const rangePattern = /^(\d*?-\d*?|\d+)([,，](\d*?-\d*?|\d+))*$/;
+
+          if (!rangePattern.test(value)) {
+            context.addIssue({
+              code: 'custom',
+              message: '格式有误',
+            });
+          }
+        }),
+    }),
+  ),
+  initialValues: {
+    id: '',
+    name: '',
+    value: '',
+  },
+});
+
+// 关闭并重置预设表单
+const handleClose = () => {
+  visible.value = false;
 };
 
-// 响应预设管理弹窗打开事件
-eventBus.on('dialog-preset:show', () => {
-  open.value = true;
+// 校验并保存预设数据
+const handleSubmit = validateSubmit((values) => {
+  switch (dialogType.value) {
+    case 'add':
+      addPreset(values);
+      break;
+    case 'edit':
+      editPreset(values);
+      break;
+  }
+
+  handleClose();
+});
+
+// 响应预设表单打开事件
+eventBus.on('dialog-preset:add:show', (value) => {
+  dialogType.value = 'add';
+
+  resetForm({
+    values: {
+      value,
+    },
+  });
+
+  visible.value = true;
+});
+
+// 响应预设表单打开事件
+eventBus.on('dialog-preset:edit:show', (value) => {
+  dialogType.value = 'edit';
+
+  setValues(value);
+
+  visible.value = true;
 });
 </script>
 

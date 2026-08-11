@@ -1,41 +1,49 @@
 <template>
-  <FormField v-slot="{ componentField }" name="mode">
-    <FormItem>
-      <FormLabel>打印模式</FormLabel>
+  <Field
+    name="mode"
+    label="打印模式"
+    :icon="SlidersHorizontalIcon"
+    v-slot="{ componentField }"
+  >
+    <Select v-bind="componentField">
+      <SelectTrigger class="min-w-0 w-full">
+        <SelectValue placeholder="请选择打印模式">
+          {{ modeMap[componentField.modelValue] }}
+        </SelectValue>
+      </SelectTrigger>
 
-      <FormControl>
-        <ToggleGroup
-          class="w-full grid grid-cols-2 grid-rows-2 shadow-xs"
-          variant="outline"
-          type="single"
-          v-bind="componentField"
+      <SelectContent>
+        <SelectItem
+          v-for="item in Object.keys(modeMap)"
+          :key="item"
+          :value="item"
         >
-          <ToggleGroupItem
-            class="flex-1 first:rounded-bl-none! first:border-b-0! nth-[2]:rounded-tr-md! nth-[2]:border-b-0! nth-[3]:rounded-bl-md! nth-[3]:border-l! last:rounded-tr-none!"
-            v-for="item in Object.keys(modeMap)"
-            :key="item"
-            :value="item"
-          >
-            {{ modeMap[item] }}
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </FormControl>
+          <div class="flex flex-col">
+            <span>
+              {{ modeMap[item] }}
+            </span>
 
-      <FormMessage />
-    </FormItem>
-  </FormField>
+            <span class="text-xs text-muted-foreground">
+              {{ modeDescriptionMap[item] }}
+            </span>
+          </div>
+        </SelectItem>
+      </SelectContent>
+    </Select>
+  </Field>
 </template>
 
 <script setup lang="ts">
+import Field from '@/components/field.vue';
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { modeMap } from '@/map';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { modeDescriptionMap, modeMap } from '@/map';
+import { SlidersHorizontalIcon } from '@lucide/vue';
 </script>
 
 <style scoped lang="scss"></style>

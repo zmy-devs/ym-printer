@@ -19,9 +19,7 @@ import { eventBus } from '@/utils/event-bus';
 import { PlusIcon } from '@lucide/vue';
 
 const handleAdd = () => {
-  eventBus.emit('dialog-workspace:show', {
-    type: 'add',
-  });
+  eventBus.emit('dialog-workspace:add:show');
 };
 </script>
 

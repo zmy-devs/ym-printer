@@ -1,4 +1,3 @@
-import { presetTypeMap, workspaceTypeMap } from '@/map';
 import type { Preset } from '@/stores/preset';
 import type { Workspace } from '@/stores/workspace';
 
@@ -19,21 +18,11 @@ type EventMap = {
   'dialog-print-task:show': [];
   'dialog-setting:show': [id?: string];
 
-  'dialog-workspace:show': [
-    option: {
-      type: keyof typeof workspaceTypeMap;
-      data?: Workspace;
-    },
-  ];
+  'dialog-workspace:add:show': [];
+  'dialog-workspace:edit:show': [data: Workspace];
 
-  'dialog-preset:show': [];
-
-  'dialog-preset-form:show': [
-    option: {
-      type: keyof typeof presetTypeMap;
-      data?: Preset;
-    },
-  ];
+  'dialog-preset:add:show': [data: string];
+  'dialog-preset:edit:show': [data: Preset];
 };
 
 type EventName = keyof EventMap;

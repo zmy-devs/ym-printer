@@ -1,30 +1,19 @@
 <template>
-  <FormField v-slot="{ componentField }" name="remark">
-    <FormItem>
-      <FormLabel>备注</FormLabel>
-
-      <FormControl>
-        <Input
-          class="bg-transparent!"
-          placeholder="当前打印任务的备注"
-          v-bind="componentField"
-        />
-      </FormControl>
-
-      <FormMessage />
-    </FormItem>
-  </FormField>
+  <Field
+    name="remark"
+    label="备注"
+    :icon="PencilLineIcon"
+    v-slot="{ componentField }"
+  >
+    <Input placeholder="当前打印任务的备注" v-bind="componentField" />
+  </Field>
 </template>
 
 <script setup lang="ts">
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import Field from '@/components/field.vue';
 import { Input } from '@/components/ui/input';
+import { PencilLineIcon } from '@lucide/vue';
 </script>
 
 <style scoped lang="scss"></style>
+

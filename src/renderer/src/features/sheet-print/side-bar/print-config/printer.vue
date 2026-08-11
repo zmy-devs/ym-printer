@@ -1,35 +1,26 @@
 <template>
-  <FormField v-slot="{ componentField }" name="printer">
-    <FormItem>
-      <FormLabel>打印机</FormLabel>
+  <Field
+    name="printer"
+    label="打印机"
+    :icon="PrinterIcon"
+    v-slot="{ componentField }"
+  >
+    <Select v-bind="componentField">
+      <SelectTrigger class="min-w-0 w-full">
+        <SelectValue placeholder="请选择打印机" />
+      </SelectTrigger>
 
-      <FormControl>
-        <Select v-bind="componentField">
-          <SelectTrigger class="min-w-0 w-full bg-transparent!">
-            <SelectValue placeholder="请选择打印机" />
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectItem v-for="item in printers" :key="item" :value="item">
-              {{ item }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </FormControl>
-
-      <FormMessage />
-    </FormItem>
-  </FormField>
+      <SelectContent>
+        <SelectItem v-for="item in printers" :key="item" :value="item">
+          {{ item }}
+        </SelectItem>
+      </SelectContent>
+    </Select>
+  </Field>
 </template>
 
 <script setup lang="ts">
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import Field from '@/components/field.vue';
 import {
   Select,
   SelectContent,
@@ -38,6 +29,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePrinterStore } from '@/stores/printer';
+import { PrinterIcon } from '@lucide/vue';
 
 const { printers } = storeToRefs(usePrinterStore());
 </script>

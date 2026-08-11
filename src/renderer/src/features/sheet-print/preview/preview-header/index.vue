@@ -1,59 +1,147 @@
 <template>
-  <section
-    class="p-2 relative flex justify-between items-center gap-1 border-b"
-  >
-    <Button class="mr-auto" variant="ghost" size="sm">
-      <span class="text-sm">共{{ selectedDoc.pageCount }}页</span>
-    </Button>
-
-    <NumberField
-      class="absolute left-1/2 -translate-x-1/2"
-      :step="0.05"
-      :min="0.05"
-      :max="2"
-      :format-options="{
-        style: 'percent',
-      }"
-      v-model="scale"
-    >
-      <NumberFieldContent class="bg-transparent!">
-        <NumberFieldDecrement />
-
-        <NumberFieldInput class="border-none ring-0! shadow-none" />
-
-        <NumberFieldIncrement />
-      </NumberFieldContent>
-    </NumberField>
-
-    <ToggleGroup variant="outline" type="single" v-model="viewMode">
-      <ToggleGroupItem
-        v-for="item in Object.keys(viewMap)"
-        :key="item"
-        :value="item"
+  <section class="preview-toolbar">
+    <div class="absolute bottom-2 left-2 z-10 pointer-events-auto">
+      <Button
+        class="backdrop-blur-2xl bg-background/30"
+        variant="ghost"
+        size="sm"
       >
-        <span>{{ viewMap[item] }}</span>
-      </ToggleGroupItem>
-    </ToggleGroup>
+        <span class="text-sm">共{{ selectedDoc.pageCount }}页</span>
+      </Button>
+    </div>
+
+    <div class="absolute right-2 bottom-2 z-10 pointer-events-auto">
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button
+            class="backdrop-blur-2xl bg-background/30"
+            variant="ghost"
+            size="sm"
+          >
+            <span class="text-sm">{{ scalePercent }}%</span>
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent
+          align="end"
+          side="top"
+          class="w-52"
+          @open-auto-focus="handleFocusScaleInput"
+        >
+          <InputGroup class="ring-0!">
+            <InputGroupInput
+              class="[&::-webkit-inner-spin-button]:appearance-none"
+              type="number"
+              min="5"
+              max="200"
+              step="5"
+              v-model="scalePercent"
+            />
+
+            <InputGroupAddon align="inline-end"> % </InputGroupAddon>
+          </InputGroup>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            class="hover:bg-accent"
+            @select.prevent="handleIncreaseScale"
+          >
+            放大
+
+            <DropdownMenuShortcut>Ctrl + 上滚轮</DropdownMenuShortcut>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            class="hover:bg-accent"
+            @select.prevent="handleDecreaseScale"
+          >
+            缩小
+
+            <DropdownMenuShortcut>Ctrl + 下滚轮</DropdownMenuShortcut>
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            class="hover:bg-accent"
+            v-for="option in zoomOptions"
+            :key="option"
+            @select.prevent="handleSetScale(option)"
+          >
+            缩放至{{ option }}%
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+
   </section>
 </template>
 
 <script setup lang="ts">
-import {
-  NumberField,
-  NumberFieldContent,
-  NumberFieldDecrement,
-  NumberFieldIncrement,
-  NumberFieldInput,
-} from '@/components/ui/number-field';
 import { usePdfStore } from '@/stores/pdf';
 import { Button } from '@/components/ui/button';
 import { useDocStore } from '@/stores/doc';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { viewMap } from '@/map';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import InputGroup from '@/components/ui/input-group/InputGroup.vue';
+import { InputGroupInput } from '@/components/ui/input-group';
+import InputGroupAddon from '@/components/ui/input-group/InputGroupAddon.vue';
 
+// 当前预览文档
 const { selectedDoc } = storeToRefs(useDocStore());
+// 当前缩放倍率
 const { scale } = storeToRefs(usePdfStore());
-const { viewMode } = storeToRefs(usePdfStore());
+// 缩放控制方法
+const { addScale, subScale } = usePdfStore();
+
+// 快捷缩放百分比
+const zoomOptions = [50, 100, 200];
+
+// 供界面展示和输入的缩放百分比
+const scalePercent = computed({
+  get: () => {
+    return Math.round(scale.value * 100);
+  },
+  set: (value: number) => {
+    scale.value = Math.min(Math.max(value / 100, 0.05), 2);
+  },
+});
+
+// 放大预览
+const handleIncreaseScale = () => {
+  addScale();
+};
+
+// 菜单打开时聚焦缩放输入框
+const handleFocusScaleInput = (event: Event) => {
+  event.preventDefault();
+  const menuContent = event.currentTarget as HTMLElement | null;
+  menuContent?.querySelector('input')?.focus();
+};
+
+// 缩小预览
+const handleDecreaseScale = () => {
+  subScale();
+};
+
+// 设置快捷缩放倍率
+const handleSetScale = (value: number) => {
+  scalePercent.value = value;
+};
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.preview-toolbar {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+</style>

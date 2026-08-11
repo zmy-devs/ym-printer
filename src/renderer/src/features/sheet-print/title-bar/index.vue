@@ -1,5 +1,5 @@
 <template>
-  <section class="pl-3 pr-2 flex items-center gap-2">
+  <section class="h-10 pl-3 pr-2 flex items-center gap-2 shrink-0">
     <FileIcon :ext="selectedDoc?.ext" size="24" />
 
     <span class="text-sm"> {{ selectedDoc?.name }}</span>

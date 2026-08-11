@@ -6,11 +6,22 @@
     >
       <DialogHeader>
         <DialogTitle>
-          {{ workspaceTypeMap[dialogType] }}
+          {{ workspaceTitleMap[dialogType] }}
         </DialogTitle>
       </DialogHeader>
 
-      <Form />
+      <Field name="name" label="工作空间名称" v-slot="{ componentField }">
+        <Input placeholder="请输入工作空间名称" v-bind="componentField" />
+      </Field>
+
+      <Field name="printer" label="工作空间打印机" v-slot="{ componentField }">
+        <Printer
+          class="w-full"
+          variant="outline"
+          :iconVisible="false"
+          v-bind="componentField"
+        />
+      </Field>
 
       <DialogFooter>
         <Button @click="handleClick">确定</Button>
@@ -20,7 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import Form from './form/index.vue';
+import Field from '@/components/field.vue';
+import { Input } from '@/components/ui/input';
+import Printer from '@/components/printer.vue';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -35,10 +48,9 @@ import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
 import { usePrinterStore } from '@/stores/printer';
-import { workspaceTypeMap } from '@/map/index';
+import { workspaceTitleMap } from '@/map/index';
 
 const { selectedPrinter } = storeToRefs(usePrinterStore());
-const { selectedWorkspace } = storeToRefs(useWorkspaceStore());
 const { addWorkspace, editWorkspace } = useWorkspaceStore();
 
 const open = ref(false);
@@ -46,7 +58,7 @@ const open = ref(false);
 //dialog类型
 const dialogType = ref<'add' | 'edit'>('add');
 
-const { handleSubmit, setValues } = useForm({
+const { handleSubmit, resetForm, setValues } = useForm({
   validationSchema: toTypedSchema(
     z.object({
       id: z.string(),
@@ -88,24 +100,24 @@ const handleClick = handleSubmit((values) => {
   handleClose();
 });
 
-eventBus.on('dialog-workspace:show', (option) => {
-  dialogType.value = option.type;
+// 响应新增工作空间弹窗事件
+eventBus.on('dialog-workspace:add:show', () => {
+  dialogType.value = 'add';
 
-  switch (dialogType.value) {
-    case 'add':
-      setValues({
-        printer: selectedPrinter.value,
-      });
-      break;
-    case 'edit':
-      if (!option.data) {
-        setValues(selectedWorkspace.value);
-        break;
-      }
+  resetForm({
+    values: {
+      printer: selectedPrinter.value,
+    },
+  });
 
-      setValues(option.data);
-      break;
-  }
+  open.value = true;
+});
+
+// 响应编辑工作空间弹窗事件
+eventBus.on('dialog-workspace:edit:show', (data) => {
+  dialogType.value = 'edit';
+
+  setValues(data);
 
   open.value = true;
 });

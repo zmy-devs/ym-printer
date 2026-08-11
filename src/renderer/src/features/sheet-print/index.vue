@@ -3,34 +3,34 @@
     <SheetContent
       :aria-describedby="undefined"
       side="bottom"
-      class="h-[calc(100vh-40px)] p-0!"
+      class="h-[calc(100vh-40px)] p-0! flex flex-col gap-0 bg-sidebar"
       @open-auto-focus.prevent
     >
       <VisuallyHidden as-child>
         <SheetTitle />
       </VisuallyHidden>
 
-      <div class="print-preview wh-full grid bg-sidebar">
-        <TitleBar />
+      <TitleBar class="border-b" />
 
-        <ResizablePanelGroup
-          class="pb-2"
-          direction="horizontal"
-          autoSaveId="print-preview-layout"
+      <ResizablePanelGroup
+        direction="horizontal"
+        autoSaveId="print-preview-layout"
+      >
+        <ResizablePanel
+          :min-size="240"
+          :default-size="260"
+          :max-size="350"
+          size-unit="px"
         >
-          <ResizablePanel :min-size="240" :default-size="260" size-unit="px">
-            <SideBar class="h-full" />
-          </ResizablePanel>
+          <SideBar class="h-full" />
+        </ResizablePanel>
 
-          <ResizableHandle class="bg-transparent!" />
+        <ResizableHandle />
 
-          <ResizablePanel class="pr-2" :min-size="50">
-            <Preview
-              class="h-full bg-background border rounded-lg overflow-hidden"
-            />
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </div>
+        <ResizablePanel :min-size="50">
+          <Preview class="h-full bg-background overflow-hidden" />
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </SheetContent>
   </Sheet>
 </template>
@@ -154,8 +154,4 @@ useEventListener(window, 'beforeunload', (e) => {
 provide('form', form);
 </script>
 
-<style scoped lang="scss">
-.print-preview {
-  grid-template-rows: 40px calc(100% - 40px);
-}
-</style>
+<style scoped lang="scss"></style>

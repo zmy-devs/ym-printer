@@ -100,10 +100,7 @@ const handleEdit = () => {
     return;
   }
 
-  eventBus.emit('dialog-workspace:show', {
-    type: 'edit',
-    data: selectedItem.value,
-  });
+  eventBus.emit('dialog-workspace:edit:show', selectedItem.value);
 };
 
 //删除工作区中所有文档

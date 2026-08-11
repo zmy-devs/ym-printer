@@ -1,41 +1,39 @@
 <template>
-  <FormField v-slot="{ componentField }" name="orientation">
-    <FormItem>
-      <FormLabel>方向</FormLabel>
+  <Field
+    name="orientation"
+    label="方向"
+    :icon="RotateCwIcon"
+    v-slot="{ componentField }"
+  >
+    <Select v-bind="componentField">
+      <SelectTrigger class="min-w-0 w-full">
+        <SelectValue placeholder="请选择方向" />
+      </SelectTrigger>
 
-      <FormControl>
-        <ToggleGroup
-          class="w-full shadow-xs"
-          variant="outline"
-          type="single"
-          v-bind="componentField"
+      <SelectContent>
+        <SelectItem
+          v-for="item in Object.keys(orientationMap)"
+          :key="item"
+          :value="item"
         >
-          <ToggleGroupItem
-            class="flex-1"
-            v-for="item in Object.keys(orientationMap)"
-            :key="item"
-            :value="item"
-          >
-            {{ orientationMap[item] }}
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </FormControl>
-
-      <FormMessage />
-    </FormItem>
-  </FormField>
+          {{ orientationMap[item] }}
+        </SelectItem>
+      </SelectContent>
+    </Select>
+  </Field>
 </template>
 
 <script setup lang="ts">
+import Field from '@/components/field.vue';
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { orientationMap } from '@/map';
+import { RotateCwIcon } from '@lucide/vue';
 </script>
 
 <style scoped lang="scss"></style>
