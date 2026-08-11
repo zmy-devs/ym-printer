@@ -5,6 +5,7 @@
         <VueDraggable
           class="flex flex-col gap-1"
           :animation="200"
+          ghost-class="opacity-0"
           v-model="workspace"
         >
           <Item

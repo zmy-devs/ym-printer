@@ -2,14 +2,7 @@
   <div class="manager-window wh-screen grid bg-sidebar" v-drag="dragOption">
     <TitleBar />
 
-    <ResizablePanelGroup
-      class="px-2 pb-2"
-      :class="{
-        'gap-1': panelRef?.isExpanded,
-      }"
-      direction="horizontal"
-      autoSaveId="layout"
-    >
+    <ResizablePanelGroup direction="horizontal" autoSaveId="layout">
       <ResizablePanel
         ref="panelRef"
         :min-size="160"
@@ -25,7 +18,7 @@
 
       <ResizablePanel :min-size="50">
         <RouterView
-          class="h-full bg-background border rounded-lg overflow-hidden"
+          class="h-full bg-background border-t border-l rounded-tl-lg"
         />
       </ResizablePanel>
     </ResizablePanelGroup>

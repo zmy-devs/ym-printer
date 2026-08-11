@@ -1,8 +1,8 @@
 <template>
-  <section class="flex flex-col bg-sidebar">
+  <section class="px-2 pb-2 flex flex-col bg-sidebar">
     <Workspace />
 
-    <div class="py-2">
+    <div class="-mx-2 py-2">
       <Separator />
     </div>
 

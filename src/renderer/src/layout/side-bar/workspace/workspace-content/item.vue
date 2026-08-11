@@ -1,24 +1,24 @@
 <template>
   <section
-    class="h-13 px-3 flex flex-col justify-center gap-1 rounded-[6px] hover:bg-accent dark:hover:bg-accent/50 transition-colors"
+    class="h-13 px-3 flex flex-col justify-center gap-1 rounded-md hover:bg-accent dark:hover:bg-accent/50 transition-colors"
     :class="{
-      'bg-accent dark:bg-accent/50': isSelected,
+      'bg-primary/20!': isSelected,
     }"
     :title="data.name"
     @click="handleClick"
   >
     <span class="text-sm truncate">{{ data.name }}</span>
 
-    <div class="flex items-center gap-1.5">
-      <FolderOpenIcon class="size-4 text-muted-foreground" v-if="isSelected" />
+    <div
+      class="flex items-center gap-1.5 text-muted-foreground text-xs [&>svg]:size-4 [&>span]:truncate"
+    >
+      <FolderOpenIcon v-if="isSelected" />
 
-      <FolderClosedIcon class="size-4 text-muted-foreground" v-else />
+      <FolderClosedIcon v-else />
 
-      <span class="text-xs text-muted-foreground truncate"> · </span>
+      <span> · </span>
 
-      <span class="text-xs text-muted-foreground truncate">
-        {{ docCount }} 个文档
-      </span>
+      <span> {{ docCount }} 个文档 </span>
     </div>
   </section>
 </template>

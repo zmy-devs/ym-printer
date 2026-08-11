@@ -25,7 +25,7 @@
               size="icon-xs"
               @click="handleAddPreset(componentField.modelValue)"
             >
-              <Plus class="text-foreground" />
+              <ClipboardPlusIcon class="text-foreground" />
             </InputGroupButton>
           </Tooltip>
         </InputGroupAddon>
@@ -100,7 +100,12 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from '@/components/ui/input-group';
-import { FileTextIcon, PencilLine, Plus, Trash2 } from '@lucide/vue';
+import {
+  ClipboardPlusIcon,
+  FileTextIcon,
+  PencilLine,
+  Trash2,
+} from '@lucide/vue';
 import { Preset, usePresetStore } from '@/stores/preset';
 import Tooltip from '@/components/tooltip.vue';
 import { eventBus } from '@/utils/event-bus';
