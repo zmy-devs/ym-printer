@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model="visible">
-    <TitleBar class="border-b" />
+    <TitleBar class="border-b bg-sidebar" />
 
     <ResizablePanelGroup
       direction="horizontal"
@@ -13,10 +13,7 @@
       <ResizableHandle />
 
       <ResizablePanel :min-size="50">
-        <component
-          :is="selectedRoute?.component"
-          class="h-full bg-background"
-        />
+        <component :is="selectedRoute?.component" class="h-full" />
       </ResizablePanel>
     </ResizablePanelGroup>
   </Dialog>

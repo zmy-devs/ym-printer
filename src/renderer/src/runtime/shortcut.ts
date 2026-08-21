@@ -23,12 +23,6 @@ export const useShortcut = () => {
 
   // 监听键盘快捷键
   useEventListener('keydown', (event) => {
-    // 新建工作空间
-    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'n') {
-      eventBus.emit('dialog-workspace:add:show');
-      return;
-    }
-
     // 新建分组
     if (event.ctrlKey && !event.shiftKey && event.key === 'n') {
       eventBus.emit('dialog-group:add:show');

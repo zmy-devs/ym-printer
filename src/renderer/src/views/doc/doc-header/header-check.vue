@@ -11,10 +11,7 @@
     <span>取消全选</span>
   </Button>
 
-  <span
-    class="ml-auto mr-2 text-sm text-green-700 dark:text-green-500"
-    v-if="settings.price"
-  >
+  <span class="ml-auto mr-2 text-sm font-medium" v-if="settings.price">
     总价: {{ price }} 元
   </span>
 </template>

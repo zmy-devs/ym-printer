@@ -64,13 +64,9 @@ import { useGroupStore } from '@/stores/group.store';
 import { eventBus } from '@/utils/event-bus';
 import { useDocumentService } from '@/services/document.service';
 import { useGroupService } from '@/services/group.service';
-import { useWorkspaceStore } from '@/stores/workspace.store';
 
 // 分组实体状态
 const groupStore = useGroupStore();
-
-// 工作空间实体状态
-const workspaceStore = useWorkspaceStore();
 
 // 分组业务能力
 const groupService = useGroupService();
@@ -89,15 +85,9 @@ const group = computed(() => {
   return getGroup(groupId.value);
 });
 
-// 当前右键目标是否为工作空间中唯一分组
+// 当前右键目标是否为唯一分组
 const canRemoveGroup = computed(() => {
-  if (!group.value) {
-    return true;
-  }
-
-  const groupIds = workspaceStore.getWorkspaceGroupIds(group.value.workspaceId);
-
-  return groupIds.length > 1;
+  return groupStore.groupIds.length > 1;
 });
 
 // 处理右键菜单目标

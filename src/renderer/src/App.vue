@@ -2,11 +2,9 @@
   <TooltipProvider>
     <RouterView />
 
-    <SheetPrint />
+    <Print />
 
     <DialogSetting />
-
-    <DialogWorkspace />
 
     <DialogGroup />
 
@@ -19,24 +17,23 @@
 </template>
 
 <script setup lang="ts">
-import SheetPrint from '@/features/sheet-print/index.vue';
+import Print from '@/features/print/index.vue';
 import DialogSetting from '@/features/settings/index.vue';
-import DialogWorkspace from '@/features/dialog/workspace/index.vue';
 import DialogGroup from '@/features/dialog/group/index.vue';
 import DialogPreset from '@/features/dialog/preset/index.vue';
 import DialogPrinterTask from '@/features/dialog/printer-task/index.vue';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
 import { usePrinterStore } from '@/stores/printer.store';
-import 'vue-sonner/style.css';
 import { useRuntime } from '@/runtime';
-import { useWorkspaceService } from '@/services/workspace.service';
-import { initializeUpdateService } from '@/services/update.service';
+import { useGroupService } from '@/services/group.service';
+import { initUpdateService } from '@/services/update.service';
+import 'vue-sonner/style.css';
 
 //初始化pinia
-initializeUpdateService();
+initUpdateService();
 usePrinterStore().getPrinters();
-useWorkspaceService().initSelection();
+useGroupService().initSelection();
 useRuntime();
 </script>
 

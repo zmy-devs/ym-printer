@@ -60,13 +60,12 @@ import {
 } from '@/utils/range';
 import { usePrintConfigStore } from '@/stores/print-config.store';
 import { eventBus } from '@/utils/event-bus';
-import { sheetPrintContextKey, type PrintConfigValues } from './context';
+import { sheetPrintContextKey, type PrintConfigValues } from './context.js';
 
 // 打印 Sheet 是否可见
 const visible = ref(false);
 
-const { selectedDoc, docId, selectedWorkspace } =
-  storeToRefs(useSelectionStore());
+const { selectedDoc, docId, selectedGroup } = storeToRefs(useSelectionStore());
 const { setViewMode } = usePdfStore();
 // 文档打印配置状态
 const printConfigStore = usePrintConfigStore();
@@ -76,24 +75,20 @@ const closeSheetPrint = () => {
   visible.value = false;
 };
 
-// 根据当前文档与工作空间生成打印表单初始值
+// 根据当前文档与分组生成打印表单初始值
 const createInitialValues = () => {
   const defaultValue = {
     remark: '',
-    printer: selectedWorkspace.value?.printer || '',
+    printer: selectedGroup.value?.printer || '',
     copies: 1,
     pageRange: [{ range: '', mode: 'simplex' }],
     color: 'black',
     orientation: 'portrait',
   } satisfies PrintConfigValues;
 
-  if (!docId.value) {
-    return defaultValue;
-  }
-
   const config = printConfigStore.getPrintConfig(docId.value);
 
-  return config ? config : defaultValue;
+  return config ?? defaultValue;
 };
 
 // 打印配置表单校验与默认值

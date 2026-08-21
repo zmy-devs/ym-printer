@@ -5,8 +5,6 @@
     <DocEmpty v-if="selectedDocs.length == 0" />
 
     <DocContent v-else />
-
-    <DocFooter class="absolute left-0 bottom-0" v-if="selectedDocs.length" />
   </section>
 </template>
 
@@ -15,7 +13,6 @@ import { useSelectionStore } from '@/stores/selection.store';
 import DocHeader from './doc-header/index.vue';
 import DocContent from './doc-content/index.vue';
 import DocEmpty from './doc-empty.vue';
-import DocFooter from './doc-footer/index.vue';
 
 // 当前分类内的文档列表
 const { selectedDocs } = storeToRefs(useSelectionStore());

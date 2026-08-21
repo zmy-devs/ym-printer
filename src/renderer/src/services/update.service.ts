@@ -69,7 +69,7 @@ export const checkUpdate = async () => {
 };
 
 // 初始化更新任务及 IPC 监听
-export const initializeUpdateService = () => {
+export const initUpdateService = () => {
   if (isInitialized.value) {
     return;
   }

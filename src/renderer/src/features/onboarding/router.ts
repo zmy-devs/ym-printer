@@ -1,8 +1,8 @@
 import { Component } from 'vue';
 
-import WorkspaceView from './views/workspace.vue';
-import { BriefcaseIcon } from '@lucide/vue';
-import { useWorkspaceStore } from '@/stores/workspace.store';
+import GroupView from './views/group.vue';
+import { FolderClosedIcon } from '@lucide/vue';
+import { useGroupStore } from '@/stores/group.store';
 
 export interface OnboardingRoute {
   title: string;
@@ -52,13 +52,13 @@ export const nextStep = async () => {
 
 //初始化路由
 export const initRouter = () => {
-  if (useWorkspaceStore().workspaceIds.length == 0) {
+  if (useGroupStore().groupIds.length == 0) {
     onboardingRouter.push({
-      title: '让我们新建你的第一个工作空间',
-      description: '请根据提示输入对应的内容已新建你的工作空间。',
-      icon: BriefcaseIcon,
-      component: WorkspaceView,
-      fields: ['workspaceName', 'workspacePrinter'],
+      title: '让我们新建你的第一个组',
+      description: '请根据提示输入对应内容以新建你的第一个组。',
+      icon: FolderClosedIcon,
+      component: GroupView,
+      fields: ['groupName', 'groupPrinter'],
     });
   }
 

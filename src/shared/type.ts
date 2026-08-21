@@ -1,18 +1,11 @@
 //主题
 export type Theme = 'light' | 'dark';
 
-// 工作空间信息
-export interface Workspace {
-  id: string;
-  name: string;
-  printer: string;
-}
-
-// 工作空间内的分组信息
+// 分组信息
 export interface Group {
   id: string;
   name: string;
-  workspaceId: string;
+  printer: string;
 }
 
 // 单项打印范围的打印方式

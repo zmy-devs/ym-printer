@@ -3,24 +3,17 @@ import { showErrorToast } from '@/utils/toast';
 import { useDocStore } from '@/stores/doc.store';
 import { useGroupStore } from '@/stores/group.store';
 import { useSelectionStore } from '@/stores/selection.store';
-import { useWorkspaceStore } from '@/stores/workspace.store';
 import { usePrintConfigStore } from '@/stores/print-config.store';
+import type { Doc } from '@type';
+
+// 主进程导入后、尚未关联分组的文档数据
+type ImportedDoc = Omit<Doc, 'groupId'>;
 
 // 提供文档的跨实体业务操作
 export const useDocumentService = () => {
-  // 工作空间实体状态
-  const workspaceStore = useWorkspaceStore();
-
-  // 分组实体状态
   const groupStore = useGroupStore();
-
-  // 文档实体状态
   const docStore = useDocStore();
-
-  // 当前选择状态
   const selectionStore = useSelectionStore();
-
-  // 文档打印配置与运行状态
   const printConfigStore = usePrintConfigStore();
 
   // 获取指定分组内的有序文档
@@ -28,58 +21,43 @@ export const useDocumentService = () => {
     return docStore.getDocs(groupStore.getGroupDocIds(groupId));
   };
 
-  // 获取指定工作空间内的全部文档
-  const getWorkspaceDocs = (workspaceId: string) => {
-    // 工作空间下的全部文档标识
-    const docIds = workspaceStore
-      .getWorkspaceGroupIds(workspaceId)
-      .flatMap((groupId) => {
-        return groupStore.getGroupDocIds(groupId);
-      });
+  // 获取全部分组内的文档
+  const getAllDocs = () => {
+    // 全部分组内的文档标识
+    const docIds = groupStore.groupIds.flatMap(groupStore.getGroupDocIds);
 
     return docStore.getDocs(docIds);
   };
 
-  // 选择当前分组内的文档
-  const selectDoc = (docId: string) => {
-    selectionStore.selectDoc(docId);
-  };
-
-  // 导入文档并关联到指定或当前分组
-  const addDocs = async (groupId = selectionStore.groupId, files?: File[]) => {
-    if (!groupId) {
-      return;
-    }
-
-    // 目标分组
-    const group = groupStore.getGroup(groupId);
-
-    if (!group) {
-      return;
-    }
-
+  // 获取支持导入的文件路径
+  const getDocumentPaths = (files?: File[]) => {
     // 支持导入的文档文件
     const documentFiles = files?.filter((file) => {
       return isSupportedDocument(file.name);
     });
 
     // 有效文档的原生文件路径
-    const paths = documentFiles?.map(api.getFilePath) ?? [];
+    return documentFiles?.map(api.getFilePath) ?? [];
+  };
+
+  // 调用主进程选择并导入文档
+  const importDocs = async (files?: File[]) => {
+    // 待导入的有效文件路径
+    const paths = getDocumentPaths(files);
 
     if (files && paths.length === 0) {
-      return;
+      return [];
     }
 
-    // 主进程解析出的纯文档实体
-    const importedDocs = await ipc.addDoc(paths);
+    return ipc.addDoc(paths);
+  };
 
-    // 当前工作空间已有的文档路径
-    const existingPaths = new Set(
-      getWorkspaceDocs(group.workspaceId).map((doc) => doc.path),
-    );
+  // 过滤重复文档并关联目标分组
+  const getNewDocs = (groupId: string, importedDocs: ImportedDoc[]) => {
+    // 全部组中已有的文档路径
+    const existingPaths = new Set(getAllDocs().map((doc) => doc.path));
 
-    // 当前批次内去重并关联分组后的文档实体
-    const validDocs = importedDocs.flatMap((doc) => {
+    return importedDocs.flatMap((doc) => {
       if (existingPaths.has(doc.path)) {
         showErrorToast(`${doc.name} 已存在`);
         return [];
@@ -89,34 +67,70 @@ export const useDocumentService = () => {
 
       return [{ ...doc, groupId }];
     });
+  };
 
-    docStore.addDocs(validDocs);
+  // 持久化导入文档及其分组排序
+  const saveDocs = (docs: Doc[], groupId: string) => {
+    docStore.addDocs(docs);
 
-    groupStore.appendGroupDocIds(
-      groupId,
-      validDocs.map((doc) => doc.id),
-    );
+    // 新增文档的标识列表
+    const docIds = docs.map((doc) => doc.id);
 
-    validDocs.map(async (doc) => {
-      try {
-        await ipc.parserDoc(doc);
-        // 解析完成后仍存在的文档实体
-        const storedDoc = docStore.getDoc(doc.id);
+    groupStore.appendGroupDocIds(groupId, docIds);
+  };
 
-        if (storedDoc) {
-          storedDoc.status = 'ready';
+  // 更新解析成功后的文档状态
+  const markDocAsReady = (docId: string) => {
+    // 解析完成后仍存在的文档实体
+    const storedDoc = docStore.getDoc(docId);
 
-          printConfigStore.initPrintState(storedDoc.id);
-        }
-      } catch {
-        // 解析失败后仍存在的文档实体
-        const storedDoc = docStore.getDoc(doc.id);
+    if (!storedDoc) {
+      return;
+    }
 
-        if (storedDoc) {
-          storedDoc.status = 'error';
-        }
-      }
-    });
+    storedDoc.status = 'ready';
+    printConfigStore.initPrintState(storedDoc.id);
+  };
+
+  // 更新解析失败后的文档状态
+  const markDocAsError = (docId: string) => {
+    // 解析失败后仍存在的文档实体
+    const storedDoc = docStore.getDoc(docId);
+
+    if (storedDoc) {
+      storedDoc.status = 'error';
+    }
+  };
+
+  // 异步解析已保存的单个文档
+  const parseDoc = async (doc: Doc) => {
+    try {
+      await ipc.parserDoc(doc);
+      markDocAsReady(doc.id);
+    } catch {
+      markDocAsError(doc.id);
+    }
+  };
+
+  // 导入文档并关联到指定或当前分组
+  const addDocs = async (groupId = selectionStore.groupId, files?: File[]) => {
+    if (!groupId) {
+      return;
+    }
+
+    // 主进程解析出的纯文档实体
+    const importedDocs = await importDocs(files);
+
+    // 当前批次内去重并关联分组后的文档实体
+    const newDocs = getNewDocs(groupId, importedDocs);
+
+    if (newDocs.length === 0) {
+      return;
+    }
+
+    saveDocs(newDocs, groupId);
+
+    newDocs.forEach(parseDoc);
   };
 
   // 重新读取文档路径并刷新内容缓存
@@ -184,7 +198,7 @@ export const useDocumentService = () => {
     removeDocs(groupStore.getGroupDocIds(groupId));
   };
 
-  // 将文档移动到同一工作空间内的目标分组
+  // 将文档移动到目标分组
   const moveDocs = (groupId: string, docIds: string | string[]) => {
     docIds = Array.isArray(docIds) ? docIds : [docIds];
 
@@ -208,8 +222,7 @@ export const useDocumentService = () => {
 
   return {
     getGroupDocs,
-    getWorkspaceDocs,
-    selectDoc,
+    getAllDocs,
     addDocs,
     reloadDoc,
     removeDocs,

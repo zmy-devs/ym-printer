@@ -32,9 +32,14 @@ export const usePrintQueueStore = defineStore('print-queue', () => {
         }
 
         task.start && task.start();
-        await ipc.print(doc, task.config, task.config.pageNumbers);
+        await ipc.print(
+          toRaw(doc),
+          toRaw(task.config),
+          toRaw(task.config.pageNumbers),
+        );
         task.end && task.end();
       } catch (error) {
+        console.error(error);
         task.error && task.error(error);
       }
     }

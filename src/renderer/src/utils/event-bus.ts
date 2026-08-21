@@ -1,14 +1,11 @@
 import type { Preset } from '@/stores/preset.store';
-import type { Group, Workspace } from '@type';
+import type { Group } from '@type';
 
 // 定义事件到函数类型的映射
 type EventMap = {
   'dialog-print:show': [];
   'dialog-print-task:show': [];
   'dialog-setting:show': [id?: string];
-
-  'dialog-workspace:add:show': [];
-  'dialog-workspace:edit:show': [data: Workspace];
 
   'dialog-group:add:show': [];
   'dialog-group:edit:show': [data: Group];

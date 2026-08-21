@@ -25,10 +25,6 @@ const disabledStatus = ['queued', 'uploading', 'waiting'];
 
 // 处于不可编辑打印状态时禁用配置表单
 const isPrintConfigDisabled = computed(() => {
-  if (!docId.value) {
-    return false;
-  }
-
   // 当前文档打印运行状态
   const status = printConfigStore.getPrintState(docId.value)?.status;
 

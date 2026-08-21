@@ -1,37 +1,50 @@
 import { nanoid } from 'nanoid';
 import type { Group } from '@type';
-import { useDocStore } from '@/stores/doc.store';
+import { useDocumentService } from '@/services/document.service';
 import { useGroupStore } from '@/stores/group.store';
 import { useSelectionStore } from '@/stores/selection.store';
-import { useWorkspaceStore } from '@/stores/workspace.store';
 
 // 提供分组的跨实体业务操作
 export const useGroupService = () => {
-  const workspaceStore = useWorkspaceStore();
   const groupStore = useGroupStore();
-  const docStore = useDocStore();
   const selectionStore = useSelectionStore();
 
-  // 选择当前工作空间内的分组
+  // 文档级联删除能力
+  const { removeDocs } = useDocumentService();
+
+  // 初始化当前分组选择
+  const initSelection = () => {
+    // 已选中且仍存在的分组
+    const selectedGroup = selectionStore.groupId
+      ? groupStore.getGroup(selectionStore.groupId)
+      : undefined;
+
+    if (selectedGroup) {
+      return;
+    }
+
+    const firstGroupId = groupStore.groupIds[0];
+
+    if (firstGroupId) {
+      selectionStore.selectGroup(firstGroupId);
+    }
+  };
+
+  // 选择分组
   const selectGroup = (groupId: string) => {
     selectionStore.selectGroup(groupId);
   };
 
-  // 在当前工作空间创建并选中分组
-  const createGroup = (name: string) => {
-    if (!selectionStore.workspaceId) {
-      return;
-    }
-
+  // 创建并选中分组
+  const createGroup = (data: Pick<Group, 'name' | 'printer'>) => {
     // 新分组实体
     const group: Group = {
       id: nanoid(),
-      name,
-      workspaceId: selectionStore.workspaceId,
+      name: data.name,
+      printer: data.printer,
     };
 
     groupStore.addGroup(group);
-    workspaceStore.appendWorkspaceGroupId(group.workspaceId, group.id);
 
     selectionStore.selectGroup(group.id);
   };
@@ -45,21 +58,22 @@ export const useGroupService = () => {
       return;
     }
 
+    if (groupStore.groupIds.length <= 1) {
+      return;
+    }
+
     // 待删除分组下的文档标识
     const docIds = groupStore.getGroupDocIds(groupId);
 
-    docStore.removeDocs(docIds);
+    removeDocs(docIds);
     groupStore.removeGroup(groupId);
-    workspaceStore.removeWorkspaceGroupId(group.workspaceId, groupId);
 
     if (selectionStore.groupId !== groupId) {
       return;
     }
 
     // 删除后仍有效的首个分组
-    const fallbackGroupId = workspaceStore.getWorkspaceGroupIds(
-      group.workspaceId,
-    )[0];
+    const fallbackGroupId = groupStore.groupIds[0];
 
     if (fallbackGroupId) {
       selectionStore.selectGroup(fallbackGroupId);
@@ -67,22 +81,16 @@ export const useGroupService = () => {
     }
   };
 
-  // 重命名分组
-  const renameGroup = (groupId: string, name: string) => {
-    // 待重命名的分组
-    const group = groupStore.getGroup(groupId);
-
-    if (!group) {
-      return;
-    }
-
-    group.name = name;
+  // 更新分组基础信息
+  const editGroup = (group: Group) => {
+    groupStore.updateGroup(group.id, group);
   };
 
   return {
+    initSelection,
     selectGroup,
     createGroup,
     removeGroup,
-    renameGroup,
+    editGroup,
   };
 };

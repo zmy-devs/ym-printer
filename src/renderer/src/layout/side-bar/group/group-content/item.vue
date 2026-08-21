@@ -4,14 +4,13 @@
     :class="{
       'bg-accent! dark:bg-accent/50!': isSelected,
     }"
-    :title="groupName"
+    :title="group?.name"
     @click="$emit('click', id)"
   >
     <header class="flex items-center gap-2">
       <span class="truncate text-sm">
-        {{ groupName }}
+        {{ group?.name }}
       </span>
-
     </header>
 
     <div
@@ -52,11 +51,6 @@ defineEmits<{
 // 当前列表项对应的分组实体
 const group = computed(() => {
   return getGroup(props.id);
-});
-
-// 当前列表项名称
-const groupName = computed(() => {
-  return group.value?.name;
 });
 
 // 当前列表项内的文档数量

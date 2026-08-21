@@ -35,7 +35,7 @@ import { usePrinterTaskStore } from '@/stores/printer-task.store';
 import { printTaskContextKey } from './context.js';
 import { useIntervalFn } from '@vueuse/core';
 
-const { selectedWorkspace } = storeToRefs(useSelectionStore());
+const { selectedGroup } = storeToRefs(useSelectionStore());
 
 const { getPrinterTasks, removePrinterTask } = usePrinterTaskStore();
 
@@ -97,7 +97,7 @@ provide(printTaskContextKey, {
 });
 
 eventBus.on('dialog-print-task:show', () => {
-  selectedPrinter.value = selectedWorkspace.value?.printer ?? '';
+  selectedPrinter.value = selectedGroup.value?.printer ?? '';
   visible.value = true;
 });
 

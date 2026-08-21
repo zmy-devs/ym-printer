@@ -7,6 +7,7 @@ import {
 } from '@/utils/print';
 import { useDocStore } from './doc.store';
 import { usePrintQueueStore } from './print-queue.store';
+import { clone } from '@/utils/clone';
 
 // 文档打印配置的扁平映射
 type PrintConfigMap = Record<string, PrintConfig>;
@@ -83,7 +84,7 @@ export const usePrintConfigStore = defineStore('print-config', () => {
     const queueId = printQueueStore.addPrintQueue({
       docId,
       // 当前阶段页码已冻结的打印配置
-      config: { ...structuredClone(config), pageNumbers },
+      config: { ...clone(config), pageNumbers },
       // 当前任务真正开始上传时更新状态
       start: () => {
         state.status = 'uploading';
@@ -145,7 +146,6 @@ export const usePrintConfigStore = defineStore('print-config', () => {
 
     state.status = 'completed';
     delete state.queueId;
-    showSuccessToast(`打印完成 “${doc.name}”`);
   };
 
   // 开始已预备文档的普通打印流程
@@ -206,7 +206,7 @@ export const usePrintConfigStore = defineStore('print-config', () => {
     printQueueStore.addPrintQueue({
       docId: doc.id,
       // 当前补救页码已冻结的打印配置
-      config: { ...structuredClone(config), pageNumbers: recoveryPageNumbers },
+      config: { ...clone(config), pageNumbers: recoveryPageNumbers },
       // 补救成功后结束提示任务
       end: resolve,
       // 补救失败后结束提示任务

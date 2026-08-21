@@ -7,11 +7,14 @@ type GroupMap = Record<string, Group>;
 
 export const useGroupStore = defineStore('group', () => {
   // 全部分组实体
-  const groups = useStorage<GroupMap>(`${storagePre}:workspace-groups`, {});
+  const groups = useStorage<GroupMap>(`${storagePre}:groups`, {});
 
-  // 当前会话内分组下文档的展示与拖拽顺序
+  // 分组展示与拖拽顺序
+  const groupIds = useStorage<string[]>(`${storagePre}:group-ids`, []);
+
+  // 分组下文档的展示与拖拽顺序
   const docOrderByGroup = useStorage<Record<string, string[]>>(
-    `${storagePre}:doc-order-by-worksgrouppace`,
+    `${storagePre}:doc-order-by-group`,
     {},
   );
 
@@ -21,23 +24,39 @@ export const useGroupStore = defineStore('group', () => {
   };
 
   // 根据有序标识获取分组列表
-  const getGroups = (groupIds: string[]) => {
-    return groupIds.map(getGroup);
+  const getGroups = () => {
+    return groupIds.value.flatMap((groupId) => {
+      // 有效的分组实体
+      const group = getGroup(groupId);
+
+      return group ? [group] : [];
+    });
   };
 
   // 新增分组实体
   const addGroup = (group: Group) => {
     groups.value[group.id] = group;
+    groupIds.value.push(group.id);
     docOrderByGroup.value[group.id] = [];
   };
 
-  // 删除分组实体
-  const removeGroup = (groupIds: string | string[]) => {
-    groupIds = Array.isArray(groupIds) ? groupIds : [groupIds];
+  // 更新分组基础信息
+  const updateGroup = (groupId: string, data: Partial<Omit<Group, 'id'>>) => {
+    Object.assign(getGroup(groupId)!, data);
+  };
 
-    groupIds.forEach((groupId) => {
+  // 删除分组实体
+  const removeGroup = (ids: string | string[]) => {
+    // 待删除的分组标识集合
+    const targetGroupIds = Array.isArray(ids) ? ids : [ids];
+
+    targetGroupIds.forEach((groupId) => {
       delete groups.value[groupId];
       delete docOrderByGroup.value[groupId];
+    });
+
+    groupIds.value = groupIds.value.filter((groupId) => {
+      return !targetGroupIds.includes(groupId);
     });
   };
 
@@ -70,12 +89,14 @@ export const useGroupStore = defineStore('group', () => {
 
   return {
     groups,
+    groupIds,
     docOrderByGroup,
     getGroup,
     getGroups,
     getGroupDocIds,
     setGroupDocIds,
     addGroup,
+    updateGroup,
     removeGroup,
     appendGroupDocIds,
     removeGroupDocIds,

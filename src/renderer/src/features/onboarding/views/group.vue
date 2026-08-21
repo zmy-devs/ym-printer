@@ -1,18 +1,10 @@
 <template>
   <section class="flex flex-col gap-8">
-    <Field
-      name="workspaceName"
-      label="工作空间名称"
-      v-slot="{ componentField }"
-    >
-      <Input placeholder="请输入工作空间名称" v-bind="componentField" />
+    <Field name="groupName" label="组名称" v-slot="{ componentField }">
+      <Input placeholder="请输入组名称" v-bind="componentField" />
     </Field>
 
-    <Field
-      name="workspacePrinter"
-      label="工作空间打印机"
-      v-slot="{ componentField }"
-    >
+    <Field name="groupPrinter" label="组打印机" v-slot="{ componentField }">
       <SelectPrinter
         class="w-full"
         variant="outline"
@@ -31,21 +23,22 @@ import SelectPrinter from '@/components/select-printer.vue';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
-import { useWorkspaceService } from '@/services/workspace.service';
+import { useGroupService } from '@/services/group.service';
 import Field from '@/components/field.vue';
 
-// 工作空间创建能力
-const { createWorkspace } = useWorkspaceService();
+// 分组创建能力
+const { createGroup } = useGroupService();
 
+// 首个分组创建表单
 const form = useForm({
   validationSchema: toTypedSchema(
     z.object({
-      workspaceName: z
+      groupName: z
         .string({
           message: '请输入名称',
         })
         .min(1, '请输入名称'),
-      workspacePrinter: z
+      groupPrinter: z
         .string({
           message: '请选择打印机',
         })
@@ -53,15 +46,16 @@ const form = useForm({
     }),
   ),
   initialValues: {
-    workspaceName: '默认工作空间',
-    workspacePrinter: '',
+    groupName: '默认组',
+    groupPrinter: '',
   },
 });
 
+// 提交首个分组创建表单
 const handleSubmit = form.handleSubmit((values) => {
-  createWorkspace({
-    name: values.workspaceName!,
-    printer: values.workspacePrinter!,
+  createGroup({
+    name: values.groupName!,
+    printer: values.groupPrinter!,
   });
 
   return true;

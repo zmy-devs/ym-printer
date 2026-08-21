@@ -116,7 +116,7 @@ export const themeColorMap = {
 // 主题色标识类型
 export type ThemeColor = keyof typeof themeColorMap;
 
-// 工作空间组表单标题
+// 分组表单标题
 export const groupTitleMap = {
   add: '新建组',
   edit: '编辑组',
@@ -125,10 +125,4 @@ export const groupTitleMap = {
 export const presetTitleMap = {
   add: '新建预设',
   edit: '编辑预设',
-};
-
-// 工作空间表单标题
-export const workspaceTitleMap = {
-  add: '新建工作空间',
-  edit: '编辑工作空间',
 };

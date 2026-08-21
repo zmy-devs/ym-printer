@@ -14,20 +14,15 @@
     </EmptyHeader>
 
     <EmptyContent>
-      <Tooltip label="在当前工作空间下新增文档" shortcut="Ctrl+O">
-        <Button @click="addDocs()">
-          <PlusIcon />
-
-          <span>新增文档</span>
-        </Button>
+      <Tooltip label="在当前组中新增文档" shortcut="Ctrl+O">
+        <AddDocButton />
       </Tooltip>
     </EmptyContent>
   </Empty>
 </template>
 
 <script setup lang="ts">
-import { FilesIcon, PlusIcon } from '@lucide/vue';
-import { Button } from '@/components/ui/button';
+import { FilesIcon } from '@lucide/vue';
 import {
   Empty,
   EmptyContent,
@@ -37,8 +32,5 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import Tooltip from '@/components/tooltip.vue';
-import { useDocumentService } from '@/services/document.service';
-
-// 当前分组文档导入能力
-const { addDocs } = useDocumentService();
+import AddDocButton from '@/components/add-doc-button.vue';
 </script>
