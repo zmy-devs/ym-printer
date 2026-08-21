@@ -1,14 +1,17 @@
 <template>
-  <section class="title-bar pl-1.5 flex items-center bg-sidebar app-drag">
-    <Tooltip label="切换侧边栏可见性">
-      <Button variant="ghost" size="icon-xs" @click="toggleSilderbar">
+  <section class="h-10 pl-1.5 pr-37 flex items-center shrink-0 app-drag">
+    <Tooltip label="切换侧边栏可见性" side="right">
+      <Button
+        class="app-no-drag"
+        variant="ghost"
+        size="icon-xs"
+        @click="toggleSilderbar"
+      >
         <PanelLeftCloseIcon v-if="panelRef?.isExpanded" />
 
         <PanelLeftIcon v-else />
       </Button>
     </Tooltip>
-
-    <TitleBarNav />
 
     <TitleBarUpdate class="ml-auto" />
   </section>
@@ -19,17 +22,7 @@ import Tooltip from '@/components/tooltip.vue';
 import { Button } from '@/components/ui/button';
 import { PanelLeftCloseIcon, PanelLeftIcon } from '@lucide/vue';
 import { panelRef, toggleSilderbar } from '../index';
-import TitleBarNav from './title-bar-nav.vue';
 import TitleBarUpdate from './title-bar-update.vue';
 </script>
 
-<style scoped lang="scss">
-.title-bar {
-  grid-area: title-bar;
-  padding-right: 148px;
-
-  * {
-    -webkit-app-region: no-drag;
-  }
-}
-</style>
+<style scoped lang="scss"></style>

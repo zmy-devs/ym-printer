@@ -1,37 +1,28 @@
 <template>
   <Field
-    name="cartridge"
-    label="墨盒颜色"
+    name="color"
+    label="颜色"
     :icon="PaletteIcon"
     v-slot="{ componentField }"
   >
-    <Select v-bind="componentField">
-      <SelectTrigger class="min-w-0 w-full">
-        <SelectValue placeholder="请选择墨盒颜色" />
-      </SelectTrigger>
-
-      <SelectContent>
-        <SelectItem
-          v-for="item in Object.keys(cartridgeMap)"
-          :key="item"
-          :value="item"
-        >
-          {{ cartridgeMap[item] }}
-        </SelectItem>
-      </SelectContent>
-    </Select>
+    <SegmentedControl v-bind="componentField">
+      <SegmentedControlItem
+        v-for="[value, label] in Object.entries(cartridgeMap)"
+        :key="value"
+        :value="value"
+      >
+        {{ label }}
+      </SegmentedControlItem>
+    </SegmentedControl>
   </Field>
 </template>
 
 <script setup lang="ts">
 import Field from '@/components/field.vue';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SegmentedControl,
+  SegmentedControlItem,
+} from '@/components/segmented-control';
 import { cartridgeMap } from '@/map';
 import { PaletteIcon } from '@lucide/vue';
 </script>

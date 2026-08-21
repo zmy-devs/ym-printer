@@ -1,6 +1,6 @@
 <template>
   <Field
-    name="count"
+    name="copies"
     label="打印份数"
     :icon="StickyNotesIcon"
     v-slot="{ componentField }"

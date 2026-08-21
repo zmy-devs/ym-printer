@@ -1,50 +1,24 @@
 <template>
-  <section class="flex flex-col relative">
-    <DocHeader class="p-1 z-10" />
+  <section class="size-full min-h-0 relative flex flex-col">
+    <DocHeader class="shrink-0 z-10" />
 
-    <div
-      class="wh-full absolute left-50 top-50 -translate-x-50 -translate-y-50"
-      v-if="!hasDocs"
-    >
-      <DocEmpty />
-    </div>
+    <DocEmpty v-if="selectedDocs.length == 0" />
 
-    <ScrollArea class="min-h-0" view-class="pb-12" v-else>
-      <DocContent />
-    </ScrollArea>
+    <DocContent v-else />
 
-    <DocFooter v-if="hasDocs" />
+    <DocFooter class="absolute left-0 bottom-0" v-if="selectedDocs.length" />
   </section>
 </template>
 
 <script setup lang="ts">
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { useSelectionStore } from '@/stores/selection.store';
 import DocHeader from './doc-header/index.vue';
 import DocContent from './doc-content/index.vue';
 import DocEmpty from './doc-empty.vue';
 import DocFooter from './doc-footer/index.vue';
-import { useDocStore } from '@/stores/doc';
-import { useWorkspaceStore } from '@/stores/workspace';
-import { useSettingsStore } from '@/stores/settings';
-import { setStatus } from './index';
 
-const { settings } = storeToRefs(useSettingsStore());
-const { docs } = storeToRefs(useDocStore());
-const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());
-
-const hasDocs = computed(() =>
-  docs.value.some((item) => item.workspaceId == selectedWorkspaceID.value),
-);
-
-//防止进入计价后关闭计价模式
-watch(
-  () => settings.value.price,
-  (value) => {
-    if (!value) {
-      setStatus();
-    }
-  },
-);
+// 当前分类内的文档列表
+const { selectedDocs } = storeToRefs(useSelectionStore());
 </script>
 
 <style scoped lang="scss"></style>

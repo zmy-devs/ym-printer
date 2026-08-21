@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { ScrollArea } from '@/components/ui/scroll-area';
 import PdfView from './pdg-view.vue';
-import { usePdfStore } from '@/stores/pdf';
+import { usePdfStore } from '@/stores/pdf.store';
 import { useEventListener } from '@vueuse/core';
 import useMove from '@/hooks/use-move';
 import { cn } from '@/lib/utils.js';

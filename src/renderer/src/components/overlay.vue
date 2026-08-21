@@ -1,14 +1,16 @@
 <template>
   <section
-    class="flex-center absolute inset-0 pointer-events-none z-9999 bg-muted/90 border-dotted"
+    class="flex-center absolute inset-0 pointer-events-none z-9999 bg-black/30"
   >
-    <div class="px-2 py-1 rounded-md bg-primary">
-      <span class="text-sm">{{ label }}</span>
-    </div>
+    <Button>
+      {{ label }}
+    </Button>
   </section>
 </template>
 
 <script setup lang="ts">
+import { Button } from './ui/button';
+
 defineProps<{
   label: string;
 }>();

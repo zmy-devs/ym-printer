@@ -13,17 +13,17 @@
 </template>
 
 <script setup lang="ts">
-import { usePdfStore } from '@/stores/pdf';
-import { useDocStore } from '@/stores/doc';
+import { usePdfStore } from '@/stores/pdf.store';
+import { useSelectionStore } from '@/stores/selection.store';
 import VuePdfEmbed, { useVuePdfEmbed } from '@/components/vue-pdf-embed';
 import type { PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs';
-import { Form } from '../../index';
-import { parserRange } from '@/utils/range';
+import { useSheetPrintContext } from '../../context';
 
 const { scale, viewMode } = storeToRefs(usePdfStore());
-const { selectedDoc } = storeToRefs(useDocStore());
+const { selectedDoc } = storeToRefs(useSelectionStore());
 
-const form: Form = inject('form')!;
+// 打印 Sheet 共享上下文
+const { form, pageNumbers } = useSheetPrintContext();
 
 const visible = ref(false);
 
@@ -36,23 +36,19 @@ const { doc } = useVuePdfEmbed({
 
 //显示的页面
 const page = computed(() => {
-  if (viewMode.value == 'raw') {
+  if (viewMode.value === 'raw' || !form.meta.value.valid) {
     return undefined;
   }
 
-  //预览模式
-  if (form.meta.value.valid) {
-    return parserRange({
-      ...selectedDoc.value,
-      ...(form.values as any),
-    });
-  } else {
-    return undefined;
-  }
+  return pageNumbers.value;
 });
 
 //处理加载
 const handleLoaded = ({ numPages }: PDFDocumentProxy) => {
+  if (!selectedDoc.value) {
+    return;
+  }
+
   selectedDoc.value.pageCount = numPages;
 };
 
@@ -62,7 +58,7 @@ const handleError = (error: Error) => {
 };
 
 onMounted(async () => {
-  if (!selectedDoc.value.md5) {
+  if (!selectedDoc.value?.md5) {
     return;
   }
 

@@ -1,19 +1,12 @@
 <template>
-  <ItemBase v-bind="$props" variant="destructive" :disabled="status == 'price'">
-    <template #icon>
-      <CircleXIcon class="size-7 text-destructive-foreground" />
-    </template>
-
-    <template #description>出错了！无法打开文档，请检查文档！</template>
-  </ItemBase>
+  <ItemBase v-bind="$props" variant="destructive" />
 </template>
 
 <script setup lang="ts">
+import type { Doc } from '@type';
 import ItemBase from './item-base/index.vue';
-import { Doc } from '@type';
-import { CircleXIcon } from '@lucide/vue';
-import { status } from '../../index';
 
+// 加载失败的文档参数
 defineProps<{
   data: Doc;
 }>();

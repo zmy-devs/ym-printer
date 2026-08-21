@@ -1,47 +1,77 @@
 <template>
-  <section class="flex items-center">
-    <Button variant="ghost" @click="handleCheckAll">
-      <SquareCheckIcon />
+  <Button variant="ghost" @click="handleCheckAll">
+    <SquareCheckIcon />
 
-      <span>全选文档</span>
-    </Button>
+    <span>全选文档</span>
+  </Button>
 
-    <Button variant="ghost" @click="handleCancelCheckAll">
-      <SquareIcon />
+  <Button variant="ghost" @click="cancelCheckAll">
+    <SquareIcon />
 
-      <span>取消全选</span>
-    </Button>
-  </section>
+    <span>取消全选</span>
+  </Button>
+
+  <span
+    class="ml-auto mr-2 text-sm text-green-700 dark:text-green-500"
+    v-if="settings.price"
+  >
+    总价: {{ price }} 元
+  </span>
 </template>
 
 <script setup lang="ts">
+import { useSelectionStore } from '@/stores/selection.store';
 import { Button } from '@/components/ui/button';
 import { SquareCheckIcon, SquareIcon } from '@lucide/vue';
-import { cancelCheck, checkAll } from '../check';
-import { useDocStore } from '@/stores/doc';
-import { useWorkspaceStore } from '@/stores/workspace';
+import { cancelCheckAll, checkAll, checked } from '../check';
+import { useDocStore } from '@/stores/doc.store';
+import { useSettingsStore } from '@/stores/settings.store';
+import { getPrice } from '@/utils/price';
+import { usePrintConfigStore } from '@/stores/print-config.store';
 
-const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());
-const { docs } = storeToRefs(useDocStore());
+// 文档状态仓库
+const docStore = useDocStore();
+// 当前分类内的有序文档
+const { selectedDocs } = storeToRefs(useSelectionStore());
+// 文档查询方法
+const { getDoc } = docStore;
+// 文档打印配置状态
+const printConfigStore = usePrintConfigStore();
+// 应用计价设置
+const { settings } = storeToRefs(useSettingsStore());
 
-//全选
-const handleCheckAll = () => {
-  handleCancelCheckAll();
-
-  const ids = docs.value
-    .filter((item) => item.workspaceId == selectedWorkspaceID.value)
-    .map((item) => item.id);
-
-  checkAll(ids);
+// 求和一组金额
+const sum = (values: number[]) => {
+  return values.reduce((total, value) => {
+    return total + value;
+  }, 0);
 };
 
-//取消全选
-const handleCancelCheckAll = () => {
-  const ids = docs.value
-    .filter((item) => item.workspaceId == selectedWorkspaceID.value)
-    .map((item) => item.id);
+// 当前勾选文档的总价
+const price = computed(() => {
+  // 当前勾选文档的价格列表
+  const prices = Array.from(checked.value).map((id) => {
+    // 当前计价文档
+    const doc = getDoc(id);
 
-  cancelCheck(ids);
+    if (!doc) {
+      return 0;
+    }
+
+    return getPrice(printConfigStore.getPrintConfig(doc.id));
+  });
+  // 当前勾选文档的总价
+  const totalPrice = sum(prices);
+
+  return totalPrice.toFixed(2);
+});
+
+// 全选当前分类内的文档
+const handleCheckAll = () => {
+  // 当前分类内的文档标识
+  const ids = selectedDocs.value.map((item) => item.id);
+
+  checkAll(ids);
 };
 </script>
 

@@ -65,7 +65,7 @@ import {
 import Container from '@/components/container.vue';
 import { Button } from '@/components/ui/button';
 import { appVersion } from '@shared/app-info';
-import { useSettingsStore } from '@/stores/settings';
+import { useSettingsStore } from '@/stores/settings.store';
 import { issueUrl } from '@/map';
 import MessageBox from '@/components/message-box';
 

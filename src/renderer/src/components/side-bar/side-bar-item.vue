@@ -1,8 +1,8 @@
 <template>
   <li
-    class="w-full h-8 p-2 flex items-center gap-2 rounded-md text-sm [&>span:last-child]:truncate [&>svg]:size-4.5 [&>svg]:shrink-0 hover:bg-accent transition-colors"
+    class="w-full h-8 p-2 flex items-center gap-2 rounded-md text-sm [&>span:last-child]:truncate [&>svg]:size-4.5 [&>svg]:shrink-0 hover:bg-accent dark:hover:bg-accent/50 transition-colors"
     :class="{
-      'bg-accent': isActive,
+      'bg-accent! dark:bg-accent/50!': isActive,
     }"
   >
     <slot></slot>
@@ -16,4 +16,3 @@ defineProps<{
 </script>
 
 <style scoped lang="scss"></style>
-

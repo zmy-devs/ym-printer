@@ -28,4 +28,3 @@ const model = defineModel<boolean>();
 </script>
 
 <style scoped lang="scss"></style>
-

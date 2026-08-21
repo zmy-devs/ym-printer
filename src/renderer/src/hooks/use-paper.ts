@@ -1,11 +1,17 @@
-import { Doc } from '@type';
+import type { PrintConfig } from '@type';
+import type { MaybeRef } from 'vue';
+import { toValue } from 'vue';
 
-export const usePaper = (doc: Doc) => {
+// 计算当前打印配置需要的纸张数量
+export const usePaper = (config: MaybeRef<PrintConfig | undefined>) => {
   return computed(() => {
-    if (!doc.formatRange) {
+    // 当前计算使用的打印配置
+    const printConfig = toValue(config);
+
+    if (!printConfig?.pageNumbers) {
       return 0;
     }
 
-    return (doc.formatRange.length / 2) * doc.count;
+    return (printConfig.pageNumbers.length / 2) * printConfig.copies;
   });
 };

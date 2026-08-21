@@ -1,18 +1,10 @@
 import { appName } from '@shared/app-info';
+import type { DocStatus, PrintRangeMode, PrintStatus } from '@type';
 
-export const modeMap = {
-  simplex: '单面打印',
-  duplex: '双面打印',
-  mix: '混合打印',
-  mixConnect: '混合打印(范围连接)',
-};
-
-// 打印模式的简短说明
-export const modeDescriptionMap: Record<keyof typeof modeMap, string> = {
-  simplex: '全部单面打印',
-  duplex: '全部双面打印',
-  mix: '单页单面，范围双面',
-  mixConnect: '单页单面，范围双面，相邻的范围自动连接',
+// 打印范围内页码的打印方式
+export const printRangeModeMap: Record<PrintRangeMode, string> = {
+  simplex: '单面',
+  duplex: '双面',
 };
 
 export const cartridgeMap = {
@@ -25,10 +17,52 @@ export const orientationMap = {
   landscape: '横向',
 };
 
-export const printStatusMap = {
+// 文档状态对应的展示文案
+export const docStatusMap: Record<DocStatus, string> = {
+  loading: '正在加载文档',
+  error: '文档加载失败，请检查文档',
+  ready: '等待打印配置',
+};
+
+// 文档状态对应的状态点样式
+export const docStatusVariantMap: Record<
+  DocStatus,
+  'success' | 'warn' | 'error'
+> = {
+  loading: 'warn',
+  error: 'error',
+  ready: 'warn',
+};
+
+// 打印流程状态对应的展示文案
+export const printStatusMap: Record<PrintStatus, string> = {
+  idle: '等待打印配置',
+  preparing: '准备就绪',
+  queued: '等待上传打印',
+  uploading: '正在上传打印',
+  waiting: '等待继续打印',
+  completed: '打印完成',
+  failed: '打印失败',
+};
+
+// 打印流程状态对应的状态点样式
+export const printStatusVariantMap: Record<
+  PrintStatus,
+  'success' | 'warn' | 'error'
+> = {
+  idle: 'warn',
+  preparing: 'success',
+  queued: 'warn',
+  uploading: 'success',
+  waiting: 'warn',
+  completed: 'success',
+  failed: 'error',
+};
+
+export const printerTaskStatusMap = {
   Printing: '打印中',
   Paused: '已暂停',
-  Spooling: '正在发送到打印机',
+  Spooling: '正在发送',
   Deleting: '正在删除',
   Error: '错误',
   Offline: '脱机',
@@ -59,6 +93,7 @@ export const viewMap = {
 export const baseThemeMap = {
   dark: '深色',
   light: '浅色',
+  auto: '跟随系统',
 };
 
 export const previewThemeMap = {
@@ -67,25 +102,33 @@ export const previewThemeMap = {
   auto: '跟随基础主题',
 };
 
+// 主题色标识对应的展示信息
+export const themeColorMap = {
+  default: { label: '默认', color: 'var(--theme-color-default)' },
+  blue: { label: '蓝色', color: 'var(--color-blue-600)' },
+  green: { label: '绿色', color: 'var(--color-green-600)' },
+  yellow: { label: '黄色', color: 'var(--color-yellow-500)' },
+  orange: { label: '橙色', color: 'var(--color-orange-600)' },
+  pink: { label: '粉色', color: 'var(--color-pink-600)' },
+  purple: { label: '紫色', color: 'var(--color-purple-600)' },
+};
+
+// 主题色标识类型
+export type ThemeColor = keyof typeof themeColorMap;
+
+// 工作空间组表单标题
+export const groupTitleMap = {
+  add: '新建组',
+  edit: '编辑组',
+};
+
 export const presetTitleMap = {
   add: '新建预设',
   edit: '编辑预设',
-};
-
-// 预设表单操作说明
-export const presetDescriptionMap = {
-  add: '创建一个新的打印范围预设',
-  edit: '修改当前打印范围预设',
 };
 
 // 工作空间表单标题
 export const workspaceTitleMap = {
   add: '新建工作空间',
   edit: '编辑工作空间',
-};
-
-// 工作空间表单操作说明
-export const workspaceDescriptionMap = {
-  add: '创建一个新的工作空间',
-  edit: '修改当前工作空间',
 };

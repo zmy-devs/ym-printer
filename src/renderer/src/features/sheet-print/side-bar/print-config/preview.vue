@@ -17,7 +17,7 @@ import {
   SegmentedControlItem,
 } from '@/components/segmented-control';
 import { viewMap } from '@/map';
-import { usePdfStore } from '@/stores/pdf';
+import { usePdfStore } from '@/stores/pdf.store';
 
 // 当前预览模式
 const { viewMode } = storeToRefs(usePdfStore());

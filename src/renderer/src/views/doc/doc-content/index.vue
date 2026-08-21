@@ -1,109 +1,29 @@
 <template>
-  <ContextMenu>
-    <ContextMenuTrigger as-child :disabled="status == 'price'">
+  <DocContextMenu>
+    <ScrollArea class="min-h-0 flex-1">
       <VueDraggable
-        class="px-0.5 flex flex-col"
+        v-if="selectedGroup"
+        class="flex flex-col gap-3 px-3"
         :animation="200"
-        :model-value="filterDocs"
-        @update:model-value="handleSort"
-        :disabled="status != 'default'"
+        :force-fallback="true"
+        ghost-class="opacity-0"
+        v-model="selectedDocIds"
       >
-        <template v-for="docs in filterDocs" :key="docs[0].groupId">
-          <div
-            class="flex flex-col"
-            :class="{
-              'border border-primary overflow-hidden': docs.length > 1,
-            }"
-          >
-            <template v-for="item in docs" :key="item.id">
-              <ContentItem
-                :data="item"
-                @contextmenu="handleContextmenu(item)"
-              />
-            </template>
-          </div>
-        </template>
+        <ContentItem v-for="id in selectedDocIds" :key="id" :id="id" />
       </VueDraggable>
-    </ContextMenuTrigger>
-
-    <component
-      :is="contextmeunMap[status]"
-      :data="selectedItem"
-      v-if="selectedItem"
-    />
-  </ContextMenu>
+    </ScrollArea>
+  </DocContextMenu>
 </template>
 
 <script setup lang="ts">
+import { useSelectionStore } from '@/stores/selection.store';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import ContentItem from './content-item/index.vue';
-import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu';
-import { useDocStore } from '@/stores/doc';
 import { VueDraggable } from 'vue-draggable-plus';
-import { status } from '../index';
-import { eventBus } from '@/utils/event-bus';
-import { useWorkspaceStore } from '@/stores/workspace';
-import { Doc } from '@type';
-import ContextMenuDefault from './context-menu/context-menu-default.vue';
-import ContextMenuCheck from './context-menu/context-menu-check.vue';
+import DocContextMenu from '@/features/context-menu/doc-context-menu.vue';
 
-const contextmeunMap = {
-  default: ContextMenuDefault,
-  price: ContextMenuDefault,
-  check: ContextMenuCheck,
-};
-
-const { docs } = storeToRefs(useDocStore());
-const { selectDoc } = useDocStore();
-const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());
-
-const selectedItem = shallowRef<Doc>();
-
-const handleContextmenu = (item: Doc) => {
-  selectedItem.value = item;
-};
-
-const filterDocs = computed(() => {
-  const workspaceDocs = docs.value.filter(
-    (item) => item.workspaceId == selectedWorkspaceID.value,
-  );
-
-  const res = workspaceDocs.reduce(
-    (prev, cur) => {
-      if (!prev[cur.groupId]) {
-        prev[cur.groupId] = [];
-      }
-
-      prev[cur.groupId].push(cur);
-
-      return prev;
-    },
-    {} as Record<string, Doc[]>,
-  );
-
-  return Object.values(res);
-});
-
-//排序
-const handleSort = (data: Doc[][]) => {
-  const order = docs.value.filter(
-    (item) => item.workspaceId != selectedWorkspaceID.value,
-  );
-
-  docs.value = [...order, ...data.flat()];
-};
-
-//打印文档
-const handlePrint = (id: string) => {
-  if (status.value != 'default') {
-    return;
-  }
-
-  selectDoc(id);
-
-  eventBus.emit('dialog-print:show');
-};
-
-provide('handlePrint', handlePrint);
+// 当前选中的分组
+const { selectedGroup, selectedDocIds } = storeToRefs(useSelectionStore());
 </script>
 
 <style scoped lang="scss"></style>

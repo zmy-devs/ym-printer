@@ -1,10 +1,8 @@
 import { Component } from 'vue';
 
-import PrinterView from './views/printer.vue';
 import WorkspaceView from './views/workspace.vue';
-import { FolderClosedIcon, PrinterIcon } from '@lucide/vue';
-import { useWorkspaceStore } from '@/stores/workspace';
-import { usePrinterStore } from '@/stores/printer';
+import { BriefcaseIcon } from '@lucide/vue';
+import { useWorkspaceStore } from '@/stores/workspace.store';
 
 export interface OnboardingRoute {
   title: string;
@@ -54,21 +52,11 @@ export const nextStep = async () => {
 
 //初始化路由
 export const initRouter = () => {
-  if (usePrinterStore().selectedPrinter == '') {
-    onboardingRouter.push({
-      title: '让我们选择你的默认打印机',
-      description: '请选择你电脑上的一个打印机作为默认打印机',
-      icon: PrinterIcon,
-      component: PrinterView,
-      fields: ['defaultPrinter'],
-    });
-  }
-
-  if (useWorkspaceStore().workspace.length == 0) {
+  if (useWorkspaceStore().workspaceIds.length == 0) {
     onboardingRouter.push({
       title: '让我们新建你的第一个工作空间',
       description: '请根据提示输入对应的内容已新建你的工作空间。',
-      icon: FolderClosedIcon,
+      icon: BriefcaseIcon,
       component: WorkspaceView,
       fields: ['workspaceName', 'workspacePrinter'],
     });

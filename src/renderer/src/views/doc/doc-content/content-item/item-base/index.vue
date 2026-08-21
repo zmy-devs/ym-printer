@@ -1,85 +1,188 @@
 <template>
-  <Item
-    class="hover:bg-accent dark:hover:bg-accent/30 has-aria-checked:bg-primary/15 has-aria-checked:hover:bg-primary/20! rounded-none"
+  <label
+    class="flex flex-col border rounded-lg overflow-hidden"
     :class="{
-      disabled,
+      'border-primary': checked.has(data.id),
+      'border-destructive': variant === 'destructive',
     }"
-    size="sm"
-    as="label"
     :for="data.id"
   >
-    <ItemMedia variant="image">
-      <slot name="icon">
-        <FileIcon
-          :size="38"
-          :ext="data.ext"
-          v-if="disabledCheck || status == 'default'"
-        />
+    <main class="group p-3 flex gap-2">
+      <section class="size-5 mt-0.5 shrink-0">
+        <slot name="icon">
+          <FileIcon
+            class="group-hover:hidden!"
+            :ext="data.ext"
+            v-if="!isChecking"
+          />
 
-        <Checkbox
-          :id="data.id"
-          :model-value="checked.has(data.id)"
-          @update:model-value="toggleCheck(data.id)"
-          v-else
-        />
-      </slot>
-    </ItemMedia>
+          <Checkbox
+            class="size-5"
+            :class="{
+              'hidden group-hover:block': !isChecking,
+            }"
+            :id="data.id"
+            :model-value="checked.has(data.id)"
+            @click.stop
+            @update:model-value="handleToggleCheck"
+          />
+        </slot>
+      </section>
 
-    <ItemContent>
-      <ItemTitle
-        :title="data.name"
+      <section class="min-w-0 flex flex-1 flex-col gap-1">
+        <div class="flex items-center gap-2">
+          <template v-if="printConfig?.remark">
+            <span
+              class="text-sm font-medium truncate"
+              :class="{
+                'text-destructive-foreground': variant === 'destructive',
+              }"
+            >
+              {{ printConfig.remark }}
+            </span>
+
+            <Separator class="h-4!" orientation="vertical" />
+          </template>
+
+          <span
+            class="text-sm font-medium truncate"
+            :class="{
+              'text-destructive-foreground': variant === 'destructive',
+            }"
+          >
+            {{ data.name }}
+          </span>
+        </div>
+
+        <span
+          class="text-sm text-muted-foreground truncate"
+          v-if="!hasPrintConfig"
+        >
+          {{ data.path }}
+        </span>
+
+        <ItemBaseDescription :data="data" v-else />
+      </section>
+
+      <Tooltip label="打开打印配置">
+        <Button
+          class="ml-auto"
+          variant="outline"
+          size="icon-sm"
+          :disabled="isPrintConfigOpenDisabled"
+          @click.stop="handleOpen"
+          v-if="variant != 'destructive'"
+        >
+          <SquareArrowOutUpRightIcon />
+        </Button>
+      </Tooltip>
+    </main>
+
+    <footer
+      class="h-10 pl-3 pr-1.5 flex items-center gap-1.5 bg-muted/50 border-t"
+    >
+      <StatusDot :variant="statusVariant" />
+
+      <span
+        class="mr-auto text-xs"
         :class="{
-          'text-destructive-foreground': variant == 'destructive',
+          'text-destructive-foreground': variant === 'destructive',
         }"
       >
-        <slot name="before-title">
-          {{ data.name }}
-        </slot>
+        {{ statusLabel }}
+      </span>
 
-        <slot name="title">
-          {{ data.name }}
-        </slot>
-      </ItemTitle>
-
-      <ItemDescription
-        :class="{
-          'text-destructive-foreground/80': variant == 'destructive',
-        }"
-      >
-        <slot name="description">
-          <ItemBaseDescription :data="data" />
-        </slot>
-      </ItemDescription>
-    </ItemContent>
-
-    <ItemActions>
-      <slot name="actions"></slot>
-    </ItemActions>
-  </Item>
+      <slot />
+    </footer>
+  </label>
 </template>
 
 <script setup lang="ts">
 import { Checkbox } from '@/components/ui/checkbox';
 import ItemBaseDescription from './item-base-description.vue';
 import FileIcon from '@/components/file-icon.vue';
+import { Button } from '@/components/ui/button';
+import type { Doc } from '@type';
+import { checked, isChecking, toggleCheck } from '@/views/doc/check';
+import { SquareArrowOutUpRightIcon } from '@lucide/vue';
+import Tooltip from '@/components/tooltip.vue';
 import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-  ItemActions,
-} from '@/components/ui/item';
-import { Doc } from '@type';
-import { checked, toggleCheck } from '@/views/doc/check';
-import { status } from '@/views/doc/index.js';
+  docStatusMap,
+  docStatusVariantMap,
+  printStatusMap,
+  printStatusVariantMap,
+} from '@/map';
+import StatusDot from './status-dot.vue';
+import { Separator } from '@/components/ui/separator';
+import { usePrintConfigStore } from '@/stores/print-config.store';
+import { useSelectionStore } from '@/stores/selection.store';
+import { eventBus } from '@/utils/event-bus';
 
-defineProps<{
+// 文档卡片显示参数
+const props = defineProps<{
   data: Doc;
-  disabled?: boolean;
+  hasPrintConfig?: boolean;
   variant?: 'destructive';
-  disabledCheck?: boolean;
 }>();
+
+// 文档打印配置状态
+const printConfigStore = usePrintConfigStore();
+
+// 当前文档选择状态
+const selectionStore = useSelectionStore();
+
+// 当前文档打印运行状态
+const printState = computed(() => {
+  return printConfigStore.getPrintState(props.data.id);
+});
+
+// 当前文档的打印状态，未初始化时按空闲状态展示
+const printStatus = computed(() => {
+  return printState.value?.status ?? 'idle';
+});
+
+// 当前文档打印配置
+const printConfig = computed(() => {
+  return printConfigStore.getPrintConfig(props.data.id);
+});
+
+// 文档状态优先于打印状态的底部文案
+const statusLabel = computed(() => {
+  if (props.data.status !== 'ready') {
+    return docStatusMap[props.data.status];
+  }
+
+  return printStatusMap[printStatus.value];
+});
+
+// 文档状态优先于打印状态的底部状态点
+const statusVariant = computed(() => {
+  if (props.data.status !== 'ready') {
+    return docStatusVariantMap[props.data.status];
+  }
+
+  return printStatusVariantMap[printStatus.value];
+});
+
+// 非就绪文档不可打开打印配置
+const isPrintConfigOpenDisabled = computed(() => {
+  return props.data.status !== 'ready';
+});
+
+// 切换当前文档的勾选状态
+const handleToggleCheck = () => {
+  toggleCheck(props.data.id);
+};
+
+// 打开当前文档的打印界面
+const handleOpen = () => {
+  if (isPrintConfigOpenDisabled.value) {
+    return;
+  }
+
+  selectionStore.selectDoc(props.data.id);
+  eventBus.emit('dialog-print:show');
+};
 </script>
 
 <style scoped lang="scss"></style>

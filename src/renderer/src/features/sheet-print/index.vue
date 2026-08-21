@@ -1,18 +1,19 @@
 <template>
-  <Sheet v-model:open="open">
+  <Sheet v-model:open="visible">
     <SheetContent
       :aria-describedby="undefined"
       side="bottom"
-      class="h-[calc(100vh-40px)] p-0! flex flex-col gap-0 bg-sidebar"
+      class="h-[calc(100vh-40px)] p-0! flex flex-col gap-0"
       @open-auto-focus.prevent
     >
       <VisuallyHidden as-child>
         <SheetTitle />
       </VisuallyHidden>
 
-      <TitleBar class="border-b" />
+      <TitleBar class="border-b bg-sidebar" />
 
       <ResizablePanelGroup
+        class="min-h-0 flex-1"
         direction="horizontal"
         autoSaveId="print-preview-layout"
       >
@@ -36,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { useSelectionStore } from '@/stores/selection.store';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -46,90 +48,121 @@ import TitleBar from './title-bar/index.vue';
 import SideBar from './side-bar/index.vue';
 import Preview from './preview/index.vue';
 import { VisuallyHidden } from 'reka-ui';
-import { open, close } from './index';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
-import { useDocStore } from '@/stores/doc';
-import { useWorkspaceStore } from '@/stores/workspace';
-import { usePdfStore } from '@/stores/pdf';
+import { usePdfStore } from '@/stores/pdf.store';
 import { useEventListener } from '@vueuse/core';
+import {
+  isPrintRangeInBounds,
+  isPrintRangeValid,
+  parserRange,
+} from '@/utils/range';
+import { usePrintConfigStore } from '@/stores/print-config.store';
+import { eventBus } from '@/utils/event-bus';
+import { sheetPrintContextKey, type PrintConfigValues } from './context';
 
-const { selectedDoc } = storeToRefs(useDocStore());
-const { selectedWorkspace } = storeToRefs(useWorkspaceStore());
+// 打印 Sheet 是否可见
+const visible = ref(false);
+
+const { selectedDoc, docId, selectedWorkspace } =
+  storeToRefs(useSelectionStore());
 const { setViewMode } = usePdfStore();
+// 文档打印配置状态
+const printConfigStore = usePrintConfigStore();
 
-const createInitialValues = () => {
-  return {
-    remark: selectedDoc.value.remark || '',
-    printer: selectedDoc.value.printer || selectedWorkspace.value.printer || '',
-    count: selectedDoc.value.count || 1,
-    mode: selectedDoc.value.mode || 'mix',
-    range: selectedDoc.value.range || '',
-    cartridge: selectedDoc.value.cartridge || 'black',
-    orientation: selectedDoc.value.orientation || 'portrait',
-  };
+// 关闭打印 Sheet
+const closeSheetPrint = () => {
+  visible.value = false;
 };
 
-const form = useForm({
-  validationSchema: toTypedSchema(
-    z.object({
-      remark: z.string(),
-      printer: z.string().min(1, '请选择打印机'),
-      count: z.number({ message: '' }).min(1, '最少1份').max(999, '最大999份'),
-      mode: z.string({
-        message: '请选择打印模式',
+// 根据当前文档与工作空间生成打印表单初始值
+const createInitialValues = () => {
+  const defaultValue = {
+    remark: '',
+    printer: selectedWorkspace.value?.printer || '',
+    copies: 1,
+    pageRange: [{ range: '', mode: 'simplex' }],
+    color: 'black',
+    orientation: 'portrait',
+  } satisfies PrintConfigValues;
+
+  if (!docId.value) {
+    return defaultValue;
+  }
+
+  const config = printConfigStore.getPrintConfig(docId.value);
+
+  return config ? config : defaultValue;
+};
+
+// 打印配置表单校验与默认值
+const printConfigSchema = z.object({
+  remark: z.string(),
+  printer: z.string().min(1, '请选择打印机'),
+  copies: z.number().min(1, '最少1份').max(999, '最大999份'),
+  pageRange: z
+    .array(
+      z.object({
+        range: z.string(),
+        mode: z.enum(['simplex', 'duplex']),
       }),
-      range: z.string().superRefine((value, ctx) => {
-        //允许空值
-        if (value === '') {
-          return;
-        }
+    )
+    .min(1, '请至少添加一项打印范围')
+    .superRefine((ranges, ctx) => {
+      // 所有打印范围是否符合输入格式
+      const isRangeValid = ranges.every(({ range }) => {
+        return isPrintRangeValid(range);
+      });
 
-        //验证格式
-        const reg = /^(\d*?-\d*?|\d+)([,，](\d*?-\d*?|\d+))*$/;
-
-        if (!reg.test(value)) {
-          ctx.addIssue({
-            code: 'custom',
-            message: '格式有误',
-          });
-          return;
-        }
-
-        // 打印范围验证
-        const pages = value.split(/[,，-]/);
-
-        const isOutOfRange = pages.some((item) => {
-          if (item === '') {
-            return;
-          }
-
-          const page = Number(item);
-
-          return page > selectedDoc.value!.pageCount || page < 1;
+      if (!isRangeValid) {
+        ctx.addIssue({
+          code: 'custom',
+          message: '格式有误',
         });
+        return;
+      }
 
-        if (isOutOfRange) {
-          ctx.addIssue({
-            code: 'custom',
-            message: '超出打印范围',
-          });
-        }
-      }),
-      cartridge: z.string({
-        message: '请选择墨盒颜色',
-      }),
-      orientation: z.string({
-        message: '请选择方向',
-      }),
+      // 所有打印范围是否位于当前文档页数内
+      const isRangeInBounds = ranges.every(({ range }) => {
+        return isPrintRangeInBounds(range, selectedDoc.value?.pageCount);
+      });
+
+      if (!isRangeInBounds) {
+        ctx.addIssue({
+          code: 'custom',
+          message: '超出打印范围',
+        });
+      }
     }),
-  ),
+  color: z.enum(['black', 'color']),
+  orientation: z.enum(['portrait', 'landscape']),
+});
+
+// 打印配置表单
+const form = useForm<PrintConfigValues>({
+  initialValues: createInitialValues(),
+  validationSchema: toTypedSchema(printConfigSchema),
+});
+
+// 当前表单解析出的完整页码序列
+const pageNumbers = computed(() => {
+  // 当前待打印文档
+  const doc = selectedDoc.value;
+
+  if (!doc) {
+    return [];
+  }
+
+  return parserRange({
+    pageCount: doc.pageCount,
+    pageRange: form.values.pageRange,
+  });
 });
 
 //打开就设置值
 watch(
-  open,
+  visible,
   (val) => {
     if (!val) return;
 
@@ -145,13 +178,21 @@ watch(
 
 //防止误触关闭应用按钮
 useEventListener(window, 'beforeunload', (e) => {
-  if (open.value) {
+  if (visible.value) {
     e.preventDefault();
-    close();
+    closeSheetPrint();
   }
 });
 
-provide('form', form);
+eventBus.on('dialog-print:show', () => {
+  visible.value = true;
+});
+
+provide(sheetPrintContextKey, {
+  form,
+  pageNumbers,
+  closeSheetPrint,
+});
 </script>
 
 <style scoped lang="scss"></style>

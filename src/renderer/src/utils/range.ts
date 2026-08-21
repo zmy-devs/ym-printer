@@ -1,122 +1,129 @@
-import { Doc } from '@type';
+import type { PrintConfig, PrintRange, PrintRangeMode } from '@type';
 
-//解析单独的范围
-const formatRange = (range: string, max: number) => {
-  //纯数字
-  if (!range.includes('-')) {
+// 空输入时使用的完整文档页码范围
+const defaultPrintRange = '1-';
+
+// 缺少打印配置时使用的完整文档单面范围
+const defaultPrintRanges: PrintRange[] = [
+  {
+    range: defaultPrintRange,
+    mode: 'simplex',
+  },
+];
+
+// 正整数或从末页倒数的负整数页码语法
+const pageNumberPattern = '-?[1-9]\\d*';
+
+// 单个页码的匹配规则
+const pageNumberRegExp = new RegExp(`^${pageNumberPattern}$`);
+
+// 单个页码范围的匹配规则，终点可省略
+const pageRangeRegExp = new RegExp(
+  `^(${pageNumberPattern})-(${pageNumberPattern})?$`,
+);
+
+// 多个逗号分隔页码范围的匹配规则
+const printRangeRegExp = new RegExp(
+  `^(?:${pageNumberPattern}|${pageNumberPattern}-(?:${pageNumberPattern})?)(?:[,，](?:${pageNumberPattern}|${pageNumberPattern}-(?:${pageNumberPattern})?))*$`,
+);
+
+// 页码范围的分隔规则
+const rangeSeparatorRegExp = /[,，]/;
+
+// 解析单个范围的起止页码
+const parseRangeEndpoints = (range: string) => {
+  if (pageNumberRegExp.test(range)) {
     return [Number(range)];
   }
 
-  let [start, end] = range.split('-').map(Number);
+  // 已由表单校验保证范围格式正确
+  const [, start, end] = range.match(pageRangeRegExp)!;
 
-  if (start == 0) {
-    start = 1;
-  }
-
-  if (end == 0) {
-    end = max;
-  }
-
-  if (start > end) {
-    [start, end] = [end, start];
-  }
-
-  const res = Array.from({ length: end - start + 1 }, (_, i) => start + i);
-
-  return res;
+  return [Number(start), ...(end ? [Number(end)] : [])];
 };
 
-//是不是奇数
-const isOdd = (num: number) => {
-  return num % 2 === 1;
+// 将倒数页码换算为实际页码
+const resolvePageNumber = (pageNumber: number, pageCount: number) => {
+  return pageNumber < 0 ? pageCount + pageNumber + 1 : pageNumber;
 };
 
-//是不是范围
-const isRange = (part: number[]) => {
-  return part && part.length > 1;
-};
-
-//模式地图
-const modeMap = {
-  //全单模式
-  simplex: (parts: number[][]) => {
-    const flat = parts.flat();
-
-    return flat.flatMap((n) => [n, 0]);
-  },
-
-  //全双模式
-  duplex: (parts: number[][]) => {
-    const flat = parts.flat();
-
-    if (isOdd(flat.length)) {
-      flat.push(0);
-    }
-
-    return flat;
-  },
-
-  //混合模式
-  mix: (parts: number[][]) => {
-    const result: number[] = [];
-
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i];
-
-      result.push(...part);
-
-      //当前范围是奇数
-      if (isOdd(part.length)) {
-        result.push(0);
-      }
-    }
-
-    return result;
-  },
-
-  //混合连接模式
-  mixConnect: (parts: number[][]) => {
-    const result = [parts[0]];
-
-    for (let i = 1; i < parts.length; i++) {
-      const part = parts[i];
-
-      const lastPart = result[result.length - 1];
-
-      //上一项和这一项都是范围
-      if (isRange(part) && isRange(lastPart)) {
-        lastPart.push(...part);
-        continue;
-      }
-
-      // 单独的数字
-      result.push(part);
-    }
-
-    return modeMap.mix(result);
-  },
-};
-
-//缓存
-const cache = new Map<string, number[]>();
-
-//解析范围
-export const parserRange = (config: Doc) => {
-  const key = `${config.mode}-${config.pageCount}-${config.range}`;
-
-  if (cache.has(key)) {
-    return cache.get(key);
+// 将单个页码或范围展开为连续页码
+const expandRange = (range: string, pageCount: number) => {
+  if (pageNumberRegExp.test(range)) {
+    return [resolvePageNumber(Number(range), pageCount)];
   }
 
-  const range = config.range || '-';
+  // 范围两端的原始页码
+  const [startNumber, endNumber] = parseRangeEndpoints(range);
 
-  const parts = range
-    .split(/[,，]/)
-    .map((item) => formatRange(item, config.pageCount));
+  // 范围起点的实际页码
+  const startPage = resolvePageNumber(startNumber, pageCount);
 
-  const result = modeMap[config.mode](parts);
+  // 省略终点时默认延伸至文档末页
+  const endPage =
+    endNumber === undefined
+      ? pageCount
+      : resolvePageNumber(endNumber, pageCount);
 
-  cache.set(key, result);
+  // 统一升序排列范围边界
+  const [firstPage, lastPage] =
+    startPage <= endPage ? [startPage, endPage] : [endPage, startPage];
 
-  return result;
+  return Array.from({ length: lastPage - firstPage + 1 }, (_, index) => {
+    return firstPage + index;
+  });
+};
+
+// 按打印方式补足纸张背面页码
+const applyPrintMode = (pages: number[], mode: PrintRangeMode) => {
+  if (mode === 'simplex') {
+    return pages.flatMap((page) => {
+      return [page, 0];
+    });
+  }
+
+  return pages.length % 2 === 0 ? pages : [...pages, 0];
+};
+
+// 根据文档配置生成最终打印页序列
+export const parserRange = ({
+  pageCount,
+  pageRange = defaultPrintRanges,
+}: Pick<{ pageCount: number } & PrintConfig, 'pageCount' | 'pageRange'>) => {
+  return pageRange.flatMap(({ range: rangeText, mode }) => {
+    // 当前配置实际使用的范围文本
+    const printableRange = rangeText || defaultPrintRange;
+
+    // 当前配置展开后的连续页码
+    const pages = printableRange.split(rangeSeparatorRegExp).flatMap((part) => {
+      return expandRange(part, pageCount);
+    });
+
+    return applyPrintMode(pages, mode);
+  });
+};
+
+// 判断页码范围文本是否符合输入语法
+export const isPrintRangeValid = (range: string) => {
+  return range === '' || printRangeRegExp.test(range);
+};
+
+// 判断页码范围中的正负页码是否都落在文档范围内
+export const isPrintRangeInBounds = (
+  range: string,
+  pageCount: number | undefined,
+) => {
+  if (range === '') {
+    return true;
+  }
+
+  if (pageCount === undefined) {
+    return false;
+  }
+
+  return range.split(rangeSeparatorRegExp).every((part) => {
+    return parseRangeEndpoints(part).every((page) => {
+      return page >= -pageCount && page <= pageCount;
+    });
+  });
 };

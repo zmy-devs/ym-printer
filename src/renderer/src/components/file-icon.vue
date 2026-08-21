@@ -1,64 +1,44 @@
 <template>
-  <section>
-    <div class="flex-center rounded-md aspect-square">
-      <span class="font-bold text-white">{{ info.label }}</span>
-    </div>
+  <section class="size-5 flex-center rounded-full" :class="info.class">
+    <span class="font-bold text-white">{{ info.label }}</span>
   </section>
 </template>
 
 <script setup lang="ts">
+// 文件图标显示参数
 const props = withDefaults(
   defineProps<{
     ext?: string;
-    size?: number | string;
   }>(),
   {
-    size: 32,
+    ext: 'pdf',
   },
 );
 
+// 文档扩展名对应的圆形标识
 const map = {
   pdf: {
     label: 'P',
-    color: '#E50012',
-    fontSize: 18,
+    class: 'bg-red-600 text-xs',
   },
   wps: {
     label: 'W',
-    color: '#0a57bd',
-    fontSize: 16,
+    class: 'bg-red-600 text-[10px]',
   },
   doc: {
     label: 'W',
-    color: '#0a57bd',
-    fontSize: 16,
+    class: 'bg-blue-600 text-[10px]',
   },
   docx: {
     label: 'W',
-    color: '#0a57bd',
-    fontSize: 16,
+    class: 'bg-blue-600 text-[10px]',
   },
 };
 
-const ratio = computed(() => Number(props.size) / 32);
-
-const info = computed(() => map[(props.ext as keyof typeof map) || 'pdf']);
+// 当前文档类型的图标信息
+const info = computed(() => {
+  return map[props.ext as keyof typeof map];
+});
 </script>
 
-<style scoped lang="scss">
-section {
-  width: calc(v-bind('ratio') * 32px);
-  height: calc(v-bind('ratio') * 32px);
-
-  > div {
-    width: 32px;
-    background-color: v-bind('info.color');
-    transform-origin: left top;
-    transform: scale(v-bind('ratio'));
-
-    > span {
-      font-size: calc(v-bind('info.fontSize') * 1px);
-    }
-  }
-}
-</style>
+<style scoped lang="scss"></style>

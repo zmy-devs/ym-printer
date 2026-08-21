@@ -149,7 +149,7 @@ import {
   ItemTitle,
 } from '@/components/ui/item';
 import Container from '@/components/container.vue';
-import { useSettingsStore } from '@/stores/settings';
+import { useSettingsStore } from '@/stores/settings.store';
 
 // 价格字段的两位小数格式
 const numberFormatOptions = {

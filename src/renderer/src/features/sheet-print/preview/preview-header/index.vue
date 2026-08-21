@@ -6,7 +6,7 @@
         variant="ghost"
         size="sm"
       >
-        <span class="text-sm">共{{ selectedDoc.pageCount }}页</span>
+        <span class="text-sm">共{{ selectedDoc?.pageCount ?? 0 }}页</span>
       </Button>
     </div>
 
@@ -74,14 +74,13 @@
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-
   </section>
 </template>
 
 <script setup lang="ts">
-import { usePdfStore } from '@/stores/pdf';
+import { usePdfStore } from '@/stores/pdf.store';
 import { Button } from '@/components/ui/button';
-import { useDocStore } from '@/stores/doc';
+import { useSelectionStore } from '@/stores/selection.store';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -95,7 +94,7 @@ import { InputGroupInput } from '@/components/ui/input-group';
 import InputGroupAddon from '@/components/ui/input-group/InputGroupAddon.vue';
 
 // 当前预览文档
-const { selectedDoc } = storeToRefs(useDocStore());
+const { selectedDoc } = storeToRefs(useSelectionStore());
 // 当前缩放倍率
 const { scale } = storeToRefs(usePdfStore());
 // 缩放控制方法

@@ -6,8 +6,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family:
-      'Inter', 'Segoe UI', 'Microsoft YaHei UI', 'Microsoft YaHei', sans-serif;
   }
 }
 

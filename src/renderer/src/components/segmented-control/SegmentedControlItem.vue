@@ -4,7 +4,7 @@
     v-bind="forwardedProps"
     :class="
       cn(
-        'flex min-w-0 items-center justify-center rounded-md p-1.5 text-sm font-medium outline-none transition-colors text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground data-[state=on]:shadow-sm [&>span]:truncate',
+        'p-1.5 flex-1 flex-center rounded-md text-sm outline-none transition-colors disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-background data-[state=on]:text-foreground data-[state=on]:shadow-sm [&>span]:truncate',
         props.class,
       )
     "

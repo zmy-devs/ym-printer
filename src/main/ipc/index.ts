@@ -12,7 +12,7 @@ import testColorPath from '@resources/test-color.pdf?asset';
 import { copyFile, mkdir, readFile } from 'fs/promises';
 import { toPdf } from '../service/doc';
 import { existsSync } from 'fs';
-import type { Doc } from '@type';
+import type { Doc, PrintConfig } from '@type';
 import {
   BrowserWindow,
   dialog,
@@ -20,10 +20,55 @@ import {
   type IpcMainInvokeEvent,
   shell,
 } from 'electron';
-import { parseDoc } from '../utils/doc';
+import { parseDoc, type ParsedDoc } from '../utils/doc';
 import { formatPrinterTask } from '../utils/format';
 import { autoUpdater } from 'electron-updater';
-import { exec, execFile } from '@/utils/exec';
+import { exec, execFile } from '../utils/exec';
+import { getMd5 } from '../utils/md5';
+
+// 获取传入路径或由用户选择的文档路径
+const getDocumentPaths = async (win: BrowserWindow, paths: string[]) => {
+  if (paths.length > 0) {
+    return paths.filter(isSupportedDocument);
+  }
+
+  // 系统文档选择结果
+  const result = await dialog.showOpenDialog(win, {
+    title: '请选择文档',
+    properties: ['openFile', 'multiSelections'],
+    filters: [
+      {
+        name: '文档文件',
+        extensions: supportedDocumentExtensions,
+      },
+    ],
+  });
+
+  return result.canceled ? [] : result.filePaths;
+};
+
+// 将文档内容解析到对应的 PDF 缓存
+const cacheDoc = async (file: Doc) => {
+  const { md5, ext, path } = file;
+
+  if (!existsSync(cachePath)) {
+    await mkdir(cachePath, { recursive: true });
+  }
+
+  // 当前文档内容对应的 PDF 缓存路径
+  const pdfPath = join(cachePath, `${md5}.pdf`);
+
+  if (existsSync(pdfPath)) {
+    return;
+  }
+
+  if (ext == 'pdf') {
+    await copyFile(path, pdfPath);
+    return;
+  }
+
+  await toPdf(path, pdfPath);
+};
 
 //获取打印机信息
 export const getPrinters = async (_: IpcMainInvokeEvent) => {
@@ -45,51 +90,22 @@ export const getPrinters = async (_: IpcMainInvokeEvent) => {
 //添加文档
 export const addDoc = async (
   { sender }: IpcMainInvokeEvent,
-  option: { workspaceId: string; paths?: string[] },
+  paths: string[] = [],
 ) => {
+  // 发起文档导入的窗口
   const win = BrowserWindow.fromWebContents(sender)!;
 
-  let { workspaceId, paths = [] } = option;
+  // 传入或由用户选择的文档路径
+  const documentPaths = await getDocumentPaths(win, paths);
 
-  //路径不存在就选择
-  if (paths.length == 0) {
-    const result = await dialog.showOpenDialog(win, {
-      title: '请选择文档',
-      properties: ['openFile', 'multiSelections'],
-      filters: [
-        {
-          name: '文档文件',
-          extensions: supportedDocumentExtensions,
-        },
-      ],
-    });
-
-    if (result.canceled) {
-      return;
-    }
-
-    paths = result.filePaths;
+  if (documentPaths.length === 0) {
+    return [];
   }
 
-  // 过滤 IPC 传入的非文档路径
-  paths = paths.filter((path) => {
-    return isSupportedDocument(path);
-  });
+  // 已解析的纯文档实体
+  const docs: ParsedDoc[] = await Promise.all(documentPaths.map(parseDoc));
 
-  if (paths.length == 0) {
-    return;
-  }
-
-  const res: Doc[] = await Promise.all(
-    paths.map(async (path) => {
-      return await parseDoc({
-        path,
-        workspaceId,
-      });
-    }),
-  );
-
-  win.webContents.send('addDocFinish', res);
+  return docs;
 };
 
 //读取pdf
@@ -101,46 +117,38 @@ export const getPdf = async (_: IpcMainInvokeEvent, md5: string) => {
 
 //解析文件
 export const parserDoc = async (_: IpcMainInvokeEvent, file: Doc) => {
-  const { md5, ext, path } = file;
+  await cacheDoc(file);
+};
 
-  if (!existsSync(cachePath)) {
-    await mkdir(cachePath, { recursive: true });
-  }
+// 重新读取当前路径并解析最新的文档内容
+export const reloadDoc = async (_: IpcMainInvokeEvent, file: Doc) => {
+  // 当前源文件最新内容的唯一摘要
+  const md5 = await getMd5(file.path);
 
-  //存储位置
-  const pdfPath = join(cachePath, `${md5}.pdf`);
+  await cacheDoc({
+    ...file,
+    md5,
+  });
 
-  if (existsSync(pdfPath)) {
-    return;
-  }
-
-  //word转pdf
-  if (ext == 'pdf') {
-    await copyFile(path, pdfPath);
-  } else {
-    console.time(md5);
-
-    await toPdf(path, pdfPath);
-
-    console.timeEnd(md5);
-  }
+  return md5;
 };
 
 //打印
 export const print = async (
   _: IpcMainInvokeEvent,
-  config: Doc,
-  range: number[],
+  doc: Doc,
+  config: PrintConfig,
+  pageNumbers: number[],
 ) => {
   // 打印程序执行参数
   const args = [
-    `--docName=${config.name}`,
-    `--file=${join(cachePath, `${config.md5}.pdf`)}`,
+    `--docName=${doc.name}`,
+    `--file=${join(cachePath, `${doc.md5}.pdf`)}`,
     `--printer=${config.printer}`,
-    `--range=${range.join(',')}`,
+    `--range=${pageNumbers.join(',')}`,
     `--orientation=${config.orientation}`,
-    `--count=${config.count}`,
-    `--cartridge=${config.cartridge}`,
+    `--count=${config.copies}`,
+    `--cartridge=${config.color}`,
     `--dpi=300`,
   ];
 
@@ -214,6 +222,11 @@ export const openPath = (_: IpcMainInvokeEvent, path: string) => {
   return shell.openPath(path);
 };
 
+// 在文件管理器中显示文件
+export const showItemInFolder = (_: IpcMainInvokeEvent, path: string) => {
+  shell.showItemInFolder(path);
+};
+
 //打开外部链接
 export const openUrl = (_: IpcMainInvokeEvent, url: string) => {
   return shell.openExternal(url);
@@ -228,6 +241,10 @@ export const getPrinterTask = async (
 
   try {
     const { stdout } = await exec(cmd);
+
+    if (!stdout) {
+      return [];
+    }
 
     //原始任务
     const rawTask = JSON.parse(stdout);
@@ -272,13 +289,15 @@ export const removePrinterTask = async (
 //切换主题色
 export const toggleTheme = (
   { sender }: IpcMainInvokeEvent,
-  theme: 'light' | 'dark',
+  theme: 'auto' | 'light' | 'dark',
+  resolvedTheme: 'light' | 'dark',
 ) => {
+  // 发起主题切换的窗口
   const win = BrowserWindow.fromWebContents(sender)!;
 
-  nativeTheme.themeSource = theme;
+  nativeTheme.themeSource = theme === 'auto' ? 'system' : theme;
 
   win.setTitleBarOverlay({
-    symbolColor: theme == 'light' ? '#000000' : '#d4d4d4',
+    symbolColor: resolvedTheme === 'light' ? '#000000' : '#d4d4d4',
   });
 };

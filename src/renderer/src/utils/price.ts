@@ -1,9 +1,9 @@
-import { useSettingsStore } from '@/stores/settings';
-import { Doc } from '@type';
+import { useSettingsStore } from '@/stores/settings.store';
+import type { PrintConfig } from '@type';
 
-//获取价格
-export const getPrice = (doc: Doc) => {
-  if (!doc.formatRange) {
+// 根据打印配置计算价格
+export const getPrice = (config?: PrintConfig) => {
+  if (!config?.pageNumbers) {
     return 0;
   }
 
@@ -12,7 +12,7 @@ export const getPrice = (doc: Doc) => {
   let simplexPrice = 0;
   let duplexPrice = 0;
 
-  if (doc.cartridge == 'black') {
+  if (config.color == 'black') {
     simplexPrice = settings.value.blackSimplexPrice * 100;
     duplexPrice = settings.value.blackDuplexPrice * 100;
   } else {
@@ -22,9 +22,9 @@ export const getPrice = (doc: Doc) => {
 
   let result = 0;
 
-  for (let i = 1; i < doc.formatRange.length; i += 2) {
-    result += doc.formatRange[i] == 0 ? simplexPrice : duplexPrice;
+  for (let i = 1; i < config.pageNumbers.length; i += 2) {
+    result += config.pageNumbers[i] == 0 ? simplexPrice : duplexPrice;
   }
 
-  return (result * doc.count) / 100;
+  return (result * config.copies) / 100;
 };

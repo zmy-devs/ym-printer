@@ -1,238 +1,38 @@
 <template>
-  <fieldset :disabled="isPrinting" class="flex flex-col">
+  <fieldset
+    class="min-h-0 flex flex-1 flex-col"
+    :disabled="isPrintConfigDisabled"
+  >
     <PrintConfig />
 
-    <footer class="w-full mt-auto p-2 flex items-center gap-1.5 border-t">
-      <Button class="flex-1" size="sm" @click="handlePrint">
-        {{ isPrinting ? '正在打印' : '开始打印' }}
-      </Button>
-
-      <Button
-        class="flex-1"
-        size="sm"
-        variant="secondary"
-        @click="handlePrePrint"
-      >
-        预备打印
-      </Button>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger as-child>
-          <Button size="icon-sm" variant="secondary">
-            <MoreHorizontalIcon />
-          </Button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent align="center" class="w-52">
-          <DropdownMenuItem @click="handlePrintFinish">
-            <CheckIcon />
-
-            <span>标记为打印完成</span>
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem :disabled="!isSimplex" @click="handlePrintSimplex">
-            <PrinterIcon />
-
-            <span>打印 "单页"</span>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem :disabled="isSimplex" @click="handlePrintEven">
-            <PrinterIcon />
-
-            <span>打印 "偶数页"</span>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem :disabled="isSimplex" @click="handlePrintOdd">
-            <PrinterIcon />
-
-            <span>打印 "奇数页"</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </footer>
+    <Footer class="mt-auto border-t" />
   </fieldset>
 </template>
 
 <script setup lang="ts">
 import PrintConfig from './print-config/index.vue';
-import { CheckIcon, MoreHorizontalIcon, PrinterIcon } from '@lucide/vue';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import { useDocStore } from '@/stores/doc';
-import { printAuto, printEven, printOdd } from '@/utils/print';
-import { eventBus } from '@/utils/event-bus';
-import { close, Form } from '../index';
-import { parserRange } from '@/utils/range';
-import { printPromise } from '@/stores/print';
+import Footer from './footer.vue';
+import { useSelectionStore } from '@/stores/selection.store';
+import { usePrintConfigStore } from '@/stores/print-config.store';
 
-const { selectedDoc, selectedDocID } = storeToRefs(useDocStore());
-const { getDoc } = useDocStore();
+// 当前选中文档
+const { docId } = storeToRefs(useSelectionStore());
 
-const form: Form = inject('form')!;
+// 文档打印配置状态
+const printConfigStore = usePrintConfigStore();
 
-//是否再打印
-const isPrinting = ref(false);
+const disabledStatus = ['queued', 'uploading', 'waiting'];
 
-//是否是单打
-const isSimplex = computed(() => form.values.mode == 'simplex');
-
-//打印
-const handlePrint = form.handleSubmit(async (values) => {
-  //关闭弹窗
-  close();
-
-  const doc = getDoc(selectedDocID.value)!;
-
-  Object.assign(doc, values);
-
-  doc.formatRange = parserRange(selectedDoc.value);
-
-  doc.status = 'printing';
-
-  await printAuto(toRaw(doc), {
-    printFinish() {
-      doc.status = 'printed';
-
-      eventBus.emit('success:show', `打印完成 "${doc.name}"`);
-    },
-    printCancel() {
-      doc.status = 'init';
-
-      eventBus.emit('error:show', `取消打印 "${doc.name}"`);
-    },
-    printBefore() {
-      doc.status = 'upload';
-    },
-    printAfter() {
-      doc.status = 'printing';
-    },
-  });
-});
-
-//预备打印
-const handlePrePrint = form.handleSubmit(async (values) => {
-  //关闭弹窗
-  close();
-
-  const doc = getDoc(selectedDocID.value)!;
-
-  Object.assign(doc, values);
-
-  doc.formatRange = parserRange(selectedDoc.value);
-
-  doc.status = 'prepare';
-
-  const result = await printPromise(doc);
-
-  if (!result) {
-    doc.status = 'init';
-
-    eventBus.emit('error:show', `取消打印 "${doc.name}"`);
-    return;
+// 处于不可编辑打印状态时禁用配置表单
+const isPrintConfigDisabled = computed(() => {
+  if (!docId.value) {
+    return false;
   }
 
-  await printAuto(toRaw(doc), {
-    printFinish() {
-      doc.status = 'printed';
+  // 当前文档打印运行状态
+  const status = printConfigStore.getPrintState(docId.value)?.status;
 
-      eventBus.emit('success:show', `打印完成 "${doc.name}"`);
-    },
-    printCancel() {
-      doc.status = 'init';
-
-      eventBus.emit('error:show', `取消打印 "${doc.name}"`);
-    },
-    printBefore() {
-      doc.status = 'upload';
-    },
-    printAfter() {
-      doc.status = 'printing';
-    },
-  });
-});
-
-//标记为已完成
-const handlePrintFinish = form.handleSubmit(async (values) => {
-  //关闭弹窗
-  close();
-
-  const doc = getDoc(selectedDocID.value)!;
-
-  Object.assign(doc, values);
-
-  doc.formatRange = parserRange(selectedDoc.value);
-
-  doc.status = 'printed';
-
-  eventBus.emit('success:show', `打印完成 "${doc.name}"`);
-});
-
-//打印单页
-const handlePrintSimplex = form.handleSubmit(async (values) => {
-  const doc = { ...toRaw(getDoc(selectedDocID.value)!) };
-
-  Object.assign(doc, values);
-
-  isPrinting.value = true;
-
-  eventBus.emit('loading:show', {
-    loadingMsg: '正在打印单页',
-    successMsg: `打印单页完成 "${doc.name}"`,
-    errorMsg: '打印单页失败',
-    async cb() {
-      await printOdd(doc);
-    },
-  });
-
-  isPrinting.value = false;
-});
-
-//打印偶数页
-const handlePrintEven = form.handleSubmit(async (values) => {
-  const doc = { ...toRaw(getDoc(selectedDocID.value)!) };
-
-  Object.assign(doc, values);
-
-  isPrinting.value = true;
-
-  eventBus.emit('loading:show', {
-    loadingMsg: '正在打印偶数页',
-    successMsg: `打印偶数页完成 "${doc.name}"`,
-    errorMsg: '打印偶数页失败',
-    async cb() {
-      await printEven(doc);
-    },
-  });
-
-  isPrinting.value = false;
-});
-
-//打印奇数页
-const handlePrintOdd = form.handleSubmit(async (values) => {
-  const doc = { ...toRaw(getDoc(selectedDocID.value)!) };
-
-  Object.assign(doc, values);
-
-  isPrinting.value = true;
-
-  eventBus.emit('loading:show', {
-    loadingMsg: '正在打印奇数页',
-    successMsg: `打印奇数页完成 "${doc.name}"`,
-    errorMsg: '打印奇数页失败',
-    async cb() {
-      await printOdd(doc);
-    },
-  });
-
-  isPrinting.value = false;
+  return disabledStatus.includes(status);
 });
 </script>
 

@@ -1,15 +1,13 @@
 import { basename, extname } from 'path';
 import { getMd5 } from './md5';
-import { Doc } from '@type';
+import type { Doc } from '@type';
 import { nanoid } from 'nanoid';
 
-//解析文档
-export const parseDoc = async (option: {
-  path: string;
-  workspaceId: string;
-}): Promise<Doc> => {
-  const { path, workspaceId } = option;
+// 主进程解析后、尚未关联分组的文档数据
+export type ParsedDoc = Omit<Doc, 'groupId'>;
 
+//解析文档
+export const parseDoc = async (path: string): Promise<ParsedDoc> => {
   //名称
   const name = basename(path);
 
@@ -30,14 +28,5 @@ export const parseDoc = async (option: {
     ext,
     pageCount: 0,
     status: 'loading',
-    remark: '',
-    printer: '',
-    count: 1,
-    mode: '',
-    range: '',
-    cartridge: '',
-    orientation: '',
-    workspaceId,
-    groupId: id,
   };
 };

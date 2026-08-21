@@ -1,20 +1,18 @@
 <template>
-  <ItemBase v-bind="$props" disabled :disabled-check="status == 'price'">
+  <ItemBase v-bind="$props" class="disabled">
     <template #icon>
-      <Spinner class="size-7 text-muted-foreground" />
+      <Spinner class="size-4 text-muted-foreground" />
     </template>
-
-    <template #description>{{ data.path }}</template>
   </ItemBase>
 </template>
 
 <script setup lang="ts">
 import ItemBase from './item-base/index.vue';
 import { Spinner } from '@/components/ui/spinner';
-import { Doc } from '@type';
-import { status } from '../../index';
+import type { Doc } from '@type';
 
-defineProps<{
+// 非就绪文档参数
+const props = defineProps<{
   data: Doc;
 }>();
 </script>

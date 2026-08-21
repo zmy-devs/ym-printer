@@ -76,19 +76,18 @@ import {
   ItemTitle,
 } from '@/components/ui/item';
 import Container from '@/components/container.vue';
-import { useSettingsStore } from '@/stores/settings';
+import { useSettingsStore } from '@/stores/settings.store';
 import { Button } from '@/components/ui/button';
 import { updateContentUrl, updateMap } from '@/map';
-import { useUpdateStore } from '@/stores/update';
+import {
+  checkUpdate,
+  downloadProgress,
+  installUpdate,
+  status,
+} from '@/services/update.service';
 
 // 当前更新配置状态
 const { settings } = storeToRefs(useSettingsStore());
-
-// 当前更新任务状态
-const { status, downloadProgress } = storeToRefs(useUpdateStore());
-
-// 更新任务操作方法
-const { checkUpdate, installUpdate } = useUpdateStore();
 
 // 当前更新状态的显示文案
 const updateLabel = computed(() => {

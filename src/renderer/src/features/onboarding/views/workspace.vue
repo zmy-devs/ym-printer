@@ -1,56 +1,41 @@
 <template>
   <section class="flex flex-col gap-8">
-    <FormField v-slot="{ componentField }" name="workspaceName">
-      <FormItem>
-        <FormLabel>工作空间名称</FormLabel>
+    <Field
+      name="workspaceName"
+      label="工作空间名称"
+      v-slot="{ componentField }"
+    >
+      <Input placeholder="请输入工作空间名称" v-bind="componentField" />
+    </Field>
 
-        <FormControl>
-          <Input placeholder="请输入工作空间名称" v-bind="componentField" />
-        </FormControl>
-
-        <FormMessage />
-      </FormItem>
-    </FormField>
-
-    <FormField v-slot="{ componentField }" name="workspacePrinter">
-      <FormItem>
-        <FormLabel>工作空间打印机</FormLabel>
-
-        <FormControl>
-          <Printer
-            class="w-full"
-            variant="outline"
-            :iconVisible="false"
-            v-bind="componentField"
-          />
-        </FormControl>
-
-        <FormMessage />
-      </FormItem>
-    </FormField>
+    <Field
+      name="workspacePrinter"
+      label="工作空间打印机"
+      v-slot="{ componentField }"
+    >
+      <SelectPrinter
+        class="w-full"
+        variant="outline"
+        :iconVisible="false"
+        v-bind="componentField"
+      />
+    </Field>
   </section>
 
   <slot :handleSubmit="handleSubmit" />
 </template>
 
 <script setup lang="ts">
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import Printer from '@/components/printer.vue';
+import SelectPrinter from '@/components/select-printer.vue';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
-import { useWorkspaceStore } from '@/stores/workspace';
-import { usePrinterStore } from '@/stores/printer';
+import { useWorkspaceService } from '@/services/workspace.service';
+import Field from '@/components/field.vue';
 
-const { selectedPrinter } = storeToRefs(usePrinterStore());
-const { firstAddWorkspace } = useWorkspaceStore();
+// 工作空间创建能力
+const { createWorkspace } = useWorkspaceService();
 
 const form = useForm({
   validationSchema: toTypedSchema(
@@ -69,12 +54,12 @@ const form = useForm({
   ),
   initialValues: {
     workspaceName: '默认工作空间',
-    workspacePrinter: selectedPrinter.value || '',
+    workspacePrinter: '',
   },
 });
 
 const handleSubmit = form.handleSubmit((values) => {
-  firstAddWorkspace({
+  createWorkspace({
     name: values.workspaceName!,
     printer: values.workspacePrinter!,
   });

@@ -1,0 +1,57 @@
+<template>
+  <GroupContextMenu>
+    <ScrollArea class="min-h-0 h-full" view-class="px-2 pb-2">
+      <VueDraggable
+        v-if="selectedWorkspace"
+        class="flex flex-col gap-1"
+        :animation="200"
+        ghost-class="opacity-0"
+        chosen-class="bg-accent"
+        :force-fallback="true"
+        v-model="selectedGroupIds"
+      >
+        <Item
+          v-for="id in selectedGroupIds"
+          :key="id"
+          :id="id"
+          :is-selected="id === groupId"
+          :data-id="id"
+          @click="handleClick"
+        />
+      </VueDraggable>
+    </ScrollArea>
+  </GroupContextMenu>
+</template>
+
+<script setup lang="ts">
+import { ScrollArea } from '@/components/ui/scroll-area';
+import Item from './item.vue';
+import { VueDraggable } from 'vue-draggable-plus';
+import GroupContextMenu from '@/features/context-menu/group-context-menu.vue';
+import { cancelCheckAll } from '@/views/doc/check';
+import { useGroupService } from '@/services/group.service';
+import { useSelectionStore } from '@/stores/selection.store';
+
+// 当前工作空间数据
+const { selectedWorkspace } = storeToRefs(useSelectionStore());
+
+// 当前选中的分组标识
+const { groupId } = storeToRefs(useSelectionStore());
+
+// 分组选择与排序状态
+const groupService = useGroupService();
+
+// 当前工作空间下的分组排序
+const { selectedGroupIds } = storeToRefs(useSelectionStore());
+
+// 分组选择方法
+const { selectGroup } = groupService;
+
+// 处理分组选择
+const handleClick = (id: string) => {
+  cancelCheckAll();
+  selectGroup(id);
+};
+</script>
+
+<style lang="scss"></style>

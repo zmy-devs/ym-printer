@@ -11,12 +11,7 @@
 
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import { useUpdateStore } from '@/stores/update';
-
-const updateStore = useUpdateStore();
-
-const { status } = storeToRefs(updateStore);
-const { installUpdate } = updateStore;
+import { installUpdate, status } from '@/services/update.service';
 </script>
 
 <style scoped lang="scss"></style>

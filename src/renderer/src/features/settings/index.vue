@@ -6,7 +6,7 @@
       direction="horizontal"
       auto-save-id="ym-printer:settings-layout"
     >
-      <ResizablePanel :min-size="160" :default-size="200" size-unit="px">
+      <ResizablePanel :min-size="200" :default-size="200" size-unit="px">
         <SideBar class="h-full" />
       </ResizablePanel>
 

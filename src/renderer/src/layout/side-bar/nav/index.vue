@@ -1,5 +1,5 @@
 <template>
-  <section class="flex flex-col gap-1">
+  <section class="p-2 flex flex-col gap-1">
     <NavItem
       label="打印机任务队列"
       description="打开打印机队列"

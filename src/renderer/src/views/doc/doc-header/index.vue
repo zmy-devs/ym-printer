@@ -1,18 +1,15 @@
 <template>
-  <component :is="map[status]" />
+  <section class="h-12 px-3 flex items-center gap-2">
+    <HeaderCheck v-if="isChecking" />
+
+    <HeaderDefault v-else />
+  </section>
 </template>
 
 <script setup lang="ts">
-import HeaderDefault from './header-default.vue';
-import HeaderPrice from './header-price.vue';
 import HeaderCheck from './header-check.vue';
-import { status } from '../index';
-
-const map = {
-  default: HeaderDefault,
-  price: HeaderPrice,
-  check: HeaderCheck,
-};
+import HeaderDefault from './header-default.vue';
+import { isChecking } from '../check';
 </script>
 
 <style scoped lang="scss"></style>

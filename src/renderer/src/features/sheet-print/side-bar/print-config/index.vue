@@ -1,15 +1,11 @@
 <template>
   <ScrollArea class="min-h-0" view-class="p-4">
     <FieldGroup>
-      <Preview />
+      <Printer />
 
       <Remark />
 
-      <Printer />
-
       <Count />
-
-      <Mode />
 
       <Range />
 
@@ -23,11 +19,9 @@
 <script setup lang="ts">
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { FieldGroup } from '@/components/ui/field';
-import Preview from './preview.vue';
 import Remark from './remark.vue';
 import Printer from './printer.vue';
 import Count from './count.vue';
-import Mode from './mode.vue';
 import Range from './range.vue';
 import Cardridge from './cardridge.vue';
 import Orientation from './orientation.vue';

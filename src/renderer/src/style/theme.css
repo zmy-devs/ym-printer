@@ -16,7 +16,8 @@
   --popover: var(--background);
   --popover-foreground: var(--foreground);
 
-  --primary: #0169cc;
+  --theme-color-default: oklch(0.205 0 0);
+  --primary: var(--theme-color-default);
   --primary-foreground: oklch(0.985 0 0);
 
   --secondary: oklch(0.97 0 0);
@@ -50,8 +51,9 @@
   --popover: #262626;
   --popover-foreground: var(--foreground);
 
-  --primary: #0169cc;
-  --primary-foreground: var(--foreground);
+  --theme-color-default: oklch(0.922 0 0);
+  --primary: var(--theme-color-default);
+  --primary-foreground: oklch(0.145 0 0);
 
   --secondary: oklch(0.34 0 0);
   --secondary-foreground: var(--foreground);
@@ -70,6 +72,36 @@
   --ring: lab(48.496% 0 0);
 
   --sidebar: #202020;
+}
+
+:root[data-theme-color='blue'] {
+  --primary: var(--color-blue-600);
+  --primary-foreground: var(--color-white);
+}
+
+:root[data-theme-color='green'] {
+  --primary: var(--color-green-600);
+  --primary-foreground: var(--color-white);
+}
+
+:root[data-theme-color='yellow'] {
+  --primary: var(--color-yellow-500);
+  --primary-foreground: var(--color-yellow-950);
+}
+
+:root[data-theme-color='orange'] {
+  --primary: var(--color-orange-600);
+  --primary-foreground: var(--color-white);
+}
+
+:root[data-theme-color='pink'] {
+  --primary: var(--color-pink-600);
+  --primary-foreground: var(--color-white);
+}
+
+:root[data-theme-color='purple'] {
+  --primary: var(--color-purple-600);
+  --primary-foreground: var(--color-white);
 }
 
 @theme inline {

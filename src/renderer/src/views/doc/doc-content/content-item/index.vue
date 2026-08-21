@@ -1,29 +1,37 @@
 <template>
-  <component :is="map[data.status]" :data="data" />
+  <component
+    :is="itemMap[data.status]"
+    :data="data"
+    :data-id="data.id"
+    v-if="data"
+  />
 </template>
 
 <script setup lang="ts">
-import ItemInit from './item-init.vue';
-import ItemPrinting from './item-printing.vue';
-import ItemPrinted from './item-printed.vue';
-import ItemPrepare from './item-prepare.vue';
+import type { DocStatus } from '@type';
+import type { Component } from 'vue';
 import ItemError from './item-error.vue';
 import ItemLoading from './item-loading.vue';
-import { Doc } from '@type';
+import ItemReady from './item-ready.vue';
+import { useDocStore } from '@/stores/doc.store';
 
-defineProps<{
-  data: Doc;
-}>();
-
-const map = {
+// 文档状态对应的展示组件
+const itemMap: Record<DocStatus, Component> = {
   loading: ItemLoading,
-  init: ItemInit,
-  prepare: ItemPrepare,
-  upload: ItemPrinting,
-  printing: ItemPrinting,
-  printed: ItemPrinted,
+  ready: ItemReady,
   error: ItemError,
 };
+
+// 文档状态组件参数
+const props = defineProps<{
+  id: string;
+}>();
+
+const { getDoc } = useDocStore();
+
+const data = computed(() => {
+  return getDoc(props.id);
+});
 </script>
 
 <style scoped lang="scss"></style>

@@ -6,7 +6,7 @@
     :model-value="model"
     :class="
       cn(
-        'segmented-control flex w-fit items-center gap-1 rounded-lg p-1 bg-muted text-muted-foreground',
+        'w-full flex items-center gap-1 rounded-lg p-1 bg-accent/50',
         props.class,
       )
     "

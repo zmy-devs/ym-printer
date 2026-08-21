@@ -1,7 +1,7 @@
 <template>
   <FormField v-slot="{ componentField, errorMessage }" :name="name">
     <FormItem>
-      <FormLabel class="flex items-center gap-1.5">
+      <FormLabel class="flex items-center gap-1.5" v-if="label">
         <component v-if="icon" :is="icon" class="size-3.5" />
 
         {{ errorMessage ? errorMessage : label }}
@@ -25,10 +25,9 @@ import {
 
 defineProps<{
   name: string;
-  label: string;
+  label?: string;
   icon?: Component;
 }>();
 </script>
 
 <style scoped lang="scss"></style>
-

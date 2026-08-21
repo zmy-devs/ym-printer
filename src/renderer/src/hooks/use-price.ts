@@ -1,6 +1,9 @@
 import { getPrice } from '@/utils/price';
-import { Doc } from '@type';
+import type { PrintConfig } from '@type';
+import type { MaybeRef } from 'vue';
+import { toValue } from 'vue';
 
-export const usePrice = (doc: Doc) => {
-  return computed(() => getPrice(doc).toFixed(2));
+// 响应式计算打印配置价格
+export const usePrice = (config: MaybeRef<PrintConfig | undefined>) => {
+  return computed(() => getPrice(toValue(config)).toFixed(2));
 };

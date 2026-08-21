@@ -1,103 +1,39 @@
-import { Doc } from '@type';
-import { parserRange } from './range';
-import { printPromise } from '@/stores/print';
+import type { PrintConfig } from '@type';
 
-let printQueue = Promise.resolve();
+// 当前打印任务需要处理的纸张面
+export type PrintPhase = 'initial' | 'front';
 
-//是否是全单
-const isSimplex = (range: number[]) => {
-  return range.every((value, index) =>
-    (index + 1) % 2 === 0 ? value === 0 : true,
-  );
-};
-
-//打印范围中的内容
-const print = async (config: Doc, range: number[]) => {
-  return new Promise<void>((resolve, reject) => {
-    printQueue = printQueue
-      .then(async () => {
-        await ipc.print(config, range);
-      })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+// 判断完整页码序列是否只包含单面打印
+export const isSimplexPrint = (pageNumbers: number[]) => {
+  return pageNumbers.every((pageNumber, index) => {
+    return (index + 1) % 2 === 0 ? pageNumber === 0 : true;
   });
 };
 
-//获取偶数范围
-const getEvenRange = (range: number[]) => {
-  return range.filter((_, index) => (index + 1) % 2 == 0);
+// 获取纸张正面需要上传的页码
+const getFrontPageNumbers = (pageNumbers: number[]) => {
+  return pageNumbers.filter((_, index) => {
+    return (index + 1) % 2 === 1;
+  });
 };
 
-//获取奇数范围
-const getOddRange = (range: number[]) => {
-  return range.filter((_, index) => (index + 1) % 2 == 1);
+// 获取纸张背面需要上传的页码
+const getBackPageNumbers = (pageNumbers: number[]) => {
+  return pageNumbers.filter((_, index) => {
+    return (index + 1) % 2 === 0;
+  });
 };
 
-//打印偶数页
-export const printEven = async (config: Doc) => {
-  const range = parserRange(config);
+// 根据打印配置与当前阶段获取实际上传页码
+export const getPhasePageNumbers = (config: PrintConfig, phase: PrintPhase) => {
+  // 已解析的完整打印页码序列
+  const pageNumbers = config.pageNumbers;
 
-  await print(config, getEvenRange(range));
-};
-
-//打印奇数页
-export const printOdd = async (config: Doc) => {
-  const range = parserRange(config);
-
-  await print(config, getOddRange(range));
-};
-
-//自动打印
-export const printAuto = async (
-  config: Doc,
-  option: {
-    printFinish?: () => void;
-    printCancel?: () => void;
-    printBefore?: () => void;
-    printAfter?: () => void;
-  },
-) => {
-  if (!config.formatRange) {
-    return;
+  if (phase === 'front') {
+    return getFrontPageNumbers(pageNumbers);
   }
 
-  const { printFinish, printCancel, printBefore, printAfter } = option;
-
-  //单页
-  if (isSimplex(config.formatRange)) {
-    printBefore && printBefore();
-
-    await print(config, getOddRange(config.formatRange));
-
-    printFinish && printFinish();
-    return;
-  }
-
-  printBefore && printBefore();
-
-  //打印偶数页
-  await print(config, getEvenRange(config.formatRange));
-
-  printAfter && printAfter();
-
-  const result = await printPromise(config);
-
-  if (!result) {
-    printCancel && printCancel();
-
-    return;
-  }
-
-  printBefore && printBefore();
-
-  //打印奇数页
-  await print(config, getOddRange(config.formatRange));
-
-  printFinish && printFinish();
-
-  return;
+  return isSimplexPrint(pageNumbers)
+    ? getFrontPageNumbers(pageNumbers)
+    : getBackPageNumbers(pageNumbers);
 };

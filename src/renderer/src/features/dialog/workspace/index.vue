@@ -1,21 +1,21 @@
 <template>
-  <Dialog v-model:open="open">
+  <Dialog v-model:open="visible">
     <DialogContent
+      as="form"
       :aria-describedby="undefined"
-      @close-auto-focus="handleClose"
+      @submit.prevent="handleSubmit"
+      @close-auto-focus.prevent="handleClose"
     >
       <DialogHeader>
-        <DialogTitle>
-          {{ workspaceTitleMap[dialogType] }}
-        </DialogTitle>
+        <DialogTitle>{{ workspaceTitleMap[dialogType] }}</DialogTitle>
       </DialogHeader>
 
       <Field name="name" label="工作空间名称" v-slot="{ componentField }">
         <Input placeholder="请输入工作空间名称" v-bind="componentField" />
       </Field>
 
-      <Field name="printer" label="工作空间打印机" v-slot="{ componentField }">
-        <Printer
+      <Field name="printer" label="默认打印机" v-slot="{ componentField }">
+        <SelectPrinter
           class="w-full"
           variant="outline"
           :iconVisible="false"
@@ -24,7 +24,7 @@
       </Field>
 
       <DialogFooter>
-        <Button @click="handleClick">确定</Button>
+        <Button type="submit">确定</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import Field from '@/components/field.vue';
 import { Input } from '@/components/ui/input';
-import Printer from '@/components/printer.vue';
+import SelectPrinter from '@/components/select-printer.vue';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -43,35 +43,31 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { eventBus } from '@/utils/event-bus';
-import { useWorkspaceStore } from '@/stores/workspace';
+import { useWorkspaceService } from '@/services/workspace.service';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
-import { usePrinterStore } from '@/stores/printer';
-import { workspaceTitleMap } from '@/map/index';
+import { workspaceTitleMap } from '@/map';
 
-const { selectedPrinter } = storeToRefs(usePrinterStore());
-const { addWorkspace, editWorkspace } = useWorkspaceStore();
+const { createWorkspace, editWorkspace } = useWorkspaceService();
 
-const open = ref(false);
+// 工作空间表单弹窗开关状态
+const visible = ref(false);
 
-//dialog类型
+// 工作空间表单操作类型
 const dialogType = ref<'add' | 'edit'>('add');
 
-const { handleSubmit, resetForm, setValues } = useForm({
+// 工作空间表单校验和提交控制器
+const {
+  handleSubmit: validateSubmit,
+  resetForm,
+  setValues,
+} = useForm({
   validationSchema: toTypedSchema(
     z.object({
       id: z.string(),
-      name: z
-        .string({
-          message: '请输入名称',
-        })
-        .min(1, '请输入名称'),
-      printer: z
-        .string({
-          message: '请选择打印机',
-        })
-        .min(1, '请选择打印机'),
+      name: z.string().min(1, '请输入名称'),
+      printer: z.string().min(1, '请选择打印机'),
     }),
   ),
   initialValues: {
@@ -81,16 +77,16 @@ const { handleSubmit, resetForm, setValues } = useForm({
   },
 });
 
-//关闭
+// 关闭工作空间表单
 const handleClose = () => {
-  open.value = false;
+  visible.value = false;
 };
 
-//处理提交
-const handleClick = handleSubmit((values) => {
+// 校验并保存工作空间数据
+const handleSubmit = validateSubmit((values) => {
   switch (dialogType.value) {
     case 'add':
-      addWorkspace(values);
+      createWorkspace(values);
       break;
     case 'edit':
       editWorkspace(values);
@@ -100,26 +96,22 @@ const handleClick = handleSubmit((values) => {
   handleClose();
 });
 
-// 响应新增工作空间弹窗事件
+// 响应新增工作空间事件
 eventBus.on('dialog-workspace:add:show', () => {
   dialogType.value = 'add';
 
-  resetForm({
-    values: {
-      printer: selectedPrinter.value,
-    },
-  });
+  resetForm();
 
-  open.value = true;
+  visible.value = true;
 });
 
-// 响应编辑工作空间弹窗事件
+// 响应编辑工作空间事件
 eventBus.on('dialog-workspace:edit:show', (data) => {
   dialogType.value = 'edit';
 
   setValues(data);
 
-  open.value = true;
+  visible.value = true;
 });
 </script>
 

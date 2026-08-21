@@ -15,7 +15,7 @@
 
     <EmptyContent>
       <Tooltip label="在当前工作空间下新增文档" shortcut="Ctrl+O">
-        <Button @click="handleAdd">
+        <Button @click="addDocs()">
           <PlusIcon />
 
           <span>新增文档</span>
@@ -36,14 +36,9 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import { useWorkspaceStore } from '@/stores/workspace';
 import Tooltip from '@/components/tooltip.vue';
+import { useDocumentService } from '@/services/document.service';
 
-const { selectedWorkspaceID } = storeToRefs(useWorkspaceStore());
-
-const handleAdd = () => {
-  ipc.addDoc({
-    workspaceId: selectedWorkspaceID.value,
-  });
-};
+// 当前分组文档导入能力
+const { addDocs } = useDocumentService();
 </script>

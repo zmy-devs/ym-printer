@@ -1,8 +1,6 @@
 <template>
-  <div class="manager-window wh-screen grid bg-sidebar" v-drag="dragOption">
-    <TitleBar />
-
-    <ResizablePanelGroup direction="horizontal" autoSaveId="layout">
+  <div class="wh-screen bg-sidebar" v-drag="dragOption">
+    <ResizablePanelGroup direction="horizontal" autoSaveId="ym-printer:layout">
       <ResizablePanel
         ref="panelRef"
         :min-size="160"
@@ -14,12 +12,12 @@
         <SideBar class="h-full" />
       </ResizablePanel>
 
-      <ResizableHandle class="bg-transparent!" />
+      <ResizableHandle />
 
-      <ResizablePanel :min-size="50">
-        <RouterView
-          class="h-full bg-background border-t border-l rounded-tl-lg"
-        />
+      <ResizablePanel class="flex flex-col" :min-size="50">
+        <TitleBar class="border-b" />
+
+        <RouterView class="bg-background" />
       </ResizablePanel>
     </ResizablePanelGroup>
   </div>
@@ -36,13 +34,13 @@ import {
 import SideBar from './side-bar/index.vue';
 import TitleBar from './title-bar/index.vue';
 import vDrag from '@/hooks/use-drag';
-import { useDocStore } from '@/stores/doc';
+import { useDocumentService } from '@/services/document.service';
 import Overlay from '@/components/overlay.vue';
 //@ts-ignore
 import { panelRef } from '.';
-import { useEventListener } from '@vueuse/core';
 
-const { addDoc } = useDocStore();
+// 当前分组文档导入能力
+const { addDocs } = useDocumentService();
 
 const isDragging = ref(false);
 
@@ -57,26 +55,9 @@ const dragOption = {
 
     if (!files || files.length === 0) return;
 
-    addDoc(Array.from(files));
+    addDocs(undefined, Array.from(files));
   },
 };
-
-//监控粘贴文档
-useEventListener('paste', async (e) => {
-  const files = e.clipboardData?.files;
-
-  if (!files || files.length === 0) return;
-
-  addDoc(Array.from(files));
-});
 </script>
 
-<style lang="scss">
-.manager-window {
-  grid-template-rows: 40px calc(100vh - 40px);
-
-  grid-template-areas:
-    'title-bar'
-    'content';
-}
-</style>
+<style lang="scss"></style>

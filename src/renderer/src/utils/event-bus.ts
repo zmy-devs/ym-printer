@@ -1,25 +1,17 @@
-import type { Preset } from '@/stores/preset';
-import type { Workspace } from '@/stores/workspace';
+import type { Preset } from '@/stores/preset.store';
+import type { Group, Workspace } from '@type';
 
 // 定义事件到函数类型的映射
 type EventMap = {
-  'success:show': [msg: string];
-  'loading:show': [
-    option: {
-      successMsg?: string;
-      errorMsg?: string;
-      loadingMsg?: string;
-      cb: () => Promise<void>;
-    },
-  ];
-  'error:show': [msg: string];
-
   'dialog-print:show': [];
   'dialog-print-task:show': [];
   'dialog-setting:show': [id?: string];
 
   'dialog-workspace:add:show': [];
   'dialog-workspace:edit:show': [data: Workspace];
+
+  'dialog-group:add:show': [];
+  'dialog-group:edit:show': [data: Group];
 
   'dialog-preset:add:show': [data: string];
   'dialog-preset:edit:show': [data: Preset];
