@@ -1,8 +1,10 @@
 import { Component } from 'vue';
 
 import GroupView from './views/group.vue';
-import { FolderClosedIcon } from '@lucide/vue';
+import WorkspaceView from './views/workspace.vue';
+import { BriefcaseIcon, FolderClosedIcon } from '@lucide/vue';
 import { useGroupStore } from '@/stores/group.store';
+import { useSettingsStore } from '@/stores/settings.store';
 
 export interface OnboardingRoute {
   title: string;
@@ -52,7 +54,22 @@ export const nextStep = async () => {
 
 //初始化路由
 export const initRouter = () => {
-  if (useGroupStore().groupIds.length == 0) {
+  // 应用设置状态
+  const settingsStore = useSettingsStore();
+  // 本机分组状态
+  const groupStore = useGroupStore();
+
+  if (!settingsStore.settings.clientName.trim()) {
+    onboardingRouter.push({
+      title: '为你的工作空间命名',
+      description: '工作空间名称会显示在团队协作和局域网发现列表中。',
+      icon: BriefcaseIcon,
+      component: WorkspaceView,
+      fields: ['workspaceName'],
+    });
+  }
+
+  if (groupStore.groupIds.length == 0) {
     onboardingRouter.push({
       title: '让我们新建你的第一个组',
       description: '请根据提示输入对应内容以新建你的第一个组。',
