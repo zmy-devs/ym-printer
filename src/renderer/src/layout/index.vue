@@ -30,7 +30,7 @@
       <ResizablePanel
         ref="rightPanelRef"
         :min-size="260"
-        :default-size="260"
+        :default-size="0"
         collapsible
         :collapsedSize="0"
         size-unit="px"
