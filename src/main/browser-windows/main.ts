@@ -20,7 +20,6 @@ export const createMainWindow = () => {
 
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      symbolColor: '#d4d4d4',
       color: 'rgba(0,0,0,0)',
       height: 40,
     },

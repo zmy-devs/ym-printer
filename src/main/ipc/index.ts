@@ -298,6 +298,6 @@ export const toggleTheme = (
   nativeTheme.themeSource = theme === 'auto' ? 'system' : theme;
 
   win.setTitleBarOverlay({
-    symbolColor: resolvedTheme === 'light' ? '#000000' : '#d4d4d4',
+    symbolColor: resolvedTheme === 'light' ? '#000000' : '#ffffff',
   });
 };
