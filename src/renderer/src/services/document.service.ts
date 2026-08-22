@@ -49,7 +49,7 @@ export const useDocumentService = () => {
       return [];
     }
 
-    return ipc.addDoc(paths);
+    return ipc.addDoc(toRaw(paths));
   };
 
   // 过滤重复文档并关联目标分组
@@ -105,7 +105,7 @@ export const useDocumentService = () => {
   // 异步解析已保存的单个文档
   const parseDoc = async (doc: Doc) => {
     try {
-      await ipc.parserDoc(doc);
+      await ipc.parserDoc(toRaw(doc));
       markDocAsReady(doc.id);
     } catch {
       markDocAsError(doc.id);
@@ -139,38 +139,23 @@ export const useDocumentService = () => {
     const doc = docStore.getDoc(docId);
 
     if (!doc) {
-      return false;
+      return;
     }
 
     doc.status = 'loading';
-    printConfigStore.removePrintData(docId);
 
     try {
       // 当前源文件最新内容摘要
-      const md5 = await ipc.reloadDoc(doc);
+      const md5 = await ipc.reloadDoc(toRaw(doc));
 
-      // 重载完成后仍存在的文档实体
-      const storedDoc = docStore.getDoc(docId);
+      doc.md5 = md5;
+      doc.status = 'ready';
 
-      if (!storedDoc) {
-        return false;
-      }
+      printConfigStore.initPrintState(doc.id);
+    } catch (e) {
+      console.error(e);
 
-      storedDoc.md5 = md5;
-      storedDoc.status = 'ready';
-
-      printConfigStore.initPrintState(storedDoc.id);
-
-      return true;
-    } catch {
-      // 重载失败后仍存在的文档实体
-      const storedDoc = docStore.getDoc(docId);
-
-      if (storedDoc) {
-        storedDoc.status = 'error';
-      }
-
-      return false;
+      doc.status = 'error';
     }
   };
 

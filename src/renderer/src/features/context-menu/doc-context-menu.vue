@@ -19,7 +19,7 @@
             <span>在文件管理器中显示</span>
           </ContextMenuItem>
 
-          <ContextMenuItem @click="handleReload">
+          <ContextMenuItem :disabled="isReloadDisabled" @click="handleReload">
             <RotateCwIcon />
 
             <span>重新加载文档</span>
@@ -90,14 +90,20 @@ import {
   Trash2Icon,
 } from '@lucide/vue';
 import { useDocStore } from '@/stores/doc.store';
+import { usePrintConfigStore } from '@/stores/print-config.store';
 import { showSuccessToast } from '@/utils/toast';
 import { cancelCheckAll, checked, isChecking } from '@/views/doc/check';
 import { useDocumentService } from '@/services/document.service';
 
 const docStore = useDocStore();
+// 文档打印配置与流程状态
+const printConfigStore = usePrintConfigStore();
 const { getDoc } = docStore;
 const { selectedGroups } = storeToRefs(useSelectionStore());
 const { reloadDoc, removeDocs, moveDocs } = useDocumentService();
+
+// 禁止重新加载文档的打印流程状态
+const disabledReloadStatuses = ['queued', 'uploading', 'waiting'];
 
 // 当前右键菜单目标的文档标识
 const docId = ref('');
@@ -110,6 +116,14 @@ const doc = computed(() => {
 // 当前右键菜单目标所属的分组标识
 const docGroupId = computed(() => {
   return doc.value?.groupId;
+});
+
+// 当前文档是否禁止重新加载
+const isReloadDisabled = computed(() => {
+  // 当前文档的打印流程状态
+  const status = printConfigStore.getPrintState(docId.value)?.status;
+
+  return status ? disabledReloadStatuses.includes(status) : false;
 });
 
 // 处理右键菜单目标
