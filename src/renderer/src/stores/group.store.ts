@@ -13,10 +13,7 @@ export const useGroupStore = defineStore('group', () => {
   const groupIds = useStorage<string[]>(`${storagePre}:group-ids`, []);
 
   // 分组下文档的展示与拖拽顺序
-  const docOrderByGroup = useStorage<Record<string, string[]>>(
-    `${storagePre}:doc-order-by-group`,
-    {},
-  );
+  const docOrderByGroup = ref<Record<string, string[]>>({});
 
   // 根据标识获取分组
   const getGroup = (groupId: string) => {
@@ -37,7 +34,6 @@ export const useGroupStore = defineStore('group', () => {
   const addGroup = (group: Group) => {
     groups.value[group.id] = group;
     groupIds.value.push(group.id);
-    docOrderByGroup.value[group.id] = [];
   };
 
   // 更新分组基础信息
@@ -62,6 +58,8 @@ export const useGroupStore = defineStore('group', () => {
 
   // 获取分组下的文档排序
   const getGroupDocIds = (groupId: string) => {
+    docOrderByGroup.value[groupId] ??= [];
+
     return docOrderByGroup.value[groupId];
   };
 
