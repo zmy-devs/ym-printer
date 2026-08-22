@@ -12,12 +12,31 @@
         <SideBar class="h-full" />
       </ResizablePanel>
 
-      <ResizableHandle />
+      <ResizableHandle class="bg-transparent! border-r" />
 
       <ResizablePanel class="flex flex-col" :min-size="50">
         <TitleBar class="border-b" />
 
         <RouterView class="bg-background" />
+      </ResizablePanel>
+
+      <ResizableHandle
+        class="w-0! bg-transparent!"
+        v-if="rightPanelRef?.isExpanded"
+      />
+
+      <ResizablePanel
+        ref="rightPanelRef"
+        :min-size="260"
+        :default-size="260"
+        collapsible
+        :collapsedSize="0"
+        size-unit="px"
+      >
+        <RightSideBar
+          class="h-full bg-background"
+          v-if="rightPanelRef?.isExpanded"
+        />
       </ResizablePanel>
     </ResizablePanelGroup>
   </div>
@@ -32,12 +51,13 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import SideBar from './side-bar/index.vue';
+import RightSideBar from './right-side-bar/index.vue';
 import TitleBar from './title-bar/index.vue';
 import vDrag from '@/hooks/use-drag';
 import { useDocumentService } from '@/services/document.service';
 import Overlay from '@/components/overlay.vue';
 //@ts-ignore
-import { panelRef } from '.';
+import { panelRef, rightPanelRef } from '.';
 
 // 当前分组文档导入能力
 const { addDocs } = useDocumentService();

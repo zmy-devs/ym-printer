@@ -1,16 +1,20 @@
 <template>
   <Dialog v-model="visible">
-    <TitleBar class="border-b" />
+    <TitleBar class="border-b bg-sidebar" />
 
     <ResizablePanelGroup
       direction="horizontal"
-      autoSaveId="ym-printer:print-task-layout"
+      autoSaveId="ym-printer:printer-task-layout"
     >
       <ResizablePanel :min-size="200" :default-size="200" size-unit="px">
-        <SideBar class="h-full" />
+        <SideBar
+          class="h-full"
+          :selected-printer="selectedPrinter"
+          @select="handleSelectPrinter"
+        />
       </ResizablePanel>
 
-      <ResizableHandle />
+      <ResizableHandle class="bg-transparent! border-r" />
 
       <ResizablePanel :min-size="50">
         <Content class="h-full bg-background" />
@@ -31,13 +35,15 @@ import TitleBar from './title-bar/index.vue';
 import SideBar from './side-bar/index.vue';
 import { eventBus } from '@/utils/event-bus';
 import Content from './content/index.vue';
-import { usePrinterTaskStore } from '@/stores/printer-task.store';
+import { usePrinterTaskService } from '@/services/printer-task.service';
 import { printTaskContextKey } from './context.js';
 import { useIntervalFn } from '@vueuse/core';
 
 const { selectedGroup } = storeToRefs(useSelectionStore());
 
-const { getPrinterTasks, removePrinterTask } = usePrinterTaskStore();
+// 当前弹窗的打印机任务服务实例
+const { printerTasks, getPrinterTasks, removePrinterTask } =
+  usePrinterTaskService();
 
 // 打印机队列弹窗显示状态
 const visible = ref(false);
@@ -90,8 +96,8 @@ watch(visible, (isVisible) => {
 });
 
 provide(printTaskContextKey, {
+  printerTasks,
   selectedPrinter,
-  handleSelectPrinter,
   handleRefreshPrinterTasks,
   handleRemovePrinterTask,
 });

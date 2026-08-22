@@ -7,7 +7,7 @@
 
       <EmptyTitle>暂无打印任务</EmptyTitle>
 
-      <EmptyDescription> 当前打印机暂无打印任务请刷新或重试 </EmptyDescription>
+      <EmptyDescription> 当前打印机暂无待处理的打印任务 </EmptyDescription>
     </EmptyHeader>
 
     <EmptyContent>

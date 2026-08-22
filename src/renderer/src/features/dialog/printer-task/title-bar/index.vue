@@ -1,6 +1,6 @@
 <template>
   <section class="h-10 flex items-center px-3 gap-2 shrink-0">
-    <span class="text-sm">打印机任务队列</span>
+    <span class="text-sm font-medium">打印机任务队列</span>
   </section>
 </template>
 

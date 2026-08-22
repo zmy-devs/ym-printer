@@ -1,6 +1,11 @@
 <template>
-  <section class="h-10 pl-1.5 pr-37 flex items-center shrink-0 app-drag">
-    <Tooltip label="切换侧边栏可见性" side="right">
+  <section
+    class="h-10 px-2 flex items-center shrink-0 app-drag"
+    :class="{
+      'pr-34!': rightPanelRef?.isCollapsed,
+    }"
+  >
+    <Tooltip label="切换侧边栏可见性" side="bottom">
       <Button
         class="app-no-drag"
         variant="ghost"
@@ -13,6 +18,19 @@
       </Button>
     </Tooltip>
 
+    <Tooltip label="切换右侧边栏可见性" side="bottom">
+      <Button
+        class="app-no-drag ml-auto"
+        variant="ghost"
+        size="icon-xs"
+        @click="toggleRightSidebar"
+      >
+        <PanelRightCloseIcon v-if="rightPanelRef?.isExpanded" />
+
+        <PanelRightIcon v-else />
+      </Button>
+    </Tooltip>
+
     <TitleBarUpdate class="ml-auto" />
   </section>
 </template>
@@ -20,8 +38,18 @@
 <script setup lang="ts">
 import Tooltip from '@/components/tooltip.vue';
 import { Button } from '@/components/ui/button';
-import { PanelLeftCloseIcon, PanelLeftIcon } from '@lucide/vue';
-import { panelRef, toggleSilderbar } from '../index';
+import {
+  PanelLeftCloseIcon,
+  PanelLeftIcon,
+  PanelRightCloseIcon,
+  PanelRightIcon,
+} from '@lucide/vue';
+import {
+  panelRef,
+  rightPanelRef,
+  toggleRightSidebar,
+  toggleSilderbar,
+} from '../index';
 import TitleBarUpdate from './title-bar-update.vue';
 </script>
 

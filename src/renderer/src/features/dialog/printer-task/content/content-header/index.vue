@@ -1,6 +1,6 @@
 <template>
-  <section class="flex gap-1">
-    <Tooltip label="刷新">
+  <section class="flex gap-1 shrink-0">
+    <Tooltip label="刷新" side="left">
       <Button
         class="ml-auto"
         variant="ghost"

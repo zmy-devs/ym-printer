@@ -1,20 +1,23 @@
 import type { PrinterTask } from '@type';
 
-export const usePrinterTaskStore = defineStore('printer-task', () => {
-  // 当前打印机的任务列表
+// 提供单个打印机任务队列的查询与删除能力
+export const usePrinterTaskService = () => {
+  // 当前服务实例维护的打印任务列表
   const printerTasks = ref<PrinterTask[]>([]);
 
-  // 获取指定打印机的任务
+  // 获取指定打印机的任务列表
   const getPrinterTasks = async (printer: string) => {
     if (!printer) {
       printerTasks.value = [];
       return;
     }
 
+    console.log('获取');
+
     printerTasks.value = await ipc.getPrinterTask(printer);
   };
 
-  // 删除指定打印机的单个任务
+  // 删除指定打印机的单个或全部任务
   const removePrinterTask = async (printer: string, id?: number) => {
     if (!printer) {
       return;
@@ -31,4 +34,4 @@ export const usePrinterTaskStore = defineStore('printer-task', () => {
     getPrinterTasks,
     removePrinterTask,
   };
-});
+};
