@@ -39,6 +39,7 @@ const main = async () => {
   const files = [
     join(__dirname, '../dist/latest.yml'),
     join(__dirname, `../dist/${name}-${version}.exe`),
+    join(__dirname, `../dist/${name}-${version}.exe.blockmap`),
   ];
 
   await giteeRelease({ version, body, files });

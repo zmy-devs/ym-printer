@@ -14,10 +14,12 @@
 
       <ResizableHandle class="bg-transparent! border-r" />
 
-      <ResizablePanel class="flex flex-col" :min-size="50">
+      <ResizablePanel class="relative flex flex-col" :min-size="50">
         <TitleBar class="border-b" />
 
         <RouterView class="bg-background" />
+
+        <UpdateNotification />
       </ResizablePanel>
 
       <ResizableHandle
@@ -53,6 +55,7 @@ import {
 import SideBar from './side-bar/index.vue';
 import RightSideBar from './right-side-bar/index.vue';
 import TitleBar from './title-bar/index.vue';
+import UpdateNotification from './update-notification.vue';
 import vDrag from '@/hooks/use-drag';
 import { useDocumentService } from '@/services/document.service';
 import Overlay from '@/components/overlay.vue';

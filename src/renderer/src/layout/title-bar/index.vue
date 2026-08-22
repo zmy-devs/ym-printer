@@ -30,8 +30,6 @@
         <PanelRightIcon v-else />
       </Button>
     </Tooltip>
-
-    <TitleBarUpdate class="ml-auto" />
   </section>
 </template>
 
@@ -50,7 +48,6 @@ import {
   toggleRightSidebar,
   toggleSilderbar,
 } from '../index';
-import TitleBarUpdate from './title-bar-update.vue';
 </script>
 
 <style scoped lang="scss"></style>

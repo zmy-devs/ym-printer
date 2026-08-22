@@ -15,7 +15,7 @@ module.exports = {
   icon: 'build/icon.png',
 
   nsis: {
-    differentialPackage: false,
+    differentialPackage: true,
     oneClick: false,
     allowToChangeInstallationDirectory: true,
     artifactName: name + '-${version}.${ext}',

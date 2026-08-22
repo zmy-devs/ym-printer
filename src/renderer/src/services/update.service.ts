@@ -1,6 +1,5 @@
 import { useStorage } from '@vueuse/core';
 import { storagePre } from '@shared/app-info';
-import MessageBox from '@/components/message-box';
 import { useSettingsStore } from '@/stores/settings.store';
 import { isOverOneDay } from '@/utils/date';
 import { showErrorToast } from '@/utils/toast';
@@ -31,18 +30,6 @@ const isInitialized = ref(false);
 
 // 安装已下载的更新
 export const installUpdate = async () => {
-  status.value = 'downloaded';
-
-  // 安装确认结果
-  const shouldInstall = await MessageBox.confirm({
-    title: '安装新版本',
-    description: '新版本下载完成,是否安装?',
-  });
-
-  if (!shouldInstall) {
-    return;
-  }
-
   await ipc.installUpdate();
 };
 
@@ -83,7 +70,9 @@ export const initUpdateService = () => {
     downloadProgress.value = Math.floor(percent);
   });
 
-  ipc.on('update-downloaded', installUpdate);
+  ipc.on('update-downloaded', () => {
+    status.value = 'downloaded';
+  });
 
   if (!settingsStore.settings.autoUpdate) {
     return;
