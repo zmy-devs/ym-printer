@@ -134,7 +134,7 @@ export const useDocumentService = () => {
   };
 
   // 重新读取文档路径并刷新内容缓存
-  const reloadDoc = async (docId: string) => {
+  const reloadDoc = async (docId = selectionStore.docId) => {
     // 待重新加载的文档
     const doc = docStore.getDoc(docId);
 

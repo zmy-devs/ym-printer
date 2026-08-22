@@ -1,14 +1,41 @@
+<template>
+  <div
+    ref="root"
+    class="vue-pdf-embed w-fit grid gap-2"
+    :class="{
+      'cols-2': pageItems.length > 1,
+    }"
+  >
+    <div
+      v-for="pageItem in pageItems"
+      :key="pageItem.key"
+      class="relative bg-white shadow-sm"
+      :class="{
+        'page-number': pageItem.pageNumber !== 0,
+      }"
+      :data-page-number="pageItem.pageNumber"
+    >
+      <slot name="before-page" :page="pageItem.pageNumber" />
+
+      <div class="vue-pdf-embed__page">
+        <canvas v-if="pageItem.pageNumber !== 0" />
+      </div>
+
+      <slot name="after-page" :page="pageItem.pageNumber" />
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import type {
   OnProgressParameters,
   PDFDocumentProxy,
-  PDFPageProxy,
-  PageViewport,
 } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { PasswordRequestParams, Source } from './types';
-import { releaseChildCanvases } from './utils';
 import { useVuePdfEmbed } from './composables';
+import { usePageRenderer } from './use-page-renderer';
 
+// PDF 页面渲染组件入参
 const props = withDefaults(
   defineProps<{
     height?: number;
@@ -24,29 +51,25 @@ const props = withDefaults(
   },
 );
 
+// PDF 加载与渲染生命周期事件
 const emit = defineEmits<{
-  (e: 'internal-link-clicked', value: number): void;
-  (e: 'loaded', value: PDFDocumentProxy): void;
-  (e: 'loading-failed', value: Error): void;
-  (e: 'password-requested', value: PasswordRequestParams): void;
-  (e: 'progress', value: OnProgressParameters): void;
-  (e: 'rendered'): void;
-  (e: 'rendering-failed', value: Error): void;
+  loaded: [document: PDFDocumentProxy];
+  'loading-failed': [error: Error];
+  'password-requested': [params: PasswordRequestParams];
+  progress: [params: OnProgressParameters];
+  rendered: [];
+  'rendering-failed': [error: Error];
 }>();
 
-const pageNums = shallowRef<number[]>([]);
-const pageScales = ref<number[]>([]);
+// PDF 页面根元素
 const root = shallowRef<HTMLDivElement | null>(null);
 
-let renderingController: { isAborted: boolean; promise: Promise<void> } | null =
-  null;
-
+// 加载并响应 PDF 文档来源变化
 const { doc } = useVuePdfEmbed({
-  onError: (e) => {
-    pageNums.value = [];
-    emit('loading-failed', e);
+  onError: (error) => {
+    emit('loading-failed', error);
   },
-  onPasswordRequest({ callback, isWrongPassword }) {
+  onPasswordRequest: ({ callback, isWrongPassword }) => {
     emit('password-requested', { callback, isWrongPassword });
   },
   onProgress: (progressParams) => {
@@ -55,201 +78,39 @@ const { doc } = useVuePdfEmbed({
   source: toRef(props, 'source'),
 });
 
-const getPageNums = () => {
-  if (!doc.value) {
-    return [];
-  }
+// 管理分页渲染并转发渲染结果事件
+const { pageItems } = usePageRenderer({
+  document: doc,
+  height: toRef(props, 'height'),
+  onError: (error) => {
+    emit('rendering-failed', error);
+  },
+  onRendered: () => {
+    emit('rendered');
+  },
+  page: toRef(props, 'page'),
+  root,
+  rotation: toRef(props, 'rotation'),
+  scale: toRef(props, 'scale'),
+  width: toRef(props, 'width'),
+});
 
-  return props.page
-    ? Array.isArray(props.page)
-      ? props.page
-      : [props.page]
-    : [...Array(doc.value.numPages + 1).keys()].slice(1);
-};
-
-const getPageDimensions = (ratio: number): [number, number] => {
-  let width: number;
-  let height: number;
-
-  if (props.height && !props.width) {
-    height = props.height;
-    width = height / ratio;
-  } else {
-    width = props.width ?? root.value!.clientWidth;
-    height = width * ratio;
-  }
-
-  return [width, height];
-};
-
-/**
- * 核心渲染逻辑
- */
-const render = async () => {
-  if (!doc.value || renderingController?.isAborted) {
-    return;
-  }
-
-  try {
-    pageNums.value = getPageNums();
-
-    pageScales.value = Array(pageNums.value.length).fill(1);
-
-    await Promise.all(
-      pageNums.value.map(async (pageNum, i) => {
-        // 如果是第 0 页直接返回
-        if (pageNum === 0) {
-          return;
-        }
-
-        const page = await doc.value!.getPage(pageNum);
-
-        if (renderingController?.isAborted) {
-          return;
-        }
-
-        const pageRotation =
-          ((props.rotation % 90 === 0 ? props.rotation : 0) + page.rotate) %
-          360;
-
-        const [canvas] = Array.from(
-          root.value!.getElementsByClassName('vue-pdf-embed__page')[i].children,
-        ) as [HTMLCanvasElement];
-
-        const isTransposed = !!((pageRotation / 90) % 2);
-
-        const viewWidth = page.view[2] - page.view[0];
-        const viewHeight = page.view[3] - page.view[1];
-
-        const ratio = isTransposed
-          ? viewWidth / viewHeight
-          : viewHeight / viewWidth;
-
-        const [actualWidth, actualHeight] = getPageDimensions(ratio);
-
-        const cssWidth = `${Math.floor(actualWidth)}px`;
-        const cssHeight = `${Math.floor(actualHeight)}px`;
-
-        const pageWidth = isTransposed ? viewHeight : viewWidth;
-
-        const pageScale = actualWidth / pageWidth;
-
-        const viewport = page.getViewport({
-          scale: pageScale,
-          rotation: pageRotation,
-        });
-
-        pageScales.value[i] = pageScale;
-
-        canvas.style.display = 'block';
-        canvas.style.width = cssWidth;
-        canvas.style.height = cssHeight;
-
-        const scale = viewport.scale * window.devicePixelRatio * props.scale;
-
-        return renderPage(page, viewport.clone({ scale }), canvas);
-      }),
-    );
-
-    if (!renderingController?.isAborted) {
-      emit('rendered');
-    }
-  } catch (e) {
-    pageNums.value = [];
-    pageScales.value = [];
-
-    if (!renderingController?.isAborted) {
-      emit('rendering-failed', e as Error);
-    }
-  }
-};
-
-const renderPage = async (
-  page: PDFPageProxy,
-  viewport: PageViewport,
-  canvas: HTMLCanvasElement,
-) => {
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
-  await page.render({ canvas, viewport }).promise;
-};
-
+// 文档就绪时通知调用方更新页数
 watch(
   doc,
-  (newDoc) => {
-    if (newDoc) {
-      emit('loaded', newDoc);
+  (newDocument) => {
+    if (newDocument) {
+      emit('loaded', newDocument);
     }
   },
   { immediate: true },
 );
-
-watch(
-  () => [
-    doc.value,
-    props.height,
-    props.page,
-    props.rotation,
-    props.scale,
-    props.width,
-  ],
-  async ([newDoc]) => {
-    if (newDoc) {
-      if (renderingController) {
-        renderingController.isAborted = true;
-        await renderingController.promise;
-      }
-
-      releaseChildCanvases(root.value);
-      renderingController = {
-        isAborted: false,
-        promise: render(),
-      };
-
-      await renderingController.promise;
-      renderingController = null;
-    }
-  },
-  { immediate: true },
-);
-
-onBeforeUnmount(() => {
-  releaseChildCanvases(root.value);
-});
 </script>
 
-<template>
-  <div
-    ref="root"
-    class="vue-pdf-embed w-fit grid gap-2"
-    :class="{
-      'cols-2': pageNums.length > 1,
-    }"
-  >
-    <div
-      v-for="(pageNum, i) in pageNums"
-      :key="i"
-      class="relative bg-white shadow-sm"
-      :class="{
-        pageNum: pageNum != 0,
-      }"
-      :data-pageNum="pageNum"
-    >
-      <slot name="before-page" :page="pageNum" />
-
-      <div class="vue-pdf-embed__page">
-        <canvas v-if="pageNum != 0" />
-      </div>
-
-      <slot name="after-page" :page="pageNum" />
-    </div>
-  </div>
-</template>
-
-<style lang="scss">
-.pageNum {
+<style scoped lang="scss">
+.page-number {
   &::after {
-    content: attr(data-pageNum);
+    content: attr(data-page-number);
     position: absolute;
     top: 0;
     left: 20px;

@@ -1,25 +1,20 @@
 import type { PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-// @internal
-export function emptyElement(el?: HTMLElement | null) {
-  while (el?.firstChild) {
-    el.removeChild(el.firstChild);
-  }
-}
+// 判断输入值是否为已加载的 PDF 文档
+export const isDocument = (document: unknown): document is PDFDocumentProxy => {
+  return document
+    ? Object.prototype.hasOwnProperty.call(document, '_pdfInfo')
+    : false;
+};
 
-// @internal
-export function isDocument(doc: unknown): doc is PDFDocumentProxy {
-  return doc ? Object.prototype.hasOwnProperty.call(doc, '_pdfInfo') : false;
-}
-
-// @internal
-export function releaseCanvas(canvas: HTMLCanvasElement) {
+// 释放画布占用的位图内存
+export const releaseCanvas = (canvas: HTMLCanvasElement) => {
   canvas.width = 1;
   canvas.height = 1;
   canvas.getContext('2d')?.clearRect(0, 0, 1, 1);
-}
+};
 
-// @internal
-export function releaseChildCanvases(el?: HTMLElement | null) {
-  el?.querySelectorAll('canvas').forEach(releaseCanvas);
-}
+// 释放元素下所有画布占用的位图内存
+export const releaseChildCanvases = (element?: HTMLElement | null) => {
+  element?.querySelectorAll('canvas').forEach(releaseCanvas);
+};

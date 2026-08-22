@@ -3,7 +3,8 @@ import PdfWorker from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 import { useVuePdfEmbed } from './composables';
 import VuePdfEmbed from './index.vue';
 
-if (!GlobalWorkerOptions?.workerSrc) {
+// 未配置工作线程时使用随应用打包的 PDF.js Worker
+if (!GlobalWorkerOptions.workerSrc) {
   GlobalWorkerOptions.workerSrc = PdfWorker;
 }
 

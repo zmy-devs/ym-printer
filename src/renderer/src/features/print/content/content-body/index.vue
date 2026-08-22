@@ -20,16 +20,18 @@ import { useEventListener } from '@vueuse/core';
 import useMove from '@/hooks/use-move';
 import { cn } from '@/lib/utils.js';
 
+// PDF 缩放控制能力
 const { addScale, subScale } = usePdfStore();
 
-//组件实例
+// 滚动区域组件实例
 const scrollAreaRef = useTemplateRef('scrollAreaRef');
 
+// PDF 预览拖拽控制能力
 const { panning, handleMousedown, handleMousemove } = useMove(
   () => scrollAreaRef.value?.viewportElement,
 );
 
-//处理鼠标滚轮
+// 处理鼠标滚轮缩放
 useEventListener(
   'wheel',
   (e: WheelEvent) => {

@@ -6,9 +6,8 @@
     :scale="2"
     :page="page"
     @loaded="handleLoaded"
-    @loading-failed="handleError"
-    @rendering-failed="handleError"
-    v-if="visible"
+    @loading-failed="console.error"
+    @rendering-failed="console.error"
   />
 </template>
 
@@ -19,22 +18,22 @@ import VuePdfEmbed, { useVuePdfEmbed } from '@/components/vue-pdf-embed';
 import type { PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { useSheetPrintContext } from '../../context';
 
+// PDF 预览配置状态
 const { scale, viewMode } = storeToRefs(usePdfStore());
+// 当前待打印文档
 const { selectedDoc } = storeToRefs(useSelectionStore());
 
 // 打印 Sheet 共享上下文
 const { form, pageNumbers } = useSheetPrintContext();
 
-const visible = ref(false);
-
-//pdf数据
+// 当前 PDF 文件二进制数据
 const buffer = shallowRef<Uint8Array | null>(null);
 
 const { doc } = useVuePdfEmbed({
   source: buffer,
 });
 
-//显示的页面
+// 当前需要展示的页面范围
 const page = computed(() => {
   if (viewMode.value === 'raw' || !form.meta.value.valid) {
     return undefined;
@@ -43,7 +42,7 @@ const page = computed(() => {
   return pageNumbers.value;
 });
 
-//处理加载
+// 更新当前文档的页数
 const handleLoaded = ({ numPages }: PDFDocumentProxy) => {
   if (!selectedDoc.value) {
     return;
@@ -52,22 +51,15 @@ const handleLoaded = ({ numPages }: PDFDocumentProxy) => {
   selectedDoc.value.pageCount = numPages;
 };
 
-//处理错误
-const handleError = (error: Error) => {
-  console.error(error);
-};
+// 根据当前文档状态读取最新 PDF
+watchEffect(async () => {
+  const md5 = selectedDoc.value?.md5;
 
-onMounted(async () => {
-  if (!selectedDoc.value?.md5) {
+  if (!md5) {
     return;
   }
 
-  buffer.value = await ipc.getPdf(selectedDoc.value.md5);
-
-  //等待400ms在渲染防止动画卡顿
-  setTimeout(() => {
-    visible.value = true;
-  }, 400);
+  buffer.value = await ipc.getPdf(md5);
 });
 </script>
 

@@ -1,4 +1,4 @@
-import type { Doc, PrintConfig, PrintState } from '@type';
+import type { Doc, PrintConfig, PrintState, PrintStatus } from '@type';
 import { showErrorToast, showSuccessToast } from '@/utils/toast';
 import {
   getPhasePageNumbers,
@@ -8,12 +8,16 @@ import {
 import { useDocStore } from './doc.store';
 import { usePrintQueueStore } from './print-queue.store';
 import { clone } from '@/utils/clone';
+import { useSelectionStore } from './selection.store';
 
 // 文档打印配置的扁平映射
 type PrintConfigMap = Record<string, PrintConfig>;
 
 // 文档打印状态的扁平映射
 type PrintStateMap = Record<string, PrintState>;
+
+// 禁止编辑或重新加载文档的打印流程状态
+const disabledPrintStatuses: PrintStatus[] = ['queued', 'uploading', 'waiting'];
 
 // 创建默认打印运行状态
 const createDefaultPrintState = (): PrintState => {
@@ -23,7 +27,13 @@ const createDefaultPrintState = (): PrintState => {
 };
 
 export const usePrintConfigStore = defineStore('print-config', () => {
+  // 当前文档选择状态
+  const selectionStore = useSelectionStore();
+
+  // 打印队列状态
   const printQueueStore = usePrintQueueStore();
+
+  // 文档实体状态
   const docStore = useDocStore();
 
   // 文档标识对应的打印配置
@@ -40,6 +50,14 @@ export const usePrintConfigStore = defineStore('print-config', () => {
   // 获取指定文档的打印运行状态
   const getPrintState = (docId: string) => {
     return printStates.value[docId];
+  };
+
+  // 判断指定或当前选中文档是否处于不可编辑的打印状态
+  const isPrintDisabled = (docId = selectionStore.docId) => {
+    // 当前文档的打印流程状态
+    const status = getPrintState(docId)?.status;
+
+    return disabledPrintStatuses.includes(status);
   };
 
   // 为已就绪文档初始化打印运行状态
@@ -221,6 +239,7 @@ export const usePrintConfigStore = defineStore('print-config', () => {
     printStates,
     getPrintConfig,
     getPrintState,
+    isPrintDisabled,
     initPrintState,
     removePrintData,
     setPrintConfig,

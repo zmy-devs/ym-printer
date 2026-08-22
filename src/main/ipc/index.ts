@@ -125,10 +125,12 @@ export const reloadDoc = async (_: IpcMainInvokeEvent, file: Doc) => {
   // 当前源文件最新内容的唯一摘要
   const md5 = await getMd5(file.path);
 
-  await cacheDoc({
-    ...file,
-    md5,
-  });
+  if (md5 !== file.md5) {
+    await cacheDoc({
+      ...file,
+      md5,
+    });
+  }
 
   return md5;
 };
