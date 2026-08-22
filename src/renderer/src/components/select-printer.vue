@@ -3,7 +3,7 @@
     <SelectTrigger
       :class="
         cn($props.class, {
-          'shadow-none! border-none! ring-0! bg-transparent! hover:bg-accent/50! transition-colors':
+          'shadow-none! border-none! ring-0! bg-transparent! hover:bg-accent/80! transition-colors':
             variant === 'default',
         })
       "

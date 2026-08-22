@@ -13,7 +13,7 @@
     <DialogPrinterTask />
   </TooltipProvider>
 
-  <Toaster />
+  <Toaster class="dark" />
 </template>
 
 <script setup lang="ts">

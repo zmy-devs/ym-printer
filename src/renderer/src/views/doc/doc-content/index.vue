@@ -3,7 +3,7 @@
     <ScrollArea class="min-h-0 flex-1">
       <VueDraggable
         v-if="selectedGroup"
-        class="flex flex-col gap-3 px-3"
+        :class="cn($props.class, 'flex flex-col gap-3')"
         :animation="200"
         :force-fallback="true"
         ghost-class="opacity-0"
@@ -21,6 +21,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import ContentItem from './content-item/index.vue';
 import { VueDraggable } from 'vue-draggable-plus';
 import DocContextMenu from '@/features/context-menu/doc-context-menu.vue';
+import { cn } from '@/lib/utils';
+import { ClassValue } from 'vue';
+
+defineProps<{
+  class?: ClassValue;
+}>();
 
 // 当前选中的分组
 const { selectedGroup, selectedDocIds } = storeToRefs(useSelectionStore());

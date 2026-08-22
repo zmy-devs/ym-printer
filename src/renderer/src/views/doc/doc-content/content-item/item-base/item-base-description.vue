@@ -164,8 +164,8 @@ const configurations = computed<PrintConfiguration[]>(() => {
       id: 'range',
       label: '打印范围',
       value: printConfig.value.pageRange
-        .map(({ range = '1-', mode }) => {
-          return `${range}(${printRangeModeMap[mode]})`;
+        .map(({ range, mode }) => {
+          return `${range || '1-'}(${printRangeModeMap[mode]})`;
         })
         .join('，'),
       icon: FileTextIcon,

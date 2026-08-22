@@ -1,17 +1,17 @@
 <template>
   <ItemBase v-bind="$props" :has-print-config="!!printConfig">
     <template v-if="printState?.status === 'preparing'">
-      <Button variant="outline" size="xs" @click.stop="handleCancel">
-        <XIcon class="size-4" />
-        取消
-      </Button>
-
       <Tooltip label="开始打印">
         <Button size="xs" @click.stop="handleStart">
           <PrinterIcon />
           开始
         </Button>
       </Tooltip>
+
+      <Button variant="outline" size="xs" @click.stop="handleCancel">
+        <XIcon class="size-4" />
+        取消
+      </Button>
     </template>
 
     <Button
@@ -30,33 +30,33 @@
     />
 
     <template v-if="printState?.status === 'waiting'">
-      <Button variant="outline" size="xs" @click.stop="handleCancel">
-        <XIcon class="size-4" />
-        取消
-      </Button>
-
       <Tooltip label="继续打印正面">
         <Button size="xs" @click.stop="handleContinue">
           <ArrowRightIcon />
           继续
         </Button>
       </Tooltip>
+
+      <Button variant="outline" size="xs" @click.stop="handleCancel">
+        <XIcon class="size-4" />
+        取消
+      </Button>
     </template>
 
     <CheckIcon v-if="printState?.status === 'completed'" class="mr-2 size-5" />
 
     <template v-if="printState?.status === 'failed'">
-      <Button variant="outline" size="xs" @click.stop="handleCancel">
-        <XIcon class="size-4" />
-        取消
-      </Button>
-
       <Tooltip label="重试打印">
         <Button size="xs" @click.stop="handleRetry">
           <RotateCwIcon />
           重试
         </Button>
       </Tooltip>
+
+      <Button variant="outline" size="xs" @click.stop="handleCancel">
+        <XIcon class="size-4" />
+        取消
+      </Button>
     </template>
   </ItemBase>
 </template>

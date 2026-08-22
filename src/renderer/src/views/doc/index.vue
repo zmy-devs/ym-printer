@@ -1,10 +1,10 @@
 <template>
   <section class="size-full min-h-0 relative flex flex-col">
-    <DocHeader class="shrink-0 z-10" />
+    <DocHeader class="px-2 z-10" />
 
-    <DocEmpty v-if="selectedDocs.length == 0" />
+    <DocContent class="px-2" v-if="selectedDocs.length" />
 
-    <DocContent v-else />
+    <DocEmpty class="absolute inset-0" v-else />
   </section>
 </template>
 

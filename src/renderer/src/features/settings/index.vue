@@ -6,11 +6,11 @@
       direction="horizontal"
       auto-save-id="ym-printer:settings-layout"
     >
-      <ResizablePanel :min-size="200" :default-size="200" size-unit="px">
+      <ResizablePanel :min-size="260" :default-size="260" size-unit="px">
         <SideBar class="h-full" />
       </ResizablePanel>
 
-      <ResizableHandle />
+      <ResizableHandle class="bg-transparent! border-r" />
 
       <ResizablePanel :min-size="50">
         <component :is="selectedRoute?.component" class="h-full" />

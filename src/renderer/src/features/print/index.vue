@@ -15,11 +15,11 @@
       <ResizablePanelGroup
         class="min-h-0 flex-1"
         direction="horizontal"
-        autoSaveId="print-preview-layout"
+        autoSaveId="ym-printer:print-layout"
       >
         <ResizablePanel
-          :min-size="240"
-          :default-size="260"
+          :min-size="280"
+          :default-size="280"
           :max-size="350"
           size-unit="px"
         >
@@ -29,7 +29,7 @@
         <ResizableHandle />
 
         <ResizablePanel :min-size="50">
-          <Preview class="h-full bg-background overflow-hidden" />
+          <Content class="h-full bg-background" />
         </ResizablePanel>
       </ResizablePanelGroup>
     </SheetContent>
@@ -46,7 +46,7 @@ import {
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import TitleBar from './title-bar/index.vue';
 import SideBar from './side-bar/index.vue';
-import Preview from './preview/index.vue';
+import Content from './content/index.vue';
 import { VisuallyHidden } from 'reka-ui';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
