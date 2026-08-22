@@ -2,7 +2,7 @@
   <section class="size-full min-h-0 relative flex flex-col">
     <DocHeader class="px-2 z-10" />
 
-    <DocContent class="px-2" v-if="selectedDocs.length" />
+    <DocContent class="px-2 pb-2" v-if="selectedDocs.length" />
 
     <DocEmpty class="absolute inset-0" v-else />
   </section>

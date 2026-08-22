@@ -2,14 +2,15 @@
   <DocContextMenu>
     <ScrollArea class="min-h-0 flex-1">
       <VueDraggable
-        v-if="selectedGroup"
         :class="cn($props.class, 'flex flex-col gap-3')"
         :animation="200"
         :force-fallback="true"
         ghost-class="opacity-0"
         v-model="selectedDocIds"
       >
-        <ContentItem v-for="id in selectedDocIds" :key="id" :id="id" />
+        <div v-for="id in selectedDocIds" :key="id" :data-id="id">
+          <ContentItem :id="id" />
+        </div>
       </VueDraggable>
     </ScrollArea>
   </DocContextMenu>
@@ -28,8 +29,11 @@ defineProps<{
   class?: ClassValue;
 }>();
 
-// 当前选中的分组
-const { selectedGroup, selectedDocIds } = storeToRefs(useSelectionStore());
+// 文档选择与排序状态
+const selectionStore = useSelectionStore();
+
+// 当前选中分组内的文档标识
+const { selectedDocIds } = storeToRefs(selectionStore);
 </script>
 
 <style scoped lang="scss"></style>

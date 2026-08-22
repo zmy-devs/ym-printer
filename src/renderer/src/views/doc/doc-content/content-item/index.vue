@@ -1,10 +1,5 @@
 <template>
-  <component
-    :is="itemMap[data.status]"
-    :data="data"
-    :data-id="data.id"
-    v-if="data"
-  />
+  <component :is="itemMap[data.status]" :data="data" v-if="data" />
 </template>
 
 <script setup lang="ts">
