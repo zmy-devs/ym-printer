@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { useStorage } from '@vueuse/core';
 import { storagePre } from '@shared/app-info';
 
@@ -21,6 +22,12 @@ const createSettings = () => {
 
     //自动更新
     autoUpdate: false,
+
+    //团队协作客户端标识
+    clientId: nanoid(),
+
+    //团队协作工作空间名称
+    clientName: '',
   };
 };
 
