@@ -12,7 +12,7 @@ module.exports = {
   directories: {
     output: 'dist',
   },
-  icon: 'build/icon.png',
+  icon: 'resources/icon.png',
 
   nsis: {
     differentialPackage: true,
