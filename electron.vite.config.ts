@@ -50,7 +50,7 @@ export default defineConfig({
       tailwindcss(),
       AutoImport({
         imports: ['vue', 'pinia', 'vue-router'],
-        dts: true,
+        dts: 'auto-imports.d.ts',
       }),
     ],
   },
