@@ -12,7 +12,7 @@ export const parseDoc = async (path: string): Promise<ParsedDoc> => {
   const name = basename(path);
 
   //后缀
-  const ext = extname(path).slice(1);
+  const ext = extname(path).slice(1).toLowerCase();
 
   //md5
   const md5 = await getMd5(path);
