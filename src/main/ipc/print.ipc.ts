@@ -56,21 +56,10 @@ const getDuplexMode = (config: PrintConfig, phase: PrintPhase) => {
 const executePrint = async (args: string[]) => {
   try {
     await execFile(printerPath, args);
-
-    return true;
   } catch (error) {
     console.log(error);
 
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      error.code === 3221225477
-    ) {
-      return true;
-    }
-
-    throw false;
+    throw error;
   }
 };
 
@@ -116,7 +105,7 @@ export const print = async (
     `--dpi=300`,
   ];
 
-  return executePrint(args);
+  await executePrint(args);
 };
 
 // 打印测试页面
@@ -135,7 +124,7 @@ export const printTest = async (
     `--color=${cartridge}`,
   ];
 
-  return executePrint(args);
+  await executePrint(args);
 };
 
 // 获取指定打印机的系统任务
