@@ -3,6 +3,8 @@
     name="pageRange"
     label="打印范围"
     :icon="FileTextIcon"
+    tooltip="页码：1(第1页)，3(第3页)，-1(倒数第1页)，-3(倒数第3页)
+    范围：1-3(第1页到第3页)，1--1(第1页到倒数第1页)"
     v-slot="{ componentField }"
   >
     <RangeEditor

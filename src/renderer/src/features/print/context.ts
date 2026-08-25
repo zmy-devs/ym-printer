@@ -13,6 +13,9 @@ export type SheetPrintContext = {
   // 当前表单解析出的完整页码序列
   pageNumbers: ComputedRef<number[]>;
 
+  // 当前选择的打印机是否支持自动双面
+  canAutoDuplex: ComputedRef<boolean>;
+
   // 关闭打印 Sheet
   closeSheetPrint: () => void;
 };

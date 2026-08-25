@@ -59,6 +59,7 @@ import {
   parserRange,
 } from '@/utils/range';
 import { usePrintConfigStore } from '@/stores/print-config.store';
+import { usePrinterStore } from '@/stores/printer.store';
 import { eventBus } from '@/utils/event-bus';
 import { sheetPrintContextKey, type PrintConfigValues } from './context.js';
 
@@ -69,6 +70,8 @@ const { selectedDoc, docId, selectedGroup } = storeToRefs(useSelectionStore());
 const { setViewMode } = usePdfStore();
 // 文档打印配置状态
 const printConfigStore = usePrintConfigStore();
+// 系统打印机与驱动能力
+const { getPrinter } = usePrinterStore();
 
 // 关闭打印 Sheet
 const closeSheetPrint = () => {
@@ -84,11 +87,15 @@ const createInitialValues = () => {
     pageRange: [{ range: '', mode: 'simplex' }],
     color: 'black',
     orientation: 'portrait',
+    duplexMode: 'auto',
   } satisfies PrintConfigValues;
 
   const config = printConfigStore.getPrintConfig(docId.value);
 
-  return config ?? defaultValue;
+  return {
+    ...defaultValue,
+    ...config,
+  };
 };
 
 // 打印配置表单校验与默认值
@@ -132,6 +139,7 @@ const printConfigSchema = z.object({
     }),
   color: z.enum(['black', 'color']),
   orientation: z.enum(['portrait', 'landscape']),
+  duplexMode: z.enum(['auto', 'manual']),
 });
 
 // 打印配置表单
@@ -153,6 +161,23 @@ const pageNumbers = computed(() => {
     pageCount: doc.pageCount,
     pageRange: form.values.pageRange,
   });
+});
+
+// 当前选择的打印机信息
+const selectedPrinter = computed(() => {
+  return getPrinter(form.values.printer);
+});
+
+// 当前选择打印机的自动双面能力
+const canAutoDuplex = computed(() => {
+  return Boolean(selectedPrinter.value?.canDuplex);
+});
+
+// 打印机能力变化时同步双面方式
+watchEffect(() => {
+  const value = canAutoDuplex.value ? 'auto' : 'manual';
+
+  form.setFieldValue('duplexMode', value);
 });
 
 //打开就设置值
@@ -186,6 +211,7 @@ eventBus.on('dialog-print:show', () => {
 provide(sheetPrintContextKey, {
   form,
   pageNumbers,
+  canAutoDuplex,
   closeSheetPrint,
 });
 </script>

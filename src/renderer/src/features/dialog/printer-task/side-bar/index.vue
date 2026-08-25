@@ -1,15 +1,15 @@
 <template>
   <SideBar view-class="py-2">
     <SideBarItem
-      v-for="item in printers"
-      :key="item"
-      :is-active="props.selectedPrinter == item"
-      :title="item"
-      @click="handleSelect(item)"
+      v-for="printerName in printerOrder"
+      :key="printerName"
+      :is-active="props.selectedPrinter == printerName"
+      :title="printerName"
+      @click="handleSelect(printerName)"
     >
       <PrinterIcon />
 
-      <span>{{ item }}</span>
+      <span>{{ printerName }}</span>
     </SideBarItem>
   </SideBar>
 </template>
@@ -31,12 +31,12 @@ const emit = defineEmits<{
 
 // 打印机数据仓库
 const printerStore = usePrinterStore();
-// 可选择的打印机列表
-const { printers } = storeToRefs(printerStore);
+// 可选择的打印机展示顺序
+const { printerOrder } = storeToRefs(printerStore);
 
 // 处理打印机选择
-const handleSelect = (printer: string) => {
-  emit('select', printer);
+const handleSelect = (printerName: string) => {
+  emit('select', printerName);
 };
 </script>
 

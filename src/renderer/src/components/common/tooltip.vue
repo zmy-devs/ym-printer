@@ -5,7 +5,7 @@
     </TooltipTrigger>
 
     <TooltipContent :side="side">
-      {{ label }}
+      <span class="whitespace-pre-line">{{ label }}</span>
 
       <Kbd class="ml-2" v-if="shortcut">{{ shortcut }}</Kbd>
     </TooltipContent>

@@ -10,7 +10,8 @@
     "paths": {
       "@/*": ["./src/renderer/src/*"],
       "@type": ["./src/shared/type.ts"],
-      "@shared/*": ["./src/shared/*"]
+      "@shared/*": ["./src/shared/*"],
+      "@resources/*": ["./resources/*"]
     }
   }
 }

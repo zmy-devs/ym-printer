@@ -5,11 +5,13 @@
 
       <Remark />
 
-      <Count />
+      <Copies />
 
       <Range />
 
-      <Cardridge />
+      <DuplexMode />
+
+      <Color />
 
       <Orientation />
     </FieldGroup>
@@ -21,9 +23,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { FieldGroup } from '@/components/ui/field';
 import Remark from './remark.vue';
 import Printer from './printer.vue';
-import Count from './count.vue';
+import Copies from './copies.vue';
 import Range from './range.vue';
-import Cardridge from './cardridge.vue';
+import DuplexMode from './duplex-mode.vue';
+import Color from './color.vue';
 import Orientation from './orientation.vue';
 </script>
 

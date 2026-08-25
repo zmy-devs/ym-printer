@@ -7,7 +7,12 @@ import tailwindcss from '@tailwindcss/vite';
 import { createIpcChannelsPlugin } from 'plugin-electron-ipc/vite';
 
 const ipcOptions = {
-  input: ['src/main/ipc/index.ts'],
+  input: [
+    'src/main/ipc/index.ts',
+    'src/main/ipc/print.ipc.ts',
+    'src/main/ipc/update.ipc.ts',
+    'src/main/ipc/doc.ipc.ts',
+  ],
   dts: 'src/renderer/plugin-electron-ipc.d.ts',
 };
 

@@ -8,18 +8,28 @@
         })
       "
     >
-      <div class="flex items-center gap-2">
+      <section class="flex items-center gap-2">
         <PrinterIcon v-if="iconVisible" />
 
         <SelectValue :class="valueClass" placeholder="请选择打印机" />
-      </div>
+      </section>
     </SelectTrigger>
 
     <SelectContent>
-      <SelectItem v-for="item in printers" :key="item" :value="item">
+      <SelectItem
+        v-for="printerName in printerOrder"
+        :key="printerName"
+        :value="printerName"
+      >
         <PrinterIcon />
 
-        {{ item }}
+        {{ printerName }}
+
+        <span
+          class="text-muted-foreground"
+          v-if="getPrinter(printerName).canDuplex"
+          >(支持自动双面打印)</span
+        >
       </SelectItem>
 
       <SelectSeparator />
@@ -58,10 +68,10 @@ import { useLockFn } from '@/hooks/use-lock';
 import type { ClassValue } from 'clsx';
 import { cn } from '@/lib/utils';
 
-// 可选择的打印机列表
-const { printers } = storeToRefs(usePrinterStore());
+// 可选择的打印机展示顺序
+const { printerOrder } = storeToRefs(usePrinterStore());
 // 打印机列表刷新方法
-const { getPrinters } = usePrinterStore();
+const { getPrinters, getPrinter } = usePrinterStore();
 
 // 打印机选择器展示配置
 withDefaults(

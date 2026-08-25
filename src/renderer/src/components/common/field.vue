@@ -5,6 +5,10 @@
         <component v-if="icon" :is="icon" class="size-3.5" />
 
         {{ errorMessage ? errorMessage : label }}
+
+        <Tooltip :label="tooltip" v-if="tooltip">
+          <CircleQuestionMarkIcon class="size-3 text-muted-foreground" />
+        </Tooltip>
       </FormLabel>
 
       <FormControl>
@@ -22,11 +26,14 @@ import {
   FormItem,
   FormLabel,
 } from '@/components/ui/form';
+import { CircleQuestionMarkIcon } from '@lucide/vue';
+import Tooltip from './tooltip.vue';
 
 defineProps<{
   name: string;
   label?: string;
   icon?: Component;
+  tooltip?: string;
 }>();
 </script>
 

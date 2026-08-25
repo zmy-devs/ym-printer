@@ -1,10 +1,13 @@
-import type { Doc, PrintConfig, PrintState, PrintStatus } from '@type';
+import type {
+  Doc,
+  PrintConfig,
+  PrintPhase,
+  PrintQueue,
+  PrintState,
+  PrintStatus,
+} from '@type';
 import { showErrorToast, showSuccessToast } from '@/utils/toast';
-import {
-  getPhasePageNumbers,
-  isSimplexPrint,
-  type PrintPhase,
-} from '@/utils/print';
+import { isAutoDuplexPrint, isSimplexPrint } from '@shared/print';
 import { useDocStore } from './doc.store';
 import { usePrintQueueStore } from './print-queue.store';
 import { clone } from '@/utils/clone';
@@ -93,16 +96,18 @@ export const usePrintConfigStore = defineStore('print-config', () => {
       return;
     }
 
-    // 本阶段需要上传的页码
-    const pageNumbers = getPhasePageNumbers(config, phase);
+    // 是否由打印机驱动自动完成双面
+    const autoDuplex = isAutoDuplexPrint(config);
     // 是否为全单面打印任务
     const simplex = isSimplexPrint(config.pageNumbers);
 
     state.status = 'queued';
     const queueId = printQueueStore.addPrintQueue({
       docId,
-      // 当前阶段页码已冻结的打印配置
-      config: { ...clone(config), pageNumbers },
+      // 当前阶段使用的完整冻结打印配置
+      config: clone(config),
+      // 由 Electron 根据阶段计算实际页码
+      phase,
       // 当前任务真正开始上传时更新状态
       start: () => {
         state.status = 'uploading';
@@ -111,7 +116,7 @@ export const usePrintConfigStore = defineStore('print-config', () => {
       end: () => {
         delete state.queueId;
 
-        if (phase === 'initial' && !simplex) {
+        if (phase === 'all' && !simplex && !autoDuplex) {
           state.status = 'waiting';
           return;
         }
@@ -148,7 +153,7 @@ export const usePrintConfigStore = defineStore('print-config', () => {
   // 保存配置并直接开始普通打印流程
   const startPrint = (doc: Doc, config: PrintConfig) => {
     setPrintConfig(doc.id, config);
-    enqueuePrintPhase(doc.id, 'initial');
+    enqueuePrintPhase(doc.id, 'all');
   };
 
   // 保存配置并直接标记为打印完成
@@ -168,7 +173,7 @@ export const usePrintConfigStore = defineStore('print-config', () => {
 
   // 开始已预备文档的普通打印流程
   const startPreparedPrint = (docId: string) => {
-    enqueuePrintPhase(docId, 'initial');
+    enqueuePrintPhase(docId, 'all');
   };
 
   // 继续双面打印的正面上传任务
@@ -204,27 +209,24 @@ export const usePrintConfigStore = defineStore('print-config', () => {
       return;
     }
 
-    enqueuePrintPhase(docId, 'initial');
+    enqueuePrintPhase(docId, 'all');
   };
 
   // 根据表单临时配置加入补救打印任务
   const addRecoveryPrint = (
     doc: Doc,
     config: PrintConfig,
-    phase: 'all' | 'front' | 'back',
+    phase: PrintQueue['phase'],
   ) => {
     // 补救任务的异步完成控制器
     const { promise, resolve, reject } = Promise.withResolvers<void>();
-    // 本次补救实际上传的页码
-    const recoveryPageNumbers = getPhasePageNumbers(
-      config,
-      phase === 'front' ? 'front' : 'initial',
-    );
 
     printQueueStore.addPrintQueue({
       docId: doc.id,
-      // 当前补救页码已冻结的打印配置
-      config: { ...clone(config), pageNumbers: recoveryPageNumbers },
+      // 当前补救任务使用的完整冻结打印配置
+      config: clone(config),
+      // 由 Electron 根据阶段计算实际页码
+      phase,
       // 补救成功后结束提示任务
       end: resolve,
       // 补救失败后结束提示任务

@@ -6,6 +6,9 @@
     :model-value="model"
     :class="
       cn(
+        {
+          'cursor-not-allowed': forwardedProps.disabled,
+        },
         'w-full flex items-center gap-1 rounded-lg p-1 bg-accent/50',
         props.class,
       )

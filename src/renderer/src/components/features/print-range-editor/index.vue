@@ -7,7 +7,7 @@
     >
       <InputGroupInput
         ref="inputRefs"
-        placeholder="例如 1-、-1、-3--1"
+        placeholder="请输入页码和范围"
         :model-value="item.range"
         @update:model-value="handleRangeChange(index, $event)"
         @blur="$emit('blur', $event)"

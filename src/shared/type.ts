@@ -11,6 +11,21 @@ export interface Group {
 // 单项打印范围的打印方式
 export type PrintRangeMode = 'simplex' | 'duplex';
 
+// 双面打印的执行方式
+export type DuplexMode = 'auto' | 'manual';
+
+// 当前打印任务需要输出的纸张面
+export type PrintPhase = 'all' | 'front' | 'back';
+
+// 系统打印机及其驱动能力
+export type Printer = {
+  // 系统打印机名称
+  name: string;
+
+  // 是否支持由驱动自动完成双面打印
+  canDuplex: boolean;
+};
+
 // 单项打印范围配置
 export interface PrintRange {
   // 页码范围表达式
@@ -39,6 +54,9 @@ export type PrintConfig = {
 
   //方向
   orientation: 'portrait' | 'landscape';
+
+  // 双面范围使用的执行方式
+  duplexMode: DuplexMode;
 
   // 解析后的完整打印页码序列
   pageNumbers: number[];
@@ -76,6 +94,9 @@ export type PrintQueue = {
 
   // 入队时冻结的打印配置
   config: PrintConfig;
+
+  // 当前任务需要输出的纸张面
+  phase: PrintPhase;
 
   // 任务开始上传时调用
   start?: () => void;

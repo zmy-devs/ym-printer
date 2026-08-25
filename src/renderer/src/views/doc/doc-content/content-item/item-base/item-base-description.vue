@@ -52,7 +52,7 @@
         v-for="configuration in configurations"
         :key="configuration.id"
       >
-        <component :is="configuration.icon" :class="configuration.iconClass" />
+        <component :is="configuration.icon" />
 
         {{ configuration.value }}
       </Badge>
@@ -141,7 +141,6 @@ const configurations = computed<PrintConfiguration[]>(() => {
           label: '打印价格',
           value: `${price.value} 元`,
           icon: CircleDollarSignIcon,
-          iconClass: 'text-amber-500 dark:text-amber-400',
         },
       ]
     : [];
