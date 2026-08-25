@@ -23,8 +23,8 @@ const { scale, viewMode } = storeToRefs(usePdfStore());
 // 当前待打印文档
 const { selectedDoc } = storeToRefs(useSelectionStore());
 
-// 打印 Sheet 共享上下文
-const { form, pageNumbers } = useSheetPrintContext();
+// 打印 Sheet 当前解析出的页码序列
+const { pageNumbers } = useSheetPrintContext();
 
 // 当前 PDF 文件二进制数据
 const buffer = shallowRef<Uint8Array | null>(null);
@@ -35,8 +35,8 @@ const { doc } = usePdf({
 
 // 当前需要展示的页面范围
 const page = computed(() => {
-  if (viewMode.value === 'raw' || !form.meta.value.valid) {
-    return undefined;
+  if (viewMode.value === 'raw') {
+    return;
   }
 
   return pageNumbers.value;

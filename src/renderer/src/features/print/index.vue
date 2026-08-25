@@ -98,45 +98,48 @@ const createInitialValues = () => {
   };
 };
 
+// 打印范围字段校验规则
+const pageRangeSchema = z
+  .array(
+    z.object({
+      range: z.string(),
+      mode: z.enum(['simplex', 'duplex']),
+    }),
+  )
+  .min(1, '请至少添加一项打印范围')
+  .superRefine((ranges, ctx) => {
+    // 所有打印范围是否符合输入格式
+    const isRangeValid = ranges.every(({ range }) => {
+      return isPrintRangeValid(range);
+    });
+
+    if (!isRangeValid) {
+      ctx.addIssue({
+        code: 'custom',
+        message: '格式有误',
+      });
+      return;
+    }
+
+    // 所有打印范围是否位于当前文档页数内
+    const isRangeInBounds = ranges.every(({ range }) => {
+      return isPrintRangeInBounds(range, selectedDoc.value?.pageCount);
+    });
+
+    if (!isRangeInBounds) {
+      ctx.addIssue({
+        code: 'custom',
+        message: '超出打印范围',
+      });
+    }
+  });
+
 // 打印配置表单校验与默认值
 const printConfigSchema = z.object({
   remark: z.string(),
   printer: z.string().min(1, '请选择打印机'),
   copies: z.number().min(1, '最少1份').max(999, '最大999份'),
-  pageRange: z
-    .array(
-      z.object({
-        range: z.string(),
-        mode: z.enum(['simplex', 'duplex']),
-      }),
-    )
-    .min(1, '请至少添加一项打印范围')
-    .superRefine((ranges, ctx) => {
-      // 所有打印范围是否符合输入格式
-      const isRangeValid = ranges.every(({ range }) => {
-        return isPrintRangeValid(range);
-      });
-
-      if (!isRangeValid) {
-        ctx.addIssue({
-          code: 'custom',
-          message: '格式有误',
-        });
-        return;
-      }
-
-      // 所有打印范围是否位于当前文档页数内
-      const isRangeInBounds = ranges.every(({ range }) => {
-        return isPrintRangeInBounds(range, selectedDoc.value?.pageCount);
-      });
-
-      if (!isRangeInBounds) {
-        ctx.addIssue({
-          code: 'custom',
-          message: '超出打印范围',
-        });
-      }
-    }),
+  pageRange: pageRangeSchema,
   color: z.enum(['black', 'color']),
   orientation: z.enum(['portrait', 'landscape']),
   duplexMode: z.enum(['auto', 'manual']),
@@ -153,7 +156,12 @@ const pageNumbers = computed(() => {
   // 当前待打印文档
   const doc = selectedDoc.value;
 
-  if (!doc) {
+  // 当前打印范围是否可安全解析
+  const isPageRangeValid = pageRangeSchema.safeParse(
+    form.values.pageRange,
+  ).success;
+
+  if (!doc || !isPageRangeValid) {
     return [];
   }
 
