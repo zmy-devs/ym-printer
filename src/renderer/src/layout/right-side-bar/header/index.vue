@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { PrinterIcon } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
-import Tooltip from '@/components/tooltip.vue';
+import Tooltip from '@/components/common/tooltip.vue';
 </script>
 
 <style scoped lang="scss"></style>

@@ -15,7 +15,7 @@
 import {
   SegmentedControl,
   SegmentedControlItem,
-} from '@/components/segmented-control';
+} from '@/components/common/segmented-control';
 import { viewMap } from '@/map';
 import { usePdfStore } from '@/stores/pdf.store';
 

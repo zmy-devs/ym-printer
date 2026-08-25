@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import Dialog from '@/components/dialog.vue';
+import Dialog from '@/components/common/dialog.vue';
 import {
   ResizableHandle,
   ResizablePanel,

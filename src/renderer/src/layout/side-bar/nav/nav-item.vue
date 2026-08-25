@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import Tooltip from '@/components/tooltip.vue';
+import Tooltip from '@/components/common/tooltip.vue';
 
 defineProps<{
   label: string;

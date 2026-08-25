@@ -45,11 +45,11 @@
 
 <script setup lang="ts">
 import { SheetClose } from '@/components/ui/sheet';
-import FileIcon from '@/components/file-icon.vue';
+import FileIcon from '@/components/features/file-icon.vue';
 import { useSelectionStore } from '@/stores/selection.store';
 import { Button } from '@/components/ui/button';
 import { EyeIcon, EyeOffIcon, RotateCwIcon, XIcon } from '@lucide/vue';
-import Tooltip from '@/components/tooltip.vue';
+import Tooltip from '@/components/common/tooltip.vue';
 import { usePdfStore } from '@/stores/pdf.store';
 import { useDocumentService } from '@/services/document.service';
 import { usePrintConfigStore } from '@/stores/print-config.store';

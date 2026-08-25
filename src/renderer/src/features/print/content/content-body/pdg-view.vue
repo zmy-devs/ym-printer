@@ -1,5 +1,5 @@
 <template>
-  <VuePdfEmbed
+  <Pdf
     class="pdf-view m-auto preview-dark:invert-[0.8] preview-dark:hue-rotate-180"
     :source="doc"
     :width="500"
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { usePdfStore } from '@/stores/pdf.store';
 import { useSelectionStore } from '@/stores/selection.store';
-import VuePdfEmbed, { useVuePdfEmbed } from '@/components/vue-pdf-embed';
+import Pdf, { usePdf } from '@/components/features/pdf';
 import type { PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { useSheetPrintContext } from '../../context';
 
@@ -29,7 +29,7 @@ const { form, pageNumbers } = useSheetPrintContext();
 // 当前 PDF 文件二进制数据
 const buffer = shallowRef<Uint8Array | null>(null);
 
-const { doc } = useVuePdfEmbed({
+const { doc } = usePdf({
   source: buffer,
 });
 

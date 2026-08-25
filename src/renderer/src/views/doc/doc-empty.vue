@@ -31,6 +31,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import Tooltip from '@/components/tooltip.vue';
-import AddDocButton from '@/components/add-doc-button.vue';
+import Tooltip from '@/components/common/tooltip.vue';
+import AddDocButton from '@/components/features/add-doc-button.vue';
 </script>

@@ -16,7 +16,7 @@ export type PasswordRequestParams = {
 };
 
 // PDF 文档加载组合式函数配置
-export type UseVuePdfEmbedOptions = {
+export type UsePdfOptions = {
   onError?: (error: Error) => unknown;
   onPasswordRequest?: (params: PasswordRequestParams) => unknown;
   onProgress?: (params: OnProgressParameters) => unknown;

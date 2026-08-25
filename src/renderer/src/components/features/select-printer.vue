@@ -53,7 +53,7 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { usePrinterStore } from '@/stores/printer.store';
 import { PrinterIcon, RotateCwIcon } from '@lucide/vue';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { useLockFn } from '@/hooks/use-lock';
 import type { ClassValue } from 'clsx';
 import { cn } from '@/lib/utils';

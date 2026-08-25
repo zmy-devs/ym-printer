@@ -131,7 +131,7 @@ import {
   ItemSeparator,
   ItemTitle,
 } from '@/components/ui/item';
-import Container from '@/components/container.vue';
+import Container from '@/components/common/container.vue';
 import { baseThemeMap, previewThemeMap, themeColorMap } from '@/map';
 import { productName } from '@shared/app-info';
 import { type ThemeMode, useThemeStore } from '@/stores/theme.store';

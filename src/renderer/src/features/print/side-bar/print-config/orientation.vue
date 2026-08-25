@@ -18,13 +18,13 @@
 </template>
 
 <script setup lang="ts">
-import Field from '@/components/field.vue';
+import Field from '@/components/common/field.vue';
 import { orientationMap } from '@/map';
 import { RotateCwIcon } from '@lucide/vue';
 import {
   SegmentedControl,
   SegmentedControlItem,
-} from '@/components/segmented-control';
+} from '@/components/common/segmented-control';
 </script>
 
 <style scoped lang="scss"></style>

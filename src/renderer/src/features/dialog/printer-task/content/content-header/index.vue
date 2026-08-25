@@ -74,7 +74,7 @@ import {
   RotateCwIcon,
   Trash2Icon,
 } from '@lucide/vue';
-import Tooltip from '@/components/tooltip.vue';
+import Tooltip from '@/components/common/tooltip.vue';
 import { usePrintTaskContext } from '../../context';
 
 // 打印机任务弹窗共享状态

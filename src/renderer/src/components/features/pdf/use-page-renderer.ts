@@ -165,7 +165,7 @@ export const usePageRenderer = ({
   const getPageCanvas = (index: number) => {
     // 当前渲染位置对应的页面容器
     const pageElement = root.value?.getElementsByClassName(
-      'vue-pdf-embed__page',
+      'pdf__page',
     )[index];
 
     return pageElement?.querySelector('canvas') ?? null;

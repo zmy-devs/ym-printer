@@ -65,13 +65,13 @@
 </template>
 
 <script setup lang="ts">
-import Tooltip from '@/components/tooltip.vue';
+import Tooltip from '@/components/common/tooltip.vue';
 import {
   HoverMenu,
   HoverMenuContent,
   HoverMenuItem,
   HoverMenuTrigger,
-} from '@/components/hover-menu';
+} from '@/components/common/hover-menu';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenuShortcut } from '@/components/ui/dropdown-menu';
 import { usePaper } from '@/hooks/use-paper';

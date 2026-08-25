@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import Field from '@/components/field.vue';
+import Field from '@/components/common/field.vue';
 import { Input } from '@/components/ui/input';
 import { PencilLineIcon } from '@lucide/vue';
 </script>

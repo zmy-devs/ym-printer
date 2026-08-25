@@ -18,11 +18,11 @@
 </template>
 
 <script setup lang="ts">
-import Field from '@/components/field.vue';
+import Field from '@/components/common/field.vue';
 import {
   SegmentedControl,
   SegmentedControlItem,
-} from '@/components/segmented-control';
+} from '@/components/common/segmented-control';
 import { cartridgeMap } from '@/map';
 import { PaletteIcon } from '@lucide/vue';
 </script>

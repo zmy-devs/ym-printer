@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { SideBar, SideBarItem } from '@/components/side-bar';
+import { SideBar, SideBarItem } from '@/components/layout/side-bar';
 import { usePrinterStore } from '@/stores/printer.store';
 import { PrinterIcon } from '@lucide/vue';
 

@@ -9,9 +9,9 @@
 </template>
 
 <script setup lang="ts">
-import SelectPrinter from '@/components/select-printer.vue';
+import SelectPrinter from '@/components/features/select-printer.vue';
 import { useSelectionStore } from '@/stores/selection.store';
-import AddDocButton from '@/components/add-doc-button.vue';
+import AddDocButton from '@/components/features/add-doc-button.vue';
 
 // 当前分组的文档列表和分组信息
 const { selectedDocs, selectedGroup } = storeToRefs(useSelectionStore());

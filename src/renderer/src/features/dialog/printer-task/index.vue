@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { useSelectionStore } from '@/stores/selection.store';
-import Dialog from '@/components/dialog.vue';
+import Dialog from '@/components/common/dialog.vue';
 import {
   ResizableHandle,
   ResizablePanel,

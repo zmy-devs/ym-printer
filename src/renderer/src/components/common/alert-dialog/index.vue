@@ -35,7 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { data } from './message-box';
+import { data } from './alert-dialog';
 
 //处理确定
 const handleConfirm = () => {

@@ -43,9 +43,9 @@ import { printerTaskStatusMap } from '@/map';
 import { Trash2Icon } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 import { showLoadingToast } from '@/utils/toast';
-import Tooltip from '@/components/tooltip.vue';
+import Tooltip from '@/components/common/tooltip.vue';
 import { Badge } from '@/components/ui/badge';
-import FileIcon from '@/components/file-icon.vue';
+import FileIcon from '@/components/features/file-icon.vue';
 import { usePrintTaskContext } from '../../context';
 
 // 当前打印任务卡片参数

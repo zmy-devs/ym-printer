@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import Container from '@/components/container.vue';
+import Container from '@/components/common/container.vue';
 import { Input } from '@/components/ui/input';
 import {
   Item,

@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { SideBar, SideBarItem } from '@/components/side-bar';
+import { SideBar, SideBarItem } from '@/components/layout/side-bar';
 import router, { selectedRouteID, selectRouteID } from '../router';
 </script>
 

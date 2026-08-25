@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import Tooltip from '@/components/tooltip.vue';
+import Tooltip from '@/components/common/tooltip.vue';
 import { Button } from '@/components/ui/button';
 import { eventBus } from '@/utils/event-bus';
 import { PlusIcon } from '@lucide/vue';

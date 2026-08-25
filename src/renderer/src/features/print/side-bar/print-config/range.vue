@@ -14,9 +14,9 @@
 </template>
 
 <script setup lang="ts">
-import Field from '@/components/field.vue';
+import Field from '@/components/common/field.vue';
 import { FileTextIcon } from '@lucide/vue';
-import RangeEditor from '@/components/print-range-editor/index.vue';
+import RangeEditor from '@/components/features/print-range-editor/index.vue';
 </script>
 
 <style scoped lang="scss"></style>

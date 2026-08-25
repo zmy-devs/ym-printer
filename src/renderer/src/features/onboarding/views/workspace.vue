@@ -20,7 +20,7 @@
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
-import Field from '@/components/field.vue';
+import Field from '@/components/common/field.vue';
 import { Input } from '@/components/ui/input';
 import { useSettingsStore } from '@/stores/settings.store';
 

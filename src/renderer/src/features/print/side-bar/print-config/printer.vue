@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import Field from '@/components/field.vue';
-import SelectPrinter from '@/components/select-printer.vue';
+import Field from '@/components/common/field.vue';
+import SelectPrinter from '@/components/features/select-printer.vue';
 </script>
 
 <style scoped lang="scss"></style>

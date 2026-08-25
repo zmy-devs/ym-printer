@@ -1,5 +1,5 @@
 import { useEventListener } from '@vueuse/core';
-import MessageBox from '@/components/message-box';
+import AlertDialog from '@/components/common/alert-dialog';
 import { useDocumentService } from '@/services/document.service';
 
 // 注册主窗口关闭防误触逻辑
@@ -46,7 +46,7 @@ export const useWindowClose = () => {
 
     confirming.value = true;
 
-    MessageBox.confirm({
+    AlertDialog.confirm({
       title: '确认关闭',
       description: '当前还有文档，确定要关闭吗？',
       confirmButtonText: '关闭',

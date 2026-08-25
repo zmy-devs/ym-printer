@@ -19,12 +19,12 @@
 
 <script setup lang="ts">
 import { Input } from '@/components/ui/input';
-import SelectPrinter from '@/components/select-printer.vue';
+import SelectPrinter from '@/components/features/select-printer.vue';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useGroupService } from '@/services/group.service';
-import Field from '@/components/field.vue';
+import Field from '@/components/common/field.vue';
 
 // 分组创建能力
 const { createGroup } = useGroupService();

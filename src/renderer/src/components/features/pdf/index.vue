@@ -1,7 +1,7 @@
 <template>
   <div
     ref="root"
-    class="vue-pdf-embed w-fit grid gap-2"
+    class="pdf w-fit grid gap-2"
     :class="{
       'cols-2': pageItems.length > 1,
     }"
@@ -17,7 +17,7 @@
     >
       <slot name="before-page" :page="pageItem.pageNumber" />
 
-      <div class="vue-pdf-embed__page">
+      <div class="pdf__page">
         <canvas v-if="pageItem.pageNumber !== 0" />
       </div>
 
@@ -32,7 +32,7 @@ import type {
   PDFDocumentProxy,
 } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { PasswordRequestParams, Source } from './types';
-import { useVuePdfEmbed } from './composables';
+import { usePdf } from './composables';
 import { usePageRenderer } from './use-page-renderer';
 
 // PDF 页面渲染组件入参
@@ -65,7 +65,7 @@ const emit = defineEmits<{
 const root = shallowRef<HTMLDivElement | null>(null);
 
 // 加载并响应 PDF 文档来源变化
-const { doc } = useVuePdfEmbed({
+const { doc } = usePdf({
   onError: (error) => {
     emit('loading-failed', error);
   },

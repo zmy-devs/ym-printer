@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { ArrowLeftIcon, ArrowRightIcon } from '@lucide/vue';
-import Tooltip from '@/components/tooltip.vue';
+import Tooltip from '@/components/common/tooltip.vue';
 import { Button } from '@/components/ui/button';
 
 const router = useRouter();

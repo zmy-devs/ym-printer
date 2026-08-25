@@ -59,7 +59,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 import { PencilLineIcon, PlusIcon, Trash2Icon } from '@lucide/vue';
-import MessageBox from '@/components/message-box';
+import AlertDialog from '@/components/common/alert-dialog';
 import { useGroupStore } from '@/stores/group.store';
 import { eventBus } from '@/utils/event-bus';
 import { useDocumentService } from '@/services/document.service';
@@ -122,7 +122,7 @@ const handleEdit = () => {
 // 处理清空分组文档
 const handleClear = async () => {
   // 是否确认清空分组中的全部文档
-  const confirmed = await MessageBox.confirm({
+  const confirmed = await AlertDialog.confirm({
     title: '删除组全部文档',
     description: `删除“${group.value?.name}”中的全部文档，是否确定？`,
     confirmButtonText: '删除',
@@ -142,7 +142,7 @@ const handleRemove = async () => {
   }
 
   // 是否确认删除分组
-  const res = await MessageBox.confirm({
+  const res = await AlertDialog.confirm({
     title: `删除组`,
     description: `是否要删除组"${group.value.name}"？`,
   });

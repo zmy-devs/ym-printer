@@ -75,7 +75,7 @@ import {
   ItemSeparator,
   ItemTitle,
 } from '@/components/ui/item';
-import Container from '@/components/container.vue';
+import Container from '@/components/common/container.vue';
 import { useSettingsStore } from '@/stores/settings.store';
 import { Button } from '@/components/ui/button';
 import { updateContentUrl, updateMap } from '@/map';

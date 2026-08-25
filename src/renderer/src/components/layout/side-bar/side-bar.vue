@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { cn } from '@/lib/utils';
-import { ScrollArea } from '../ui/scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 </script>
 
 <style scoped lang="scss"></style>

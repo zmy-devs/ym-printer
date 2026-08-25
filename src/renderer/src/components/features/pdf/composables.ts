@@ -8,16 +8,16 @@ import type {
   PDFDocumentProxy,
 } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-import type { UseVuePdfEmbedOptions } from './types';
+import type { UsePdfOptions } from './types';
 import { isDocument } from './utils';
 
 // 加载 PDF 文档并管理加载任务的生命周期
-export const useVuePdfEmbed = ({
+export const usePdf = ({
   onError,
   onPasswordRequest,
   onProgress,
   source,
-}: UseVuePdfEmbedOptions) => {
+}: UsePdfOptions) => {
   // 当前已加载的 PDF 文档
   const doc = shallowRef<PDFDocumentProxy | null>(null);
 

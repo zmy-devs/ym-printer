@@ -55,10 +55,10 @@ import {
 import SideBar from './side-bar/index.vue';
 import RightSideBar from './right-side-bar/index.vue';
 import TitleBar from './title-bar/index.vue';
-import UpdateNotification from './update-notification.vue';
+import UpdateNotification from '@/components/features/update-notification.vue';
 import vDrag from '@/hooks/use-drag';
 import { useDocumentService } from '@/services/document.service';
-import Overlay from '@/components/overlay.vue';
+import Overlay from '@/components/common/overlay.vue';
 //@ts-ignore
 import { panelRef, rightPanelRef } from '.';
 

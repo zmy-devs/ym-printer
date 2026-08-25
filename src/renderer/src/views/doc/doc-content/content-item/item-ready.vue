@@ -72,7 +72,7 @@ import {
 } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import Tooltip from '@/components/tooltip.vue';
+import Tooltip from '@/components/common/tooltip.vue';
 import { usePrintConfigStore } from '@/stores/print-config.store';
 import ItemBase from './item-base/index.vue';
 
