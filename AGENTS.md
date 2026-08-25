@@ -30,6 +30,10 @@
 - 实现或调整界面时，优先使用仓库已安装的 `shadcn-vue` 组件及其既有封装。
 - 只有在组件库无法满足交互或布局需求时，才新增自定义组件；新增内容应保持与现有视觉和代码风格一致。
 - 不允许新增无障碍相关属性，例如 `aria-label`、`aria-*` 或 `role`。
+- `components/common` 用于存放对基础组件的二次封装。
+- `components/ui` 用于存放 `shadcn-vue` 组件。
+- `components/features` 用于存放业务功能组件。
+- `components/layout` 用于存放布局组件。
 
 ## 文档与沟通
 
