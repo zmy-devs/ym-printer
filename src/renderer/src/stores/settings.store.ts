@@ -27,7 +27,7 @@ const createSettings = () => {
     clientId: nanoid(),
 
     //团队协作工作空间名称
-    clientName: '',
+    workspaceName: '',
   };
 };
 

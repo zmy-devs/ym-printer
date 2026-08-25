@@ -16,11 +16,14 @@
           <InputGroup class="max-w-70 mt-3">
             <InputGroupInput
               placeholder="请输入你的工作空间名称"
-              v-model="clientName"
+              v-model="workspaceName"
             />
 
-            <InputGroupAddon align="inline-end" v-if="isClientNameChanged">
-              <InputGroupButton variant="default" @click="handleSaveClientName">
+            <InputGroupAddon align="inline-end" v-if="isWorkspaceNameChanged">
+              <InputGroupButton
+                variant="default"
+                @click="handleSaveWorkspaceName"
+              >
                 <span class="text-xs">保存</span>
               </InputGroupButton>
             </InputGroupAddon>
@@ -69,16 +72,16 @@ const settingsStore = useSettingsStore();
 // 应用设置数据
 const { settings } = storeToRefs(settingsStore);
 // 待保存的工作空间名称
-const clientName = ref(settings.value.clientName);
+const workspaceName = ref(settings.value.workspaceName);
 
 // 工作空间名称是否已修改
-const isClientNameChanged = computed(() => {
-  return clientName.value !== settings.value.clientName;
+const isWorkspaceNameChanged = computed(() => {
+  return workspaceName.value !== settings.value.workspaceName;
 });
 
 // 保存工作空间名称
-const handleSaveClientName = () => {
-  settings.value.clientName = clientName.value;
+const handleSaveWorkspaceName = () => {
+  settings.value.workspaceName = workspaceName.value;
 };
 </script>
 

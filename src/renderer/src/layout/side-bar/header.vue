@@ -37,7 +37,7 @@ import { useSettingsStore } from '@/stores/settings.store';
 const { settings } = storeToRefs(useSettingsStore());
 // 当前工作空间标题
 const workspaceTitle = computed(() => {
-  return `${settings.value.clientName}的工作空间`;
+  return `${settings.value.workspaceName}的工作空间`;
 });
 </script>
 
