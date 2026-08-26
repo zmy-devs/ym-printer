@@ -27,9 +27,9 @@ export const docStatusMap: Record<DocStatus, string> = {
 // 文档状态对应的状态点样式
 export const docStatusVariantMap: Record<
   DocStatus,
-  'success' | 'warn' | 'error'
+  'success' | 'warn' | 'error' | 'neutral'
 > = {
-  loading: 'warn',
+  loading: 'neutral',
   error: 'error',
   ready: 'warn',
 };

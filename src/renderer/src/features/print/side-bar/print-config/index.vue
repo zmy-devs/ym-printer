@@ -1,19 +1,19 @@
 <template>
   <ScrollArea class="min-h-0" view-class="p-4">
     <FieldGroup>
-      <Printer />
+      <Printer :disabled="disabledControls.includes('printer')" />
 
-      <Remark />
+      <Remark :disabled="disabledControls.includes('remark')" />
 
-      <Copies />
+      <Copies :disabled="disabledControls.includes('copies')" />
 
-      <Range />
+      <Range :disabled="disabledControls.includes('range')" />
 
-      <DuplexMode />
+      <DuplexMode :disabled="disabledControls.includes('duplex-mode')" />
 
-      <Color />
+      <Color :disabled="disabledControls.includes('color')" />
 
-      <Orientation />
+      <Orientation :disabled="disabledControls.includes('orientation')" />
     </FieldGroup>
   </ScrollArea>
 </template>
@@ -28,6 +28,10 @@ import Range from './range.vue';
 import DuplexMode from './duplex-mode.vue';
 import Color from './color.vue';
 import Orientation from './orientation.vue';
+import { useSheetPrintContext } from '../../context';
+
+// 当前需要禁用的打印控件
+const { disabledControls } = useSheetPrintContext();
 </script>
 
 <style scoped lang="scss"></style>

@@ -1,5 +1,8 @@
 <template>
-  <section class="preview-toolbar">
+  <fieldset
+    class="preview-toolbar"
+    :disabled="disabledControls.includes('preview')"
+  >
     <div class="absolute bottom-2 left-2 z-10 pointer-events-auto">
       <Button
         class="backdrop-blur-2xl bg-background/30"
@@ -74,7 +77,7 @@
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  </section>
+  </fieldset>
 </template>
 
 <script setup lang="ts">
@@ -92,6 +95,7 @@ import {
 import InputGroup from '@/components/ui/input-group/InputGroup.vue';
 import { InputGroupInput } from '@/components/ui/input-group';
 import InputGroupAddon from '@/components/ui/input-group/InputGroupAddon.vue';
+import { useSheetPrintContext } from '../../context';
 
 // 当前预览文档
 const { selectedDoc } = storeToRefs(useSelectionStore());
@@ -99,6 +103,8 @@ const { selectedDoc } = storeToRefs(useSelectionStore());
 const { scale } = storeToRefs(usePdfStore());
 // 缩放控制方法
 const { addScale, subScale } = usePdfStore();
+// 当前需要禁用的打印控件
+const { disabledControls } = useSheetPrintContext();
 
 // 快捷缩放百分比
 const zoomOptions = [50, 100, 200];

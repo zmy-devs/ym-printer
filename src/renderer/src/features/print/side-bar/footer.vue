@@ -1,6 +1,11 @@
 <template>
-  <fieldset class="p-2 flex items-center gap-2">
-    <Button class="flex-1" size="sm" @click="handleStartPrint">
+  <section class="p-2 flex items-center gap-2">
+    <Button
+      class="flex-1"
+      size="sm"
+      :disabled="disabledControls.includes('start-print')"
+      @click="disabledControls.includes('start-print') || handleStartPrint()"
+    >
       开始打印
     </Button>
 
@@ -8,20 +13,32 @@
       class="flex-1"
       size="sm"
       variant="outline"
-      @click="handlePreparePrint"
+      :disabled="disabledControls.includes('prepare-print')"
+      @click="
+        disabledControls.includes('prepare-print') || handlePreparePrint()
+      "
     >
       预备打印
     </Button>
 
     <DropdownMenu>
       <DropdownMenuTrigger as-child>
-        <Button size="icon-sm" variant="outline">
+        <Button
+          size="icon-sm"
+          variant="outline"
+          :disabled="disabledControls.includes('more-print')"
+        >
           <MoreHorizontalIcon />
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent class="min-w-52">
-        <DropdownMenuItem @click="handleCompletePrint">
+        <DropdownMenuItem
+          :disabled="disabledControls.includes('more-print')"
+          @click="
+            disabledControls.includes('more-print') || handleCompletePrint()
+          "
+        >
           <CheckIcon />
 
           <span>标记为打印完成</span>
@@ -29,26 +46,41 @@
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem :disabled="!isSimplex" @click="handleRecoveryAll">
+        <DropdownMenuItem
+          :disabled="disabledControls.includes('more-print') || !isSimplex"
+          @click="
+            disabledControls.includes('more-print') || handleRecoveryAll()
+          "
+        >
           <PrinterIcon />
 
           <span>打印全部</span>
         </DropdownMenuItem>
 
-        <DropdownMenuItem :disabled="isSimplex" @click="handleRecoveryBack">
+        <DropdownMenuItem
+          :disabled="disabledControls.includes('more-print') || isSimplex"
+          @click="
+            disabledControls.includes('more-print') || handleRecoveryBack()
+          "
+        >
           <PrinterIcon />
 
           <span>打印背面</span>
         </DropdownMenuItem>
 
-        <DropdownMenuItem :disabled="isSimplex" @click="handleRecoveryFront">
+        <DropdownMenuItem
+          :disabled="disabledControls.includes('more-print') || isSimplex"
+          @click="
+            disabledControls.includes('more-print') || handleRecoveryFront()
+          "
+        >
           <PrinterIcon />
 
           <span>打印正面</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  </fieldset>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -74,7 +106,8 @@ const { selectedDoc } = storeToRefs(useSelectionStore());
 const printConfigStore = usePrintConfigStore();
 
 // 打印 Sheet 共享上下文
-const { form, pageNumbers, closeSheetPrint } = useSheetPrintContext();
+const { form, pageNumbers, closeSheetPrint, disabledControls } =
+  useSheetPrintContext();
 
 // 根据当前表单配置创建可入队的完整打印配置
 const createPrintConfig = (config: PrintConfigValues) => {

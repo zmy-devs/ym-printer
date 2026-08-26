@@ -68,7 +68,6 @@
         <Button
           variant="outline"
           size="icon-sm"
-          :disabled="isPrintConfigOpenDisabled"
           @click.stop="handleOpen"
           v-if="variant != 'destructive'"
         >
@@ -163,11 +162,6 @@ const statusVariant = computed(() => {
   return printStatusVariantMap[printStatus.value];
 });
 
-// 非就绪文档不可打开打印配置
-const isPrintConfigOpenDisabled = computed(() => {
-  return props.data.status !== 'ready';
-});
-
 // 切换当前文档的勾选状态
 const handleToggleCheck = () => {
   toggleCheck(props.data.id);
@@ -175,10 +169,6 @@ const handleToggleCheck = () => {
 
 // 打开当前文档的打印界面
 const handleOpen = () => {
-  if (isPrintConfigOpenDisabled.value) {
-    return;
-  }
-
   selectionStore.selectDoc(props.data.id);
   eventBus.emit('dialog-print:show');
 };

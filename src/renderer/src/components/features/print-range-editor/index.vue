@@ -1,5 +1,7 @@
 <template>
-  <section class="flex flex-col rounded-md border p-1 shadow">
+  <section
+    class="p-1 flex flex-col rounded-md border border-input shadow dark:bg-input/30"
+  >
     <InputGroup
       v-for="(item, index) in modelValue"
       :key="index"
@@ -9,6 +11,7 @@
         ref="inputRefs"
         placeholder="请输入页码和范围"
         :model-value="item.range"
+        :disabled="disabled"
         @update:model-value="handleRangeChange(index, $event)"
         @blur="$emit('blur', $event)"
         @keydown.enter.prevent="handleEnter($event, index)"
@@ -19,6 +22,7 @@
 
       <PrintRangeMode
         :model-value="item.mode"
+        :disabled="disabled"
         @update:model-value="handleModeChange(index, $event)"
       />
     </InputGroup>
@@ -29,6 +33,11 @@
 import type { PrintRange } from '@type';
 import PrintRangeMode from './mode.vue';
 import { InputGroup, InputGroupInput } from '@/components/ui/input-group';
+
+// 打印范围编辑器配置
+defineProps<{
+  disabled?: boolean;
+}>();
 
 // 打印范围编辑器的双向绑定值
 const modelValue = defineModel<PrintRange[]>({ required: true });

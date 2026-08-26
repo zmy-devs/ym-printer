@@ -1,10 +1,11 @@
 <template>
-  <Select v-model="model">
+  <Select v-model="model" :disabled="disabled">
     <SelectTrigger
       :class="
         cn($props.class, {
           'shadow-none! border-none! ring-0! bg-transparent! hover:bg-accent/80! transition-colors':
             variant === 'default',
+          'pointer-events-none': disabled,
         })
       "
     >
@@ -38,8 +39,8 @@
         class="w-full justify-start dark:hover:bg-accent"
         variant="ghost"
         size="sm"
-        :disabled="refreshLock"
-        @click="handleRefresh"
+        :disabled="props.disabled || refreshLock"
+        @click="props.disabled || handleRefresh()"
       >
         <Spinner v-if="refreshLock" />
 
@@ -74,12 +75,13 @@ const { printerOrder } = storeToRefs(usePrinterStore());
 const { getPrinters, getPrinter } = usePrinterStore();
 
 // 打印机选择器展示配置
-withDefaults(
+const props = withDefaults(
   defineProps<{
     variant?: 'default' | 'outline';
     class?: ClassValue;
     valueClass?: ClassValue;
     iconVisible?: boolean;
+    disabled?: boolean;
   }>(),
   {
     variant: 'default',

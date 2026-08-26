@@ -9,6 +9,7 @@
   >
     <RangeEditor
       :model-value="componentField.modelValue"
+      :disabled="disabled"
       @update:model-value="componentField['onUpdate:modelValue']"
       @blur="componentField.onBlur"
     />
@@ -19,6 +20,11 @@
 import Field from '@/components/common/field.vue';
 import { FileTextIcon } from '@lucide/vue';
 import RangeEditor from '@/components/features/print-range-editor/index.vue';
+
+// 打印范围配置控件参数
+defineProps<{
+  disabled?: boolean;
+}>();
 </script>
 
 <style scoped lang="scss"></style>

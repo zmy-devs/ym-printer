@@ -6,13 +6,12 @@
 import type { DocStatus } from '@type';
 import type { Component } from 'vue';
 import ItemError from './item-error.vue';
-import ItemLoading from './item-loading.vue';
 import ItemReady from './item-ready.vue';
 import { useDocStore } from '@/stores/doc.store';
 
 // 文档状态对应的展示组件
 const itemMap: Record<DocStatus, Component> = {
-  loading: ItemLoading,
+  loading: ItemReady,
   ready: ItemReady,
   error: ItemError,
 };

@@ -14,7 +14,10 @@
       <Button
         :variant="viewMode === 'preview' ? 'default' : 'ghost'"
         size="icon-xs"
-        @click="handleTogglePreviewMode"
+        :disabled="disabledControls.includes('preview')"
+        @click="
+          disabledControls.includes('preview') || handleTogglePreviewMode()
+        "
       >
         <EyeIcon class="size-4.5" v-if="viewMode === 'preview'" />
 
@@ -26,8 +29,8 @@
       <Button
         variant="ghost"
         size="icon-xs"
-        :disabled="reloadLock || isReloadDisabled"
-        @click="handleReload()"
+        :disabled="disabledReload"
+        @click="disabledReload || handleReload()"
       >
         <Spinner class="size-4.5" v-if="reloadLock" />
 
@@ -52,9 +55,9 @@ import { EyeIcon, EyeOffIcon, RotateCwIcon, XIcon } from '@lucide/vue';
 import Tooltip from '@/components/common/tooltip.vue';
 import { usePdfStore } from '@/stores/pdf.store';
 import { useDocumentService } from '@/services/document.service';
-import { usePrintConfigStore } from '@/stores/print-config.store';
 import { Spinner } from '@/components/ui/spinner';
 import { useLockFn } from '@/hooks/use-lock';
+import { useSheetPrintContext } from '../context';
 
 // 当前选中的打印文档
 const { selectedDoc } = storeToRefs(useSelectionStore());
@@ -64,15 +67,15 @@ const { viewMode } = storeToRefs(usePdfStore());
 const { setViewMode } = usePdfStore();
 // 文档重新加载能力
 const { reloadDoc } = useDocumentService();
-// 判断文档打印状态是否禁用操作
-const { isPrintDisabled } = usePrintConfigStore();
+// 当前需要禁用的打印控件
+const { disabledControls } = useSheetPrintContext();
 
 // 文档重新加载操作锁
 const [reloadLock, handleReload] = useLockFn(reloadDoc);
 
-// 当前文档是否禁止重新加载
-const isReloadDisabled = computed(() => {
-  return isPrintDisabled();
+// 当前是否禁用重新加载文档
+const disabledReload = computed(() => {
+  return disabledControls.value.includes('reload') || reloadLock.value;
 });
 
 // 切换原始文档与打印预览

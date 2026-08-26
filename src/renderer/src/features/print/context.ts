@@ -1,6 +1,7 @@
 import type { PrintConfig } from '@type';
 import type { FormContext } from 'vee-validate';
 import type { ComputedRef, InjectionKey } from 'vue';
+import type { PrintControl } from './map';
 
 // 表单可编辑的打印配置
 export type PrintConfigValues = Omit<PrintConfig, 'pageNumbers'>;
@@ -9,6 +10,9 @@ export type PrintConfigValues = Omit<PrintConfig, 'pageNumbers'>;
 export type SheetPrintContext = {
   // 打印配置表单上下文
   form: FormContext<PrintConfigValues>;
+
+  // 当前需要禁用的打印控件
+  disabledControls: ComputedRef<PrintControl[]>;
 
   // 当前表单解析出的完整页码序列
   pageNumbers: ComputedRef<number[]>;

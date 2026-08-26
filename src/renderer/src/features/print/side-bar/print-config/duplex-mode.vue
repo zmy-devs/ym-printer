@@ -10,9 +10,12 @@
     <Tooltip
       label="当前打印机不支持双面打印"
       side="right"
-      :disabled="canAutoDuplex"
+      :disabled="disabled || canAutoDuplex"
     >
-      <SegmentedControl v-bind="componentField" :disabled="!canAutoDuplex">
+      <SegmentedControl
+        v-bind="componentField"
+        :disabled="disabled || !canAutoDuplex"
+      >
         <SegmentedControlItem value="auto">自动</SegmentedControlItem>
 
         <SegmentedControlItem value="manual">手动</SegmentedControlItem>
@@ -33,6 +36,11 @@ import { FilesIcon } from '@lucide/vue';
 
 // 打印 Sheet 共享状态
 const { canAutoDuplex } = useSheetPrintContext();
+
+// 双面方式配置控件参数
+defineProps<{
+  disabled?: boolean;
+}>();
 </script>
 
 <style scoped lang="scss"></style>

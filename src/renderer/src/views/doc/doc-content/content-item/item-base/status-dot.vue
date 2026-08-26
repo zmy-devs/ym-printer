@@ -7,7 +7,7 @@ import { cva } from 'class-variance-authority';
 
 // 状态点显示参数
 defineProps<{
-  variant?: 'success' | 'warn' | 'error';
+  variant?: 'success' | 'warn' | 'error' | 'neutral';
 }>();
 
 // 状态点的语义样式配置
@@ -17,6 +17,7 @@ const statusDotVariants = cva('size-2 rounded-full', {
       success: 'bg-green-500',
       warn: 'bg-yellow-500',
       error: 'bg-red-500',
+      neutral: 'bg-muted-foreground',
     },
   },
   defaultVariants: {

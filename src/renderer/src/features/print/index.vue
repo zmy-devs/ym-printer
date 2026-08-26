@@ -26,7 +26,7 @@
           <SideBar class="h-full" />
         </ResizablePanel>
 
-        <ResizableHandle />
+        <ResizableHandle class="bg-transparent! border-r" />
 
         <ResizablePanel :min-size="50">
           <Content class="h-full bg-background" />
@@ -62,6 +62,7 @@ import { usePrintConfigStore } from '@/stores/print-config.store';
 import { usePrinterStore } from '@/stores/printer.store';
 import { eventBus } from '@/utils/event-bus';
 import { sheetPrintContextKey, type PrintConfigValues } from './context.js';
+import { disabledMap } from './map';
 
 // 打印 Sheet 是否可见
 const visible = ref(false);
@@ -72,6 +73,22 @@ const { setViewMode } = usePdfStore();
 const printConfigStore = usePrintConfigStore();
 // 系统打印机与驱动能力
 const { getPrinter } = usePrinterStore();
+
+// 当前文档和打印流程需要禁用的控件
+const disabledControls = computed(() => {
+  const doc = selectedDoc.value;
+
+  // return disabledMap.all;
+  if (
+    !doc ||
+    doc.status === 'error' ||
+    printConfigStore.isPrintDisabled(doc.id)
+  ) {
+    return disabledMap.all;
+  }
+
+  return doc.status === 'loading' ? disabledMap.loading : [];
+});
 
 // 关闭打印 Sheet
 const closeSheetPrint = () => {
@@ -218,6 +235,7 @@ eventBus.on('dialog-print:show', () => {
 
 provide(sheetPrintContextKey, {
   form,
+  disabledControls,
   pageNumbers,
   canAutoDuplex,
   closeSheetPrint,
