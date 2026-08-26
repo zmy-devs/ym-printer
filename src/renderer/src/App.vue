@@ -10,6 +10,8 @@
 
     <DialogPreset />
 
+    <DialogWorkspace />
+
     <DialogPrinterTask />
   </TooltipProvider>
 
@@ -21,6 +23,7 @@ import Print from '@/features/print/index.vue';
 import DialogSetting from '@/features/settings/index.vue';
 import DialogGroup from '@/features/dialog/group/index.vue';
 import DialogPreset from '@/features/dialog/preset/index.vue';
+import DialogWorkspace from '@/features/dialog/workspace/index.vue';
 import DialogPrinterTask from '@/features/dialog/printer-task/index.vue';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';

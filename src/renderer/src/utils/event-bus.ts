@@ -12,6 +12,8 @@ type EventMap = {
 
   'dialog-preset:add:show': [data: string];
   'dialog-preset:edit:show': [data: Preset];
+
+  'dialog-workspace:edit:show': [];
 };
 
 type EventName = keyof EventMap;

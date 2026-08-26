@@ -12,10 +12,16 @@
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start" class="w-60">
-        <DropdownMenuItem>
+        <!-- <DropdownMenuItem>
           <UsersRoundIcon />
 
           <span>开启团队协作</span>
+        </DropdownMenuItem> -->
+
+        <DropdownMenuItem @click="handleEditWorkspace">
+          <PencilLineIcon />
+
+          <span>编辑工作空间</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -23,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { BriefcaseIcon, ChevronsUpDownIcon, UsersRoundIcon } from '@lucide/vue';
+import { BriefcaseIcon, ChevronsUpDownIcon, PencilLineIcon } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -32,13 +38,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useSettingsStore } from '@/stores/settings.store';
+import { eventBus } from '@/utils/event-bus';
 
 // 应用设置数据
 const { settings } = storeToRefs(useSettingsStore());
+
 // 当前工作空间标题
 const workspaceTitle = computed(() => {
   return `${settings.value.workspaceName}的工作空间`;
 });
+
+// 打开编辑工作空间弹窗
+const handleEditWorkspace = () => {
+  eventBus.emit('dialog-workspace:edit:show');
+};
 </script>
 
 <style scoped lang="scss"></style>

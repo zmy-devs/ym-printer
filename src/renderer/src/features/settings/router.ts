@@ -2,15 +2,15 @@ import {
   CircleAlertIcon,
   CircleArrowUpIcon,
   CircleDollarSignIcon,
-  UsersRoundIcon,
   PaletteIcon,
+  SettingsIcon,
 } from '@lucide/vue';
 import type { Component } from 'vue';
 import Appearance from './view/appearance.vue';
 import Price from './view/price.vue';
 import Update from './view/update.vue';
 import About from './view/about.vue';
-import Team from './view/team.vue';
+import General from './view/general.vue';
 import { appVersion } from '@shared/app-info';
 
 export interface Route {
@@ -24,10 +24,10 @@ export interface Route {
 // 设置页导航配置
 const router: Route[] = [
   {
-    id: 'team',
-    name: '团队协作',
-    icon: UsersRoundIcon,
-    component: Team,
+    id: 'general',
+    name: '通用',
+    icon: SettingsIcon,
+    component: General,
   },
   {
     id: 'price',

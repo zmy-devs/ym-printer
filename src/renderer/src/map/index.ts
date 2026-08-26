@@ -126,3 +126,8 @@ export const presetTitleMap = {
   add: '新建预设',
   edit: '编辑预设',
 };
+
+// 工作空间表单标题
+export const workspaceTitleMap = {
+  edit: '编辑工作空间',
+};

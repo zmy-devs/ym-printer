@@ -23,8 +23,8 @@ const createSettings = () => {
     //自动更新
     autoUpdate: false,
 
-    //团队协作客户端标识
-    clientId: nanoid(),
+    //工作空间唯一标识
+    workspaceId: nanoid(),
 
     //团队协作工作空间名称
     workspaceName: '',
