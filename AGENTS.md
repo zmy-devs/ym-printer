@@ -34,6 +34,8 @@
 - `components/ui` 用于存放 `shadcn-vue` 组件。
 - `components/features` 用于存放业务功能组件。
 - `components/layout` 用于存放布局组件。
+- 控制组件禁用状态时，派生值统一命名为 `disabledXxx`，不要使用 `canXxx` 再在模板中取反。
+- 禁用项直接绑定 `:disabled="disabledXxx"`，并在事件表达式中通过 `@click="disabledXxx || handleXxx()"` 阻断调用，不在事件处理函数中重复添加禁用判断。
 
 ## 文档与沟通
 
