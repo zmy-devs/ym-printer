@@ -2,12 +2,17 @@
   <section class="h-10 pl-3 pr-1 flex items-center gap-2 shrink-0">
     <FileIcon :ext="selectedDoc?.ext" />
 
-    <span class="text-sm font-medium">
+    <span class="mr-auto text-sm font-medium">
       {{ selectedDoc?.name }}
     </span>
 
+    <Tooltip label="用默认方式打开" side="bottom">
+      <Button variant="ghost" size="icon-xs" @click="handleOpenDefault">
+        <PlayIcon class="size-4.5" />
+      </Button>
+    </Tooltip>
+
     <Tooltip
-      trigger-class="ml-auto"
       :label="viewMode === 'preview' ? '取消预览' : '进入预览'"
       side="bottom"
     >
@@ -51,7 +56,13 @@ import { SheetClose } from '@/components/ui/sheet';
 import FileIcon from '@/components/features/file-icon.vue';
 import { useSelectionStore } from '@/stores/selection.store';
 import { Button } from '@/components/ui/button';
-import { EyeIcon, EyeOffIcon, RotateCwIcon, XIcon } from '@lucide/vue';
+import {
+  EyeIcon,
+  EyeOffIcon,
+  PlayIcon,
+  RotateCwIcon,
+  XIcon,
+} from '@lucide/vue';
 import Tooltip from '@/components/common/tooltip.vue';
 import { usePdfStore } from '@/stores/pdf.store';
 import { useDocumentService } from '@/services/document.service';
@@ -77,6 +88,17 @@ const [reloadLock, handleReload] = useLockFn(reloadDoc);
 const disabledReload = computed(() => {
   return disabledControls.value.includes('reload') || reloadLock.value;
 });
+
+// 使用系统默认应用打开当前文档
+const handleOpenDefault = () => {
+  const doc = selectedDoc.value;
+
+  if (!doc) {
+    return;
+  }
+
+  ipc.openPath(doc.path);
+};
 
 // 切换原始文档与打印预览
 const handleTogglePreviewMode = () => {
