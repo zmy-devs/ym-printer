@@ -45,7 +45,11 @@
         </ItemContent>
 
         <ItemActions>
-          <Button v-if="status === 'init'" size="sm" @click="checkUpdate">
+          <Button
+            v-if="status === 'init' || status == 'error'"
+            size="sm"
+            @click="checkUpdate"
+          >
             检查更新
           </Button>
 

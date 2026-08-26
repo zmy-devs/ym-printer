@@ -25,9 +25,6 @@ export const latestVersion = ref('');
 // 更新包下载进度
 export const downloadProgress = ref(0);
 
-// 是否已初始化更新服务
-const isInitialized = ref(false);
-
 // 安装已下载的更新
 export const installUpdate = async () => {
   await ipc.installUpdate();
@@ -41,6 +38,10 @@ export const checkUpdate = async () => {
     // 更新检查结果
     const latestVersionResult = await ipc.checkUpdate();
 
+    if (status.value !== 'checking') {
+      return;
+    }
+
     if (!latestVersionResult) {
       status.value = 'update-not-available';
       return;
@@ -48,23 +49,17 @@ export const checkUpdate = async () => {
 
     latestVersion.value = latestVersionResult;
     status.value = 'downloading';
-  } catch (error) {
-    showErrorToast('更新失败,请检查网络');
-    status.value = 'init';
-    console.error(error);
+  } catch (e) {
+    console.error(e);
+
+    status.value = 'error';
   }
 };
 
 // 初始化更新任务及 IPC 监听
 export const initUpdateService = () => {
-  if (isInitialized.value) {
-    return;
-  }
-
   // 设置状态仓库
   const settingsStore = useSettingsStore();
-
-  isInitialized.value = true;
 
   ipc.on('download-progress', (_, percent: number) => {
     downloadProgress.value = Math.floor(percent);
@@ -72,6 +67,12 @@ export const initUpdateService = () => {
 
   ipc.on('update-downloaded', () => {
     status.value = 'downloaded';
+  });
+
+  ipc.on('update-error', () => {
+    showErrorToast('更新失败，请检查网络');
+
+    status.value = 'error';
   });
 
   if (!settingsStore.settings.autoUpdate) {

@@ -27,3 +27,8 @@ autoUpdater.on('download-progress', (info) => {
 autoUpdater.on('update-downloaded', () => {
   sendToMainWindow('update-downloaded');
 });
+
+autoUpdater.on('error', () => {
+  sendToMainWindow('update-error');
+});
+
