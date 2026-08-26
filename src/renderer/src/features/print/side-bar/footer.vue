@@ -22,23 +22,17 @@
     </Button>
 
     <DropdownMenu>
-      <DropdownMenuTrigger as-child>
-        <Button
-          size="icon-sm"
-          variant="outline"
-          :disabled="disabledControls.includes('more-print')"
-        >
+      <DropdownMenuTrigger
+        as-child
+        :disabled="disabledControls.includes('more-print')"
+      >
+        <Button size="icon-sm" variant="outline">
           <MoreHorizontalIcon />
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent class="min-w-52">
-        <DropdownMenuItem
-          :disabled="disabledControls.includes('more-print')"
-          @click="
-            disabledControls.includes('more-print') || handleCompletePrint()
-          "
-        >
+        <DropdownMenuItem @click="handleCompletePrint">
           <CheckIcon />
 
           <span>标记为打印完成</span>
@@ -46,38 +40,41 @@
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          :disabled="disabledControls.includes('more-print') || !isSimplex"
-          @click="
-            disabledControls.includes('more-print') || handleRecoveryAll()
-          "
+        <Tooltip
+          label="打印范围必须全是单面"
+          side="right"
+          :disabled="isSimplex"
         >
-          <PrinterIcon />
+          <DropdownMenuItem :disabled="!isSimplex" @click="handleRecoveryAll">
+            <PrinterIcon />
 
-          <span>打印全部</span>
-        </DropdownMenuItem>
+            <span>打印全部</span>
+          </DropdownMenuItem>
+        </Tooltip>
 
-        <DropdownMenuItem
-          :disabled="disabledControls.includes('more-print') || isSimplex"
-          @click="
-            disabledControls.includes('more-print') || handleRecoveryBack()
-          "
+        <Tooltip
+          label="打印范围不能全是单面"
+          side="right"
+          :disabled="!isSimplex"
         >
-          <PrinterIcon />
+          <DropdownMenuItem :disabled="isSimplex" @click="handleRecoveryBack">
+            <PrinterIcon />
 
-          <span>打印背面</span>
-        </DropdownMenuItem>
+            <span>打印背面</span>
+          </DropdownMenuItem>
+        </Tooltip>
 
-        <DropdownMenuItem
-          :disabled="disabledControls.includes('more-print') || isSimplex"
-          @click="
-            disabledControls.includes('more-print') || handleRecoveryFront()
-          "
+        <Tooltip
+          label="打印范围不能全是单面"
+          side="right"
+          :disabled="!isSimplex"
         >
-          <PrinterIcon />
+          <DropdownMenuItem :disabled="isSimplex" @click="handleRecoveryFront">
+            <PrinterIcon />
 
-          <span>打印正面</span>
-        </DropdownMenuItem>
+            <span>打印正面</span>
+          </DropdownMenuItem>
+        </Tooltip>
       </DropdownMenuContent>
     </DropdownMenu>
   </section>
@@ -98,6 +95,7 @@ import { usePrintConfigStore } from '@/stores/print-config.store';
 import { showLoadingToast } from '@/utils/toast';
 import { type PrintConfigValues, useSheetPrintContext } from '../context';
 import { Doc, PrintConfig } from '@type';
+import Tooltip from '@/components/common/tooltip.vue';
 
 // 当前选中的待打印文档
 const { selectedDoc } = storeToRefs(useSelectionStore());
