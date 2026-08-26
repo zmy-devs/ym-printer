@@ -18,9 +18,9 @@
       </Button>
     </Tooltip>
 
-    <Tooltip label="切换右侧边栏可见性" side="bottom">
+    <Tooltip trigger-class="ml-auto" label="切换右侧边栏可见性" side="bottom">
       <Button
-        class="app-no-drag ml-auto"
+        class="app-no-drag"
         variant="ghost"
         size="icon-xs"
         @click="toggleRightSidebar"

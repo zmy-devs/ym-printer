@@ -64,9 +64,8 @@
         <ItemBaseDescription :data="data" v-else />
       </section>
 
-      <Tooltip label="打开打印配置">
+      <Tooltip trigger-class="ml-auto" label="打开打印配置">
         <Button
-          class="ml-auto"
           variant="outline"
           size="icon-sm"
           :disabled="isPrintConfigOpenDisabled"

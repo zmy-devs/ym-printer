@@ -28,21 +28,33 @@
       <ContextMenuSeparator />
 
       <ContextMenuGroup>
-        <ContextMenuItem variant="destructive" @click="handleClear">
-          <Trash2Icon />
-
-          <span>删除组中全部文档</span>
-        </ContextMenuItem>
-
-        <ContextMenuItem
-          variant="destructive"
-          :disabled="!canRemoveGroup"
-          @click="handleRemove"
+        <Tooltip
+          label="存在无法删除的文档"
+          side="right"
+          :disabled="!disabledClearGroupDocs"
         >
-          <Trash2Icon />
+          <ContextMenuItem
+            variant="destructive"
+            :disabled="disabledClearGroupDocs"
+            @click="disabledClearGroupDocs || handleClear()"
+          >
+            <Trash2Icon />
 
-          <span>删除组</span>
-        </ContextMenuItem>
+            <span>删除组中全部文档</span>
+          </ContextMenuItem>
+        </Tooltip>
+
+        <Tooltip label="至少保留一个分组" :disabled="!canRemoveGroup">
+          <ContextMenuItem
+            variant="destructive"
+            :disabled="!canRemoveGroup"
+            @click="handleRemove"
+          >
+            <Trash2Icon />
+
+            <span>删除组</span>
+          </ContextMenuItem>
+        </Tooltip>
       </ContextMenuGroup>
     </ContextMenuContent>
   </ContextMenu>
@@ -64,6 +76,7 @@ import { useGroupStore } from '@/stores/group.store';
 import { eventBus } from '@/utils/event-bus';
 import { useDocumentService } from '@/services/document.service';
 import { useGroupService } from '@/services/group.service';
+import Tooltip from '@/components/common/tooltip.vue';
 
 // 分组实体状态
 const groupStore = useGroupStore();
@@ -75,7 +88,7 @@ const groupService = useGroupService();
 const { getGroup } = groupStore;
 
 // 文档业务能力
-const { addDocs, clearGroupDocs } = useDocumentService();
+const { addDocs, canRemoveDocs, clearGroupDocs } = useDocumentService();
 
 // 当前右键菜单目标的分组标识
 const groupId = ref('');
@@ -83,6 +96,16 @@ const groupId = ref('');
 // 当前右键目标的分组数据
 const group = computed(() => {
   return getGroup(groupId.value);
+});
+
+// 当前右键目标分组内的文档标识
+const groupDocIds = computed(() => {
+  return groupStore.getGroupDocIds(groupId.value);
+});
+
+// 当前分组内是否存在不可删除的文档
+const disabledClearGroupDocs = computed(() => {
+  return !canRemoveDocs(groupDocIds.value);
 });
 
 // 当前右键目标是否为唯一分组

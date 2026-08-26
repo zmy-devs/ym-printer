@@ -1,6 +1,7 @@
 import { useStorage } from '@vueuse/core';
 import { storagePre } from '@shared/app-info';
 import type { Group } from '@type';
+import { toArray } from '@/utils/normalize';
 
 // 分组标识到实体的扁平映射
 type GroupMap = Record<string, Group>;
@@ -44,7 +45,7 @@ export const useGroupStore = defineStore('group', () => {
   // 删除分组实体
   const removeGroup = (ids: string | string[]) => {
     // 待删除的分组标识集合
-    const targetGroupIds = Array.isArray(ids) ? ids : [ids];
+    const targetGroupIds = toArray(ids);
 
     targetGroupIds.forEach((groupId) => {
       delete groups.value[groupId];
@@ -75,11 +76,12 @@ export const useGroupStore = defineStore('group', () => {
 
   // 从分组移除文档排序
   const removeGroupDocIds = (groupId: string, docIds: string | string[]) => {
-    docIds = Array.isArray(docIds) ? docIds : [docIds];
+    // 待移除的文档标识集合
+    const targetDocIds = toArray(docIds);
 
     // 移除目标文档后的分组文档排序
     const ids = getGroupDocIds(groupId).filter((id) => {
-      return !docIds.includes(id);
+      return !targetDocIds.includes(id);
     });
 
     setGroupDocIds(groupId, ids);

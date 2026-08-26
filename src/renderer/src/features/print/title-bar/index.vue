@@ -7,11 +7,11 @@
     </span>
 
     <Tooltip
+      trigger-class="ml-auto"
       :label="viewMode === 'preview' ? '取消预览' : '进入预览'"
       side="bottom"
     >
       <Button
-        class="ml-auto"
         :variant="viewMode === 'preview' ? 'default' : 'ghost'"
         size="icon-xs"
         @click="handleTogglePreviewMode"

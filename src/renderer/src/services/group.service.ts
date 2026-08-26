@@ -66,6 +66,7 @@ export const useGroupService = () => {
     const docIds = groupStore.getGroupDocIds(groupId);
 
     removeDocs(docIds);
+
     groupStore.removeGroup(groupId);
 
     if (selectionStore.groupId !== groupId) {

@@ -4,10 +4,23 @@ import { useDocStore } from '@/stores/doc.store';
 import { useGroupStore } from '@/stores/group.store';
 import { useSelectionStore } from '@/stores/selection.store';
 import { usePrintConfigStore } from '@/stores/print-config.store';
-import type { Doc } from '@type';
+import { toArray } from '@/utils/normalize';
+import type { Doc, DocStatus, PrintStatus } from '@type';
 
 // 主进程导入后、尚未关联分组的文档数据
 type ImportedDoc = Omit<Doc, 'groupId'>;
+
+// 允许移除的文档解析状态
+const removableDocStatuses: DocStatus[] = ['ready', 'error'];
+
+// 允许移除的打印流程状态
+const removablePrintStatuses: PrintStatus[] = [
+  'idle',
+  'preparing',
+  'waiting',
+  'completed',
+  'failed',
+];
 
 // 提供文档的跨实体业务操作
 export const useDocumentService = () => {
@@ -159,10 +172,33 @@ export const useDocumentService = () => {
     }
   };
 
+  // 判断单个文档是否可安全移除
+  const canRemoveDoc = (docId: string) => {
+    // 待判断的文档实体
+    const doc = docStore.getDoc(docId);
+
+    if (!doc || !removableDocStatuses.includes(doc.status)) {
+      return false;
+    }
+
+    // 当前文档打印运行状态
+    const printStatus = printConfigStore.getPrintState(docId)?.status;
+
+    return !printStatus || removablePrintStatuses.includes(printStatus);
+  };
+
+  // 判断多个文档是否都可安全移除
+  const canRemoveDocs = (ids: string | string[]) => {
+    // 待判断的文档标识
+    const docIds = toArray(ids);
+
+    return docIds.every(canRemoveDoc);
+  };
+
   // 删除文档实体及所属分组排序
   const removeDocs = (ids: string | string[]) => {
     // 待删除的文档标识
-    const docIds = Array.isArray(ids) ? ids : [ids];
+    const docIds = toArray(ids);
 
     docIds.forEach((docId) => {
       // 待删除的文档
@@ -185,7 +221,8 @@ export const useDocumentService = () => {
 
   // 将文档移动到目标分组
   const moveDocs = (groupId: string, docIds: string | string[]) => {
-    docIds = Array.isArray(docIds) ? docIds : [docIds];
+    // 待移动的文档标识集合
+    const targetDocIds = toArray(docIds);
 
     // 目标分组
     const targetGroup = groupStore.getGroup(groupId);
@@ -195,14 +232,14 @@ export const useDocumentService = () => {
     }
 
     // 待移动的文档实体
-    const docs = docStore.getDocs(docIds);
+    const docs = docStore.getDocs(targetDocIds);
 
     docs.forEach((doc) => {
       groupStore.removeGroupDocIds(doc.groupId, [doc.id]);
       doc.groupId = groupId;
     });
 
-    groupStore.appendGroupDocIds(groupId, docIds);
+    groupStore.appendGroupDocIds(groupId, targetDocIds);
   };
 
   return {
@@ -210,6 +247,7 @@ export const useDocumentService = () => {
     getAllDocs,
     addDocs,
     reloadDoc,
+    canRemoveDocs,
     removeDocs,
     clearGroupDocs,
     moveDocs,

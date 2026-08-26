@@ -7,14 +7,16 @@
     手动：手动双面打印"
     v-slot="{ componentField }"
   >
-    <Tooltip label="当前打印机不支持双面打印" :disabled="canAutoDuplex">
-      <span>
-        <SegmentedControl v-bind="componentField" :disabled="!canAutoDuplex">
-          <SegmentedControlItem value="auto">自动</SegmentedControlItem>
+    <Tooltip
+      label="当前打印机不支持双面打印"
+      side="right"
+      :disabled="canAutoDuplex"
+    >
+      <SegmentedControl v-bind="componentField" :disabled="!canAutoDuplex">
+        <SegmentedControlItem value="auto">自动</SegmentedControlItem>
 
-          <SegmentedControlItem value="manual">手动</SegmentedControlItem>
-        </SegmentedControl>
-      </span>
+        <SegmentedControlItem value="manual">手动</SegmentedControlItem>
+      </SegmentedControl>
     </Tooltip>
   </Field>
 </template>

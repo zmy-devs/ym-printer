@@ -51,11 +51,21 @@
       <ContextMenuSeparator />
 
       <ContextMenuGroup>
-        <ContextMenuItem variant="destructive" @click="handleRemove">
-          <Trash2Icon />
+        <Tooltip
+          label="无法删除当前状态的文档"
+          side="right"
+          :disabled="!disabledRemoveDocs"
+        >
+          <ContextMenuItem
+            variant="destructive"
+            :disabled="disabledRemoveDocs"
+            @click="disabledRemoveDocs || handleRemove()"
+          >
+            <Trash2Icon />
 
-          <span>{{ isChecking ? '删除选中的文档' : '删除文档' }}</span>
-        </ContextMenuItem>
+            <span>{{ isChecking ? '删除选中的文档' : '删除文档' }}</span>
+          </ContextMenuItem>
+        </Tooltip>
       </ContextMenuGroup>
     </ContextMenuContent>
   </ContextMenu>
@@ -86,11 +96,12 @@ import { useDocStore } from '@/stores/doc.store';
 import { showSuccessToast } from '@/utils/toast';
 import { cancelCheckAll, checked, isChecking } from '@/views/doc/check';
 import { useDocumentService } from '@/services/document.service';
+import Tooltip from '@/components/common/tooltip.vue';
 
 const docStore = useDocStore();
 const { getDoc } = docStore;
 const { selectedGroups } = storeToRefs(useSelectionStore());
-const { removeDocs, moveDocs } = useDocumentService();
+const { canRemoveDocs, removeDocs, moveDocs } = useDocumentService();
 
 // 当前右键菜单目标的文档标识
 const docId = ref('');
@@ -128,6 +139,11 @@ const getTargetDocIds = () => {
 
   return doc.value ? [doc.value.id] : [];
 };
+
+// 当前菜单操作涉及的文档是否存在不可删除项
+const disabledRemoveDocs = computed(() => {
+  return !canRemoveDocs(getTargetDocIds());
+});
 
 // 使用系统默认应用打开当前文档
 const handleOpen = () => {

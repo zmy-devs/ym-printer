@@ -1,8 +1,7 @@
 <template>
   <section class="flex gap-1 shrink-0">
-    <Tooltip label="刷新" side="left">
+    <Tooltip trigger-class="ml-auto" label="刷新" side="left">
       <Button
-        class="ml-auto"
         variant="ghost"
         size="icon-xs"
         :disabled="reloadLock"

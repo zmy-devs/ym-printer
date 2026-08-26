@@ -12,8 +12,6 @@ export const usePrinterTaskService = () => {
       return;
     }
 
-    console.log('获取');
-
     printerTasks.value = await ipc.getPrinterTask(printer);
   };
 

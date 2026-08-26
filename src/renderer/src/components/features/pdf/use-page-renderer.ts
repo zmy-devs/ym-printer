@@ -13,6 +13,7 @@ import type {
   PageViewport,
   RenderTask,
 } from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { toArray } from '@/utils/normalize';
 
 import { releaseCanvas, releaseChildCanvases } from './utils';
 
@@ -115,7 +116,7 @@ export const usePageRenderer = ({
     }
 
     if (request.page !== undefined) {
-      return Array.isArray(request.page) ? request.page : [request.page];
+      return toArray(request.page);
     }
 
     return Array.from({ length: request.document.numPages }, (_, index) => {
@@ -164,9 +165,7 @@ export const usePageRenderer = ({
   // 获取指定渲染位置对应的画布
   const getPageCanvas = (index: number) => {
     // 当前渲染位置对应的页面容器
-    const pageElement = root.value?.getElementsByClassName(
-      'pdf__page',
-    )[index];
+    const pageElement = root.value?.getElementsByClassName('pdf__page')[index];
 
     return pageElement?.querySelector('canvas') ?? null;
   };

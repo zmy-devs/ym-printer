@@ -15,9 +15,9 @@
     </ItemContent>
 
     <ItemActions>
-      <Tooltip label="删除当前打印任务">
+      <Tooltip trigger-class="ml-auto" label="删除当前打印任务">
         <Button
-          class="ml-auto text-destructive hover:text-destructive"
+          class="text-destructive hover:text-destructive"
           variant="outline"
           size="icon-xs"
           @click.stop="handleRemove"
