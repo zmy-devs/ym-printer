@@ -1,6 +1,11 @@
 <template>
   <section
-    class="p-1 flex flex-col rounded-md border border-input shadow dark:bg-input/30"
+    :class="
+      cn(
+        'p-1 flex flex-col rounded-md border border-input shadow dark:bg-input/30 transition-[color,box-shadow]',
+        'focus-within:ring-3 focus-within:ring-ring/50 focus-within:border-ring',
+      )
+    "
   >
     <InputGroup
       v-for="(item, index) in modelValue"
@@ -33,6 +38,7 @@
 import type { PrintRange } from '@type';
 import PrintRangeMode from './mode.vue';
 import { InputGroup, InputGroupInput } from '@/components/ui/input-group';
+import { cn } from '@/lib/utils';
 
 // 打印范围编辑器配置
 defineProps<{
