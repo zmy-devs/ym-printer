@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Doc from '@/views/doc/index.vue';
 import Layout from '@/layout/index.vue';
-import InitialSetup from '@/features/initial-setup/index.vue';
-import { hasPendingInitialSetup } from '@/features/initial-setup/steps';
+import InitialSetup from '@/views/initial-setup/index.vue';
+import { hasPendingInitialSetup } from '@/views/initial-setup/steps';
 
 // 应用路由控制器
 const router = createRouter({
