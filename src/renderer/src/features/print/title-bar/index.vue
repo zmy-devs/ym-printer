@@ -8,7 +8,7 @@
 
     <Tooltip label="用默认方式打开" side="bottom">
       <Button variant="ghost" size="icon-xs" @click="handleOpenDefault">
-        <PlayIcon class="size-4.5" />
+        <PlayIcon class="size-4" />
       </Button>
     </Tooltip>
 
@@ -24,9 +24,9 @@
           disabledControls.includes('preview') || handleTogglePreviewMode()
         "
       >
-        <EyeIcon class="size-4.5" v-if="viewMode === 'preview'" />
+        <EyeIcon class="size-4" v-if="viewMode === 'preview'" />
 
-        <EyeOffIcon class="size-4.5" v-else />
+        <EyeOffIcon class="size-4" v-else />
       </Button>
     </Tooltip>
 
@@ -37,9 +37,9 @@
         :disabled="disabledReload"
         @click="disabledReload || handleReload()"
       >
-        <Spinner class="size-4.5" v-if="reloadLock" />
+        <Spinner class="size-4" v-if="reloadLock" />
 
-        <RotateCwIcon class="size-4.5" v-else />
+        <RotateCwIcon class="size-4" v-else />
       </Button>
     </Tooltip>
 
