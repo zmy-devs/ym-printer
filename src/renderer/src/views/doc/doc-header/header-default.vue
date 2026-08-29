@@ -5,7 +5,7 @@
     v-if="selectedGroup"
   />
 
-  <AddDocButton class="ml-auto" size="sm" v-if="hasCurrentGroupDocs" />
+  <AddDocButton class="ml-auto" size="xs" v-if="hasCurrentGroupDocs" />
 </template>
 
 <script setup lang="ts">
