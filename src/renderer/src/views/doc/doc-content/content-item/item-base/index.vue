@@ -1,6 +1,6 @@
 <template>
   <label
-    class="group flex flex-col border rounded-lg overflow-hidden"
+    class="group flex flex-col border rounded-lg overflow-hidden bg-background"
     :class="{
       'border-primary': checked.has(data.id),
       'border-destructive': variant === 'destructive',

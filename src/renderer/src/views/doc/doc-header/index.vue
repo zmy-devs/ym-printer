@@ -1,5 +1,5 @@
 <template>
-  <section class="h-12 flex items-center gap-2 shrink-0">
+  <section class="h-11 flex items-center shrink-0">
     <HeaderCheck v-if="isChecking" />
 
     <HeaderDefault v-else />

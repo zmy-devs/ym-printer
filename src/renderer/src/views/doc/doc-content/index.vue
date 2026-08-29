@@ -2,7 +2,7 @@
   <DocContextMenu>
     <ScrollArea class="min-h-0 flex-1">
       <VueDraggable
-        :class="cn($props.class, 'flex flex-col gap-3')"
+        :class="cn($props.class, 'flex flex-col gap-2')"
         :animation="200"
         :force-fallback="true"
         ghost-class="opacity-0"

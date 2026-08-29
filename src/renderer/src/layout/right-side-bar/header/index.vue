@@ -1,5 +1,5 @@
 <template>
-  <header class="h-10 px-1.5 flex items-center shrink-0">
+  <header class="h-11 px-2 flex items-center shrink-0">
     <Button class="bg-accent dark:bg-accent/50" variant="ghost" size="xs">
       <PrinterIcon />
 

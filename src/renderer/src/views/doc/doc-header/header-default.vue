@@ -1,5 +1,6 @@
 <template>
   <SelectPrinter
+    class="h-8! px-2"
     value-class="font-medium"
     v-model="selectedGroup.printer"
     v-if="selectedGroup"
