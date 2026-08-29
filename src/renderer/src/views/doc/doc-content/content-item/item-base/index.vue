@@ -1,13 +1,13 @@
 <template>
   <label
-    class="flex flex-col border rounded-lg overflow-hidden"
+    class="group flex flex-col border rounded-lg overflow-hidden"
     :class="{
       'border-primary': checked.has(data.id),
       'border-destructive': variant === 'destructive',
     }"
     :for="data.id"
   >
-    <main class="group p-3 flex gap-2">
+    <main class="p-3 flex gap-2">
       <section class="size-5 mt-0.5 shrink-0">
         <slot name="icon">
           <FileIcon
@@ -56,7 +56,7 @@
 
         <span
           class="h-6 text-sm text-muted-foreground truncate"
-          v-if="!hasPrintConfig"
+          v-if="!visiblePrintConfig"
         >
           {{ data.path }}
         </span>
@@ -119,7 +119,7 @@ import { eventBus } from '@/utils/event-bus';
 // 文档卡片显示参数
 const props = defineProps<{
   data: Doc;
-  hasPrintConfig?: boolean;
+  visiblePrintConfig?: boolean;
   variant?: 'destructive';
 }>();
 

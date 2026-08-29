@@ -1,5 +1,5 @@
 <template>
-  <ItemBase v-bind="$props" :has-print-config="!!printConfig">
+  <ItemBase v-bind="$props" :visible-print-config="visiblePrintConfig">
     <template v-if="printState?.status === 'preparing'">
       <Tooltip label="开始打印">
         <Button size="xs" @click.stop="handleStart">
@@ -92,6 +92,11 @@ const printState = computed(() => {
 // 当前文档已保存的打印配置
 const printConfig = computed(() => {
   return printConfigStore.getPrintConfig(props.data.id);
+});
+
+//是否展示打印配置
+const visiblePrintConfig = computed(() => {
+  return Boolean(printConfig.value) && printState.value.status != 'idle';
 });
 
 // 取消当前打印流程
