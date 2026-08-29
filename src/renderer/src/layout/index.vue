@@ -1,6 +1,9 @@
 <template>
   <div class="wh-screen bg-sidebar" v-drag="dragOption">
-    <ResizablePanelGroup direction="horizontal" autoSaveId="ym-printer:layout">
+    <ResizablePanelGroup
+      direction="horizontal"
+      autoSaveId="ym-printer:layout:side-bar"
+    >
       <ResizablePanel
         ref="panelRef"
         :min-size="160"
@@ -12,33 +15,40 @@
         <SideBar class="h-full" />
       </ResizablePanel>
 
-      <ResizableHandle class="bg-transparent! border-r" />
+      <ResizableHandle class="w-0! bg-transparent! border-r" />
 
       <ResizablePanel class="relative flex flex-col" :min-size="50">
         <TitleBar class="border-b" />
 
-        <RouterView class="bg-background" />
+        <ResizablePanelGroup
+          direction="horizontal"
+          autoSaveId="ym-printer:layout:right-side-bar"
+        >
+          <ResizablePanel :min-size="50">
+            <RouterView class="bg-background" />
+          </ResizablePanel>
+
+          <ResizableHandle
+            class="w-0! bg-transparent! border-r"
+            v-if="rightPanelRef?.isExpanded"
+          />
+
+          <ResizablePanel
+            ref="rightPanelRef"
+            :min-size="260"
+            :default-size="0"
+            collapsible
+            :collapsedSize="0"
+            size-unit="px"
+          >
+            <RightSideBar
+              class="h-full bg-background"
+              v-if="rightPanelRef?.isExpanded"
+            />
+          </ResizablePanel>
+        </ResizablePanelGroup>
 
         <UpdateNotification />
-      </ResizablePanel>
-
-      <ResizableHandle
-        class="w-0! bg-transparent!"
-        v-if="rightPanelRef?.isExpanded"
-      />
-
-      <ResizablePanel
-        ref="rightPanelRef"
-        :min-size="260"
-        :default-size="0"
-        collapsible
-        :collapsedSize="0"
-        size-unit="px"
-      >
-        <RightSideBar
-          class="h-full bg-background"
-          v-if="rightPanelRef?.isExpanded"
-        />
       </ResizablePanel>
     </ResizablePanelGroup>
   </div>

@@ -1,10 +1,5 @@
 <template>
-  <section
-    class="h-10 px-2 flex items-center shrink-0 app-drag"
-    :class="{
-      'pr-34!': rightPanelRef?.isCollapsed,
-    }"
-  >
+  <section class="h-10 pl-2 pr-34 flex items-center shrink-0 app-drag">
     <Tooltip label="切换侧边栏可见性" side="bottom">
       <Button
         class="app-no-drag"

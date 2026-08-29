@@ -1,8 +1,8 @@
 <template>
   <section class="relative flex flex-col">
-    <Header class="border-b bg-sidebar" />
+    <Header class="border-b" />
 
-    <Content class="h-full border-l" />
+    <Content class="h-full" />
   </section>
 </template>
 
