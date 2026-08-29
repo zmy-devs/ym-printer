@@ -1,7 +1,7 @@
 <template>
   <section
     ref="containerRef"
-    class="h-5.5 relative flex items-center gap-1.5 overflow-hidden"
+    class="h-6 relative flex items-center gap-1.5 overflow-hidden"
   >
     <Tooltip
       :label="configuration.label"

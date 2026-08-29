@@ -55,7 +55,7 @@
         </div>
 
         <span
-          class="text-sm text-muted-foreground truncate"
+          class="h-6 text-sm text-muted-foreground truncate"
           v-if="!hasPrintConfig"
         >
           {{ data.path }}
