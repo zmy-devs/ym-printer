@@ -52,17 +52,6 @@ const getDuplexMode = (config: PrintConfig, phase: PrintPhase) => {
   return phase === 'all' && isAutoDuplexPrint(config) ? 'auto' : 'manual';
 };
 
-// 调用打印程序并兼容其成功退出码
-const executePrint = async (args: string[]) => {
-  try {
-    await execFile(printerPath, args);
-  } catch (error) {
-    console.log(error);
-
-    throw error;
-  }
-};
-
 // 获取系统打印机及其双面能力
 export const getPrinters = async (_: IpcMainInvokeEvent) => {
   // 获取系统打印机的 PowerShell 命令
@@ -105,7 +94,7 @@ export const print = async (
     `--dpi=300`,
   ];
 
-  await executePrint(args);
+  await execFile(printerPath, args);
 };
 
 // 打印测试页面
@@ -124,7 +113,7 @@ export const printTest = async (
     `--color=${cartridge}`,
   ];
 
-  await executePrint(args);
+  await execFile(printerPath, args);
 };
 
 // 获取指定打印机的系统任务

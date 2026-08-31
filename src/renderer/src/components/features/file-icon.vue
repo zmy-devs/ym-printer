@@ -37,7 +37,7 @@ const map = {
 
 // 当前文档类型的图标信息
 const info = computed(() => {
-  return map[props.ext as keyof typeof map];
+  return map[props.ext as keyof typeof map] ?? map.pdf;
 });
 </script>
 
