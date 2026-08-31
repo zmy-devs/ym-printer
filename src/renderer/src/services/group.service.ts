@@ -1,6 +1,5 @@
 import { nanoid } from 'nanoid';
 import type { Group } from '@type';
-import { useDocumentService } from '@/services/document.service';
 import { useGroupStore } from '@/stores/group.store';
 import { useSelectionStore } from '@/stores/selection.store';
 
@@ -8,9 +7,6 @@ import { useSelectionStore } from '@/stores/selection.store';
 export const useGroupService = () => {
   const groupStore = useGroupStore();
   const selectionStore = useSelectionStore();
-
-  // 文档级联删除能力
-  const { removeDocs } = useDocumentService();
 
   // 初始化当前分组选择
   const initSelection = () => {
@@ -57,15 +53,6 @@ export const useGroupService = () => {
     if (!group) {
       return;
     }
-
-    if (groupStore.groupIds.length <= 1) {
-      return;
-    }
-
-    // 待删除分组下的文档标识
-    const docIds = groupStore.getGroupDocIds(groupId);
-
-    removeDocs(docIds);
 
     groupStore.removeGroup(groupId);
 

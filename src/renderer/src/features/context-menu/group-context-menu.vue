@@ -44,11 +44,15 @@
           </ContextMenuItem>
         </Tooltip>
 
-        <Tooltip label="至少保留一个分组" :disabled="!canRemoveGroup">
+        <Tooltip
+          :label="disabledRemoveGroup"
+          side="right"
+          :disabled="!disabledRemoveGroup"
+        >
           <ContextMenuItem
             variant="destructive"
-            :disabled="!canRemoveGroup"
-            @click="handleRemove"
+            :disabled="Boolean(disabledRemoveGroup)"
+            @click="Boolean(disabledRemoveGroup) || handleRemove()"
           >
             <Trash2Icon />
 
@@ -108,9 +112,17 @@ const disabledClearGroupDocs = computed(() => {
   return !canRemoveDocs(groupDocIds.value);
 });
 
-// 当前右键目标是否为唯一分组
-const canRemoveGroup = computed(() => {
-  return groupStore.groupIds.length > 1;
+// 当前分组是否因非空或唯一分组约束而禁止删除
+const disabledRemoveGroup = computed(() => {
+  if (groupStore.groupIds.length <= 1) {
+    return '至少保留一个分组';
+  }
+
+  if (groupDocIds.value.length > 0) {
+    return '请先删除组中全部文档';
+  }
+
+  return;
 });
 
 // 处理右键菜单目标
@@ -165,12 +177,12 @@ const handleRemove = async () => {
   }
 
   // 是否确认删除分组
-  const res = await AlertDialog.confirm({
+  const confirmed = await AlertDialog.confirm({
     title: `删除组`,
     description: `是否要删除组"${group.value.name}"？`,
   });
 
-  if (!res) {
+  if (!confirmed) {
     return;
   }
 
