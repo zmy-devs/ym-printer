@@ -6,8 +6,8 @@
     :scale="2"
     :page="page"
     @loaded="handleLoaded"
-    @loading-failed="handleLoadingFailed"
-    @rendering-failed="console.error"
+    @loading-failed="handlePdfFailed"
+    @rendering-failed="handlePdfFailed"
   />
 </template>
 
@@ -29,8 +29,20 @@ const { pageNumbers } = useSheetPrintContext();
 // 当前 PDF 文件二进制数据
 const buffer = shallowRef<Uint8Array | null>(null);
 
+// 将当前文档的 PDF 处理失败状态同步到文档实体
+const handlePdfFailed = (error: Error) => {
+  console.error(error);
+
+  if (!selectedDoc.value) {
+    return;
+  }
+
+  selectedDoc.value.status = 'error';
+};
+
 // 加载当前 PDF 并接收解析失败事件
 const { doc } = usePdf({
+  onError: handlePdfFailed,
   source: buffer,
 });
 
@@ -60,17 +72,6 @@ const handleLoaded = (loadedDocument: PDFDocumentProxy) => {
   }
 };
 
-// 将当前文档的 PDF 加载失败状态同步到文档实体
-const handleLoadingFailed = (error: Error) => {
-  console.error(error);
-
-  if (!selectedDoc.value) {
-    return;
-  }
-
-  selectedDoc.value.status = 'error';
-};
-
 onMounted(async () => {
   if (!selectedDoc.value) {
     return;
@@ -81,7 +82,7 @@ onMounted(async () => {
 
     buffer.value = await ipc.getPdf(md5);
   } catch (error) {
-    handleLoadingFailed(error as Error);
+    handlePdfFailed(error as Error);
   }
 });
 </script>
