@@ -168,13 +168,5 @@ export const removePrinterTask = async (
       ? `powershell -NoProfile "Get-PrintJob -PrinterName '${option.printer}' | Remove-PrintJob"`
       : `powershell -NoProfile "Remove-PrintJob -PrinterName '${option.printer}' -ID ${option.id}"`;
 
-  try {
-    await exec(cmd);
-
-    return true;
-  } catch (error) {
-    console.error(error);
-
-    return false;
-  }
+  await exec(cmd);
 };

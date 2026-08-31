@@ -90,9 +90,7 @@ const [printTestLock, handlePrintTest] = useLockFn(
       loadingMsg: `正在打印机测试页（${cartridge == 'black' ? '黑白' : '彩色'}）`,
       successMsg: '打印测试页完成',
       errorMsg: '打印测试页失败',
-      cb: async () => {
-        await ipc.printTest(selectedPrinter.value, cartridge);
-      },
+      cb: () => ipc.printTest(selectedPrinter.value, cartridge),
     });
   },
 );
@@ -102,7 +100,7 @@ const handleRemoveAll = async () => {
   showLoadingToast({
     loadingMsg: '正在删除打印机所有任务',
     successMsg: '已删除打印机所有任务',
-    errorMsg: '打印机所有任务删除失败',
+    errorMsg: '删除打印机所有任务失败',
     cb: () => handleRemovePrinterTask(),
   });
 };
