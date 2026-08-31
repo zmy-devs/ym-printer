@@ -1,6 +1,6 @@
 import type { PrintConfig } from '@type';
 import type { FormContext } from 'vee-validate';
-import type { ComputedRef, InjectionKey } from 'vue';
+import type { ComputedRef, InjectionKey, Ref } from 'vue';
 import type { PrintControl } from './map';
 
 // 表单可编辑的打印配置
@@ -19,6 +19,12 @@ export type SheetPrintContext = {
 
   // 当前选择的打印机是否支持自动双面
   canAutoDuplex: ComputedRef<boolean>;
+
+  // 文档重新加载操作锁
+  reloadLock: Ref<boolean>;
+
+  // 重新加载当前文档
+  handleReload: () => Promise<void>;
 
   // 关闭打印 Sheet
   closeSheetPrint: () => void;

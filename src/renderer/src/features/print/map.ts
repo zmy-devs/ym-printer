@@ -30,14 +30,11 @@ const allControls: PrintControl[] = [
 ];
 
 // 文档和打印流程状态对应的禁用控件
-export const disabledMap: Record<'loading' | 'all', PrintControl[]> = {
-  loading: [
-    'range',
-    'start-print',
-    'prepare-print',
-    'more-print',
-    'reload',
-    'preview',
-  ],
-  all: allControls,
+export const disabledMap: Record<
+  'loading' | 'error' | 'ready',
+  PrintControl[]
+> = {
+  loading: ['range', 'start-print', 'prepare-print', 'more-print', 'preview'],
+  error: allControls,
+  ready: [],
 };

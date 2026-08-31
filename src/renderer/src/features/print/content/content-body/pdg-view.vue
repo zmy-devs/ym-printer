@@ -6,7 +6,7 @@
     :scale="2"
     :page="page"
     @loaded="handleLoaded"
-    @loading-failed="console.error"
+    @loading-failed="handleLoadingFailed"
     @rendering-failed="console.error"
   />
 </template>
@@ -17,7 +17,6 @@ import { useSelectionStore } from '@/stores/selection.store';
 import Pdf, { usePdf } from '@/components/features/pdf';
 import type { PDFDocumentProxy } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { useSheetPrintContext } from '../../context';
-import { watchImmediate } from '@vueuse/core';
 
 // PDF 预览配置状态
 const { scale, viewMode } = storeToRefs(usePdfStore());
@@ -30,15 +29,7 @@ const { pageNumbers } = useSheetPrintContext();
 // 当前 PDF 文件二进制数据
 const buffer = shallowRef<Uint8Array | null>(null);
 
-// 已提交到 PDF 解析流程的文档标识
-type PreviewTarget = {
-  docId: string;
-  md5: string;
-};
-
-// 当前预览数据对应的文档
-const previewTarget = shallowRef<PreviewTarget | null>(null);
-
+// 加载当前 PDF 并接收解析失败事件
 const { doc } = usePdf({
   source: buffer,
 });
@@ -54,60 +45,45 @@ const page = computed(() => {
 
 // 更新当前文档的页数
 const handleLoaded = (loadedDocument: PDFDocumentProxy) => {
-  // 当前预览数据关联的文档
-  const target = previewTarget.value;
-  // 当前选中的文档
-  const currentDoc = selectedDoc.value;
-
-  if (!target || !currentDoc) {
+  if (!selectedDoc.value || loadedDocument !== doc.value) {
     return;
   }
 
-  if (
-    currentDoc.id !== target.docId ||
-    currentDoc.md5 !== target.md5 ||
-    loadedDocument !== doc.value
-  ) {
-    return;
-  }
+  // 当前 PDF 实际解析出的页数
+  const pageCount = loadedDocument.numPages;
 
-  currentDoc.pageCount = loadedDocument.numPages;
+  selectedDoc.value.pageCount = pageCount;
+
+  //页数为0表示出错
+  if (pageCount === 0) {
+    selectedDoc.value.status = 'error';
+  }
 };
 
-// 根据当前文档状态读取最新 PDF
-watchImmediate(
-  () => {
-    return [selectedDoc.value?.id, selectedDoc.value?.md5] as const;
-  },
-  async ([docId, md5], _, onCleanup) => {
-    // 当前请求的失效状态
-    const loadState = {
-      isCancelled: false,
-    };
+// 将当前文档的 PDF 加载失败状态同步到文档实体
+const handleLoadingFailed = (error: Error) => {
+  console.error(error);
 
-    previewTarget.value = null;
-    buffer.value = null;
+  if (!selectedDoc.value) {
+    return;
+  }
 
-    // 文档切换或组件卸载时阻止旧请求覆盖新预览
-    onCleanup(() => {
-      loadState.isCancelled = true;
-    });
+  selectedDoc.value.status = 'error';
+};
 
-    if (!docId || !md5) {
-      return;
-    }
+onMounted(async () => {
+  if (!selectedDoc.value) {
+    return;
+  }
 
-    // 当前文档的 PDF 二进制数据
-    const nextBuffer = await ipc.getPdf(md5);
+  try {
+    const md5 = selectedDoc.value.md5;
 
-    if (loadState.isCancelled) {
-      return;
-    }
-
-    previewTarget.value = { docId, md5 };
-    buffer.value = nextBuffer;
-  },
-);
+    buffer.value = await ipc.getPdf(md5);
+  } catch (error) {
+    handleLoadingFailed(error as Error);
+  }
+});
 </script>
 
 <style scoped lang="scss">

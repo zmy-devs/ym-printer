@@ -6,12 +6,6 @@
       {{ selectedDoc?.name }}
     </span>
 
-    <Tooltip label="用默认方式打开" side="bottom">
-      <Button variant="ghost" size="icon-xs" @click="handleOpenDefault">
-        <PlayIcon class="size-4" />
-      </Button>
-    </Tooltip>
-
     <Tooltip
       :label="viewMode === 'preview' ? '取消预览' : '进入预览'"
       side="bottom"
@@ -30,12 +24,18 @@
       </Button>
     </Tooltip>
 
+    <Tooltip label="用默认方式打开" side="bottom">
+      <Button variant="ghost" size="icon-xs" @click="handleOpenDefault">
+        <PlayIcon class="size-4" />
+      </Button>
+    </Tooltip>
+
     <Tooltip label="重新加载文档" side="bottom">
       <Button
         variant="ghost"
         size="icon-xs"
-        :disabled="disabledReload"
-        @click="disabledReload || handleReload()"
+        :disabled="reloadLock"
+        @click="reloadLock || handleReload()"
       >
         <Spinner class="size-4" v-if="reloadLock" />
 
@@ -65,9 +65,7 @@ import {
 } from '@lucide/vue';
 import Tooltip from '@/components/common/tooltip.vue';
 import { usePdfStore } from '@/stores/pdf.store';
-import { useDocumentService } from '@/services/document.service';
 import { Spinner } from '@/components/ui/spinner';
-import { useLockFn } from '@/hooks/use-lock';
 import { useSheetPrintContext } from '../context';
 
 // 当前选中的打印文档
@@ -76,18 +74,8 @@ const { selectedDoc } = storeToRefs(useSelectionStore());
 const { viewMode } = storeToRefs(usePdfStore());
 // 更新文档预览模式
 const { setViewMode } = usePdfStore();
-// 文档重新加载能力
-const { reloadDoc } = useDocumentService();
-// 当前需要禁用的打印控件
-const { disabledControls } = useSheetPrintContext();
-
-// 文档重新加载操作锁
-const [reloadLock, handleReload] = useLockFn(reloadDoc);
-
-// 当前是否禁用重新加载文档
-const disabledReload = computed(() => {
-  return disabledControls.value.includes('reload') || reloadLock.value;
-});
+// 打印控件禁用状态与文档重新加载能力
+const { disabledControls, reloadLock, handleReload } = useSheetPrintContext();
 
 // 使用系统默认应用打开当前文档
 const handleOpenDefault = () => {

@@ -63,6 +63,8 @@ import { usePrinterStore } from '@/stores/printer.store';
 import { eventBus } from '@/utils/event-bus';
 import { sheetPrintContextKey, type PrintConfigValues } from './context.js';
 import { disabledMap } from './map';
+import { useDocumentService } from '@/services/document.service';
+import { useLockFn } from '@/hooks/use-lock';
 
 // 打印 Sheet 是否可见
 const visible = ref(false);
@@ -73,21 +75,22 @@ const { setViewMode } = usePdfStore();
 const printConfigStore = usePrintConfigStore();
 // 系统打印机与驱动能力
 const { getPrinter } = usePrinterStore();
+// 文档重新加载能力
+const { reloadDoc } = useDocumentService();
+
+// 文档重新加载操作锁与执行函数
+const [reloadLock, handleReload] = useLockFn(reloadDoc);
 
 // 当前文档和打印流程需要禁用的控件
 const disabledControls = computed(() => {
   const doc = selectedDoc.value;
 
   // return disabledMap.all;
-  if (
-    !doc ||
-    doc.status === 'error' ||
-    printConfigStore.isPrintDisabled(doc.id)
-  ) {
-    return disabledMap.all;
+  if (!doc || printConfigStore.isPrintDisabled(doc.id) || doc.pageCount <= 0) {
+    return disabledMap.error;
   }
 
-  return doc.status === 'loading' ? disabledMap.loading : [];
+  return disabledMap[doc.status];
 });
 
 // 关闭打印 Sheet
@@ -238,6 +241,8 @@ provide(sheetPrintContextKey, {
   disabledControls,
   pageNumbers,
   canAutoDuplex,
+  reloadLock,
+  handleReload,
   closeSheetPrint,
 });
 </script>

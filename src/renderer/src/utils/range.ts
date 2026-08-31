@@ -117,7 +117,7 @@ export const isPrintRangeInBounds = (
     return true;
   }
 
-  if (pageCount === undefined) {
+  if (!pageCount) {
     return false;
   }
 

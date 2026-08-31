@@ -65,12 +65,7 @@
       </section>
 
       <Tooltip trigger-class="ml-auto" label="打开打印配置">
-        <Button
-          variant="outline"
-          size="icon-sm"
-          @click.stop="handleOpen"
-          v-if="variant != 'destructive'"
-        >
+        <Button variant="outline" size="icon-sm" @click.stop="handleOpen">
           <SquareArrowOutUpRightIcon />
         </Button>
       </Tooltip>
