@@ -82,46 +82,18 @@ export const useDocumentService = () => {
     });
   };
 
-  // 持久化导入文档及其分组排序
-  const saveDocs = (docs: Doc[], groupId: string) => {
-    docStore.addDocs(docs);
-
-    // 新增文档的标识列表
-    const docIds = docs.map((doc) => doc.id);
-
-    groupStore.appendGroupDocIds(groupId, docIds);
-  };
-
-  // 更新解析成功后的文档状态
-  const markDocAsReady = (docId: string) => {
-    // 解析完成后仍存在的文档实体
-    const storedDoc = docStore.getDoc(docId);
-
-    if (!storedDoc) {
-      return;
-    }
-
-    storedDoc.status = 'ready';
-    printConfigStore.initPrintState(storedDoc.id);
-  };
-
-  // 更新解析失败后的文档状态
-  const markDocAsError = (docId: string) => {
-    // 解析失败后仍存在的文档实体
-    const storedDoc = docStore.getDoc(docId);
-
-    if (storedDoc) {
-      storedDoc.status = 'error';
-    }
-  };
-
   // 异步解析已保存的单个文档
-  const parseDoc = async (doc: Doc) => {
+  const parseDoc = async (docId: string) => {
+    const doc = docStore.getDoc(docId);
+
     try {
       await ipc.parserDoc(toRaw(doc));
-      markDocAsReady(doc.id);
+
+      doc.status = 'ready';
     } catch {
-      markDocAsError(doc.id);
+      doc.status = 'error';
+    } finally {
+      printConfigStore.initPrintState(doc.id);
     }
   };
 
@@ -141,9 +113,17 @@ export const useDocumentService = () => {
       return;
     }
 
-    saveDocs(newDocs, groupId);
+    // 新增的文档id
+    const docIds = newDocs.map((doc) => doc.id);
 
-    newDocs.forEach(parseDoc);
+    //添加文档
+    docStore.addDocs(newDocs);
+
+    //添加到组中排序
+    groupStore.appendGroupDocIds(groupId, docIds);
+
+    //解析
+    docIds.forEach(parseDoc);
   };
 
   // 重新读取文档路径并刷新内容缓存
