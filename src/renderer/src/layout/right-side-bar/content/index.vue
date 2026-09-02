@@ -44,14 +44,17 @@ const handleRemovePrinterTask = async (id?: number) => {
   await handleRefreshPrinterTasks();
 };
 
-// 根据当前分组切换打印机任务队列
-const handleSelectedGroupChange = async () => {
-  selectedPrinter.value = selectedGroup.value?.printer ?? '';
+watchEffect(() => {
+  const printer = selectedGroup.value?.printer;
 
-  await handleRefreshPrinterTasks();
-};
+  if (!printer) {
+    return;
+  }
 
-watch(selectedGroup, handleSelectedGroupChange, { immediate: true });
+  selectedPrinter.value = printer;
+
+  handleRefreshPrinterTasks();
+});
 
 provide(printTaskContextKey, {
   printerTasks,
