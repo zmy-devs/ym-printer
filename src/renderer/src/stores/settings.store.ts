@@ -43,7 +43,11 @@ export const useSettingsStore = defineStore('settings', () => {
 
   //重置
   const resetSettings = () => {
-    settings.value = createSettings();
+    // 保留当前工作空间身份的默认设置
+    const defaultSettings = createSettings();
+    defaultSettings.workspaceId = settings.value.workspaceId;
+    defaultSettings.workspaceName = settings.value.workspaceName;
+    settings.value = defaultSettings;
   };
 
   return {
