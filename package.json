@@ -1,7 +1,7 @@
 {
   "name": "ym-printer",
   "productName": "Ym Printer",
-  "version": "3.7.1",
+  "version": "4.0.0",
   "description": "A desktop application for inkjet printer document preview and printing",
   "private": true,
   "license": "GPL-3.0-or-later",
