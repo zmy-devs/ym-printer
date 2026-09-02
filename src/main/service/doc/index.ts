@@ -42,6 +42,9 @@ const worker = workerPath({
 // 当前 Word 启动任务，确保只启动一次
 let wordReadyPromise: Promise<void> | null = null;
 
+// 当前应用生命周期内的 Word 安装检查任务
+let wordInstalledPromise: Promise<boolean> | null = null;
+
 // 当前 Word 启动任务的控制器
 let wordReadyController: PromiseWithResolvers<void> | null = null;
 
@@ -133,6 +136,23 @@ export const createWord = () => {
   });
 
   return wordReadyPromise;
+};
+
+// 检查当前应用生命周期内 Word 是否可用
+export const checkWordInstalled = () => {
+  if (wordInstalledPromise) {
+    return wordInstalledPromise;
+  }
+
+  wordInstalledPromise = createWord().then(
+    () => true,
+    (error: unknown) => {
+      console.error('Word 安装检查失败:', error);
+      return false;
+    },
+  );
+
+  return wordInstalledPromise;
 };
 
 // 关闭 Word 实例

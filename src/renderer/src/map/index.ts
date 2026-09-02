@@ -79,6 +79,10 @@ export const issueUrl = `https://github.com/zmy-devs/${appName}/issues`;
 
 export const updateContentUrl = `https://github.com/zmy-devs/${appName}/blob/main/docs/release-note.md`;
 
+// Microsoft Word 官方下载与购买页面
+export const wordDownloadUrl =
+  'https://www.microsoft.com/zh-cn/microsoft-365/word';
+
 export const updateMap = {
   checking: '正在检查更新...',
   'update-not-available': '已是最新版',

@@ -1,5 +1,5 @@
 import { createMainWindow } from '@/browser-windows/main';
-import { createWord, exitWord } from './service/doc';
+import { checkWordInstalled, exitWord } from './service/doc';
 import { app } from 'electron';
 import { optimizer } from '@electron-toolkit/utils';
 import { cachePath } from './utils/path';
@@ -15,9 +15,7 @@ if (!isPrimaryInstance) {
 }
 
 if (isPrimaryInstance) {
-  createWord().catch((error) => {
-    console.error('Word 预热失败:', error);
-  });
+  checkWordInstalled();
 }
 
 app.whenReady().then(async () => {

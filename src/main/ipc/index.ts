@@ -4,6 +4,12 @@ import {
   type IpcMainInvokeEvent,
   shell,
 } from 'electron';
+import { checkWordInstalled as checkWordInstalledService } from '../service/doc';
+
+// 检查当前系统是否已安装可用的 Word
+export const checkWordInstalled = (_event: IpcMainInvokeEvent) => {
+  return checkWordInstalledService();
+};
 
 //用系统默认应用打开文件
 export const openPath = (_, path: string) => {
