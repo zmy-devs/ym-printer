@@ -8,7 +8,11 @@ export const isDocument = (document: unknown): document is PDFDocumentProxy => {
 };
 
 // 释放画布占用的位图内存
-export const releaseCanvas = (canvas: HTMLCanvasElement) => {
+export const releaseCanvas = (canvas?: HTMLCanvasElement | null) => {
+  if (!canvas) {
+    return;
+  }
+
   canvas.width = 1;
   canvas.height = 1;
   canvas.getContext('2d')?.clearRect(0, 0, 1, 1);

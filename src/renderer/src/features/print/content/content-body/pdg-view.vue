@@ -3,7 +3,7 @@
     class="pdf-view m-auto preview-dark:invert-[0.8] preview-dark:hue-rotate-180"
     :source="doc"
     :width="500"
-    :scale="2"
+    :scale="1.5"
     :page="page"
     @loaded="handleLoaded"
     @loading-failed="handlePdfFailed"

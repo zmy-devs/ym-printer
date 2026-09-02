@@ -13,12 +13,20 @@
       :class="{
         'page-number': pageItem.pageNumber !== 0,
       }"
+      :data-page-key="pageItem.key"
       :data-page-number="pageItem.pageNumber"
+      :style="{
+        width: `${pageItem.displayWidth}px`,
+        height: `${pageItem.displayHeight}px`,
+      }"
     >
       <slot name="before-page" :page="pageItem.pageNumber" />
 
-      <div class="pdf__page">
-        <canvas v-if="pageItem.pageNumber !== 0" />
+      <div class="pdf__page size-full">
+        <canvas
+          v-if="pageItem.pageNumber !== 0 && visiblePageKeys.has(pageItem.key)"
+          class="size-full block"
+        />
       </div>
 
       <slot name="after-page" :page="pageItem.pageNumber" />
@@ -79,7 +87,7 @@ const { doc } = usePdf({
 });
 
 // 管理分页渲染并转发渲染结果事件
-const { pageItems } = usePageRenderer({
+const { pageItems, visiblePageKeys } = usePageRenderer({
   document: doc,
   height: toRef(props, 'height'),
   onError: (error) => {
