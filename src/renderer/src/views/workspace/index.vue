@@ -25,7 +25,7 @@
           autoSaveId="ym-printer:layout:right-side-bar"
         >
           <ResizablePanel :min-size="50">
-            <RouterView class="bg-background" />
+            <Content class="bg-background" />
           </ResizablePanel>
 
           <ResizableHandle
@@ -65,6 +65,7 @@ import {
 import SideBar from './side-bar/index.vue';
 import RightSideBar from './right-side-bar/index.vue';
 import TitleBar from './title-bar/index.vue';
+import Content from './content/index.vue';
 import UpdateNotification from '@/components/features/update-notification.vue';
 import vDrag from '@/hooks/use-drag';
 import { useDocumentService } from '@/services/document.service';

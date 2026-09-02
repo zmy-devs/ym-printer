@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Doc from '@/views/doc/index.vue';
-import Layout from '@/layout/index.vue';
+import Workspace from '@/views/workspace/index.vue';
 import InitialSetup from '@/views/initial-setup/index.vue';
 import WordNotInstalled from '@/views/word-not-installed.vue';
 import { hasPendingInitialSetup } from '@/views/initial-setup/steps';
@@ -21,18 +20,8 @@ const router = createRouter({
     },
     {
       path: '/',
-      component: Layout,
-      children: [
-        {
-          path: '',
-          redirect: { name: 'documents' },
-        },
-        {
-          path: 'doc',
-          name: 'documents',
-          component: Doc,
-        },
-      ],
+      name: 'documents',
+      component: Workspace,
     },
   ],
 });

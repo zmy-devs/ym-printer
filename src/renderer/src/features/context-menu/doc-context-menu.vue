@@ -94,7 +94,11 @@ import {
 } from '@lucide/vue';
 import { useDocStore } from '@/stores/doc.store';
 import { showSuccessToast } from '@/utils/toast';
-import { cancelCheckAll, checked, isChecking } from '@/views/doc/check';
+import {
+  cancelCheckAll,
+  checked,
+  isChecking,
+} from '@/views/workspace/content/check';
 import { useDocumentService } from '@/services/document.service';
 import Tooltip from '@/components/common/tooltip.vue';
 

@@ -96,7 +96,11 @@ import ItemBaseDescription from './item-base-description.vue';
 import FileIcon from '@/components/features/file-icon.vue';
 import { Button } from '@/components/ui/button';
 import type { Doc } from '@type';
-import { checked, isChecking, toggleCheck } from '@/views/doc/check';
+import {
+  checked,
+  isChecking,
+  toggleCheck,
+} from '@/views/workspace/content/check';
 import { SquareArrowOutUpRightIcon } from '@lucide/vue';
 import Tooltip from '@/components/common/tooltip.vue';
 import {

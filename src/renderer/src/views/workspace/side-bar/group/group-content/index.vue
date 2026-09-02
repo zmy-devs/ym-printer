@@ -27,7 +27,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Item from './item.vue';
 import { VueDraggable } from 'vue-draggable-plus';
 import GroupContextMenu from '@/features/context-menu/group-context-menu.vue';
-import { cancelCheckAll } from '@/views/doc/check';
+import { cancelCheckAll } from '@/views/workspace/content/check';
 import { useGroupService } from '@/services/group.service';
 import { useSelectionStore } from '@/stores/selection.store';
 
