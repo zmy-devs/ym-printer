@@ -91,7 +91,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useSelectionStore } from '@/stores/selection.store';
-import { usePrintConfigStore } from '@/stores/print-config.store';
+import { usePrintService } from '@/services/print.service';
 import { showLoadingToast } from '@/utils/toast';
 import { type PrintConfigValues, useSheetPrintContext } from '../context';
 import { Doc, PrintConfig } from '@type';
@@ -100,8 +100,8 @@ import Tooltip from '@/components/common/tooltip.vue';
 // 当前选中的待打印文档
 const { selectedDoc } = storeToRefs(useSelectionStore());
 
-// 打印配置状态
-const printConfigStore = usePrintConfigStore();
+// 打印流程编排能力
+const printService = usePrintService();
 
 // 打印 Sheet 共享上下文
 const { form, pageNumbers, closeSheetPrint, disabledControls } =
@@ -145,13 +145,13 @@ const toPrint = (
 };
 
 // 保存配置并直接加入普通打印队列
-const handleStartPrint = toPrint(printConfigStore.startPrint);
+const handleStartPrint = toPrint(printService.startPrint);
 
 // 保存配置并进入预备打印状态
-const handlePreparePrint = toPrint(printConfigStore.preparePrint);
+const handlePreparePrint = toPrint(printService.preparePrint);
 
 // 保存配置并直接标记当前文档完成
-const handleCompletePrint = toPrint(printConfigStore.completePrint);
+const handleCompletePrint = toPrint(printService.completePrint);
 
 // 按当前表单配置加入全部打印补救任务
 const handleRecoveryAll = toPrint((doc, config) => {
@@ -160,7 +160,7 @@ const handleRecoveryAll = toPrint((doc, config) => {
     successMsg: `打印单页完成 “${doc.name}”`,
     errorMsg: '打印单页失败',
     cb: () => {
-      return printConfigStore.addRecoveryPrint(doc, config, 'all');
+      return printService.addRecoveryPrint(doc, config, 'all');
     },
   });
 }, false);
@@ -172,7 +172,7 @@ const handleRecoveryBack = toPrint((doc, config) => {
     successMsg: `打印偶数页完成 “${doc.name}”`,
     errorMsg: '打印偶数页失败',
     cb: () => {
-      return printConfigStore.addRecoveryPrint(doc, config, 'back');
+      return printService.addRecoveryPrint(doc, config, 'back');
     },
   });
 }, false);
@@ -184,7 +184,7 @@ const handleRecoveryFront = toPrint((doc, config) => {
     successMsg: `打印奇数页完成 “${doc.name}”`,
     errorMsg: '打印奇数页失败',
     cb: () => {
-      return printConfigStore.addRecoveryPrint(doc, config, 'front');
+      return printService.addRecoveryPrint(doc, config, 'front');
     },
   });
 }, false);

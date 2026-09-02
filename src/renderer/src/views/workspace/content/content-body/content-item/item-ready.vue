@@ -74,6 +74,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import Tooltip from '@/components/common/tooltip.vue';
 import { usePrintConfigStore } from '@/stores/print-config.store';
+import { usePrintService } from '@/services/print.service';
 import ItemBase from './item-base/index.vue';
 
 // 就绪文档参数
@@ -83,6 +84,9 @@ const props = defineProps<{
 
 // 文档打印配置状态
 const printConfigStore = usePrintConfigStore();
+
+// 打印流程编排能力
+const printService = usePrintService();
 
 // 当前文档打印运行状态
 const printState = computed(() => {
@@ -101,22 +105,22 @@ const visiblePrintConfig = computed(() => {
 
 // 取消当前打印流程
 const handleCancel = () => {
-  printConfigStore.cancelPrint(props.data.id);
+  printService.cancelPrint(props.data.id);
 };
 
 // 开始已预备的打印流程
 const handleStart = () => {
-  printConfigStore.startPreparedPrint(props.data.id);
+  printService.startPreparedPrint(props.data.id);
 };
 
 // 继续双面打印的正面任务
 const handleContinue = () => {
-  printConfigStore.continuePrint(props.data.id);
+  printService.continuePrint(props.data.id);
 };
 
 // 重试失败的打印任务
 const handleRetry = () => {
-  printConfigStore.retryPrint(props.data.id);
+  printService.retryPrint(props.data.id);
 };
 </script>
 

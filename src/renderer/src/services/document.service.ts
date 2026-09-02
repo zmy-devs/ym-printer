@@ -4,6 +4,7 @@ import { useDocStore } from '@/stores/doc.store';
 import { useGroupStore } from '@/stores/group.store';
 import { useSelectionStore } from '@/stores/selection.store';
 import { usePrintConfigStore } from '@/stores/print-config.store';
+import { usePrintService } from '@/services/print.service';
 import { toArray } from '@/utils/normalize';
 import type { Doc, DocStatus, PrintStatus } from '@type';
 
@@ -24,10 +25,20 @@ const removablePrintStatuses: PrintStatus[] = [
 
 // 提供文档的跨实体业务操作
 export const useDocumentService = () => {
+  // 分组实体与文档排序状态
   const groupStore = useGroupStore();
+
+  // 文档实体状态
   const docStore = useDocStore();
+
+  // 当前文档与分组选择状态
   const selectionStore = useSelectionStore();
+
+  // 文档打印配置与运行状态
   const printConfigStore = usePrintConfigStore();
+
+  // 打印流程编排能力
+  const printService = usePrintService();
 
   // 获取指定分组内的有序文档
   const getGroupDocs = (groupId: string) => {
@@ -188,7 +199,7 @@ export const useDocumentService = () => {
         groupStore.removeGroupDocIds(doc.groupId, docId);
       }
 
-      printConfigStore.removePrintData(docId);
+      printService.removePrintData(docId);
     });
 
     docStore.removeDocs(docIds);

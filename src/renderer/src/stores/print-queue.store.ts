@@ -1,74 +1,39 @@
 import { nanoid } from 'nanoid';
 import type { PrintQueue } from '@type';
-import { useDocStore } from './doc.store';
 
+// 管理待处理的打印任务队列
 export const usePrintQueueStore = defineStore('print-queue', () => {
-  const docStore = useDocStore();
-
   // 等待上传的打印任务
   const printQueue = ref<PrintQueue[]>([]);
 
   // 队列是否正在消费
   const isProcessing = ref(false);
 
-  // 串行消费全部待上传打印任务
-  const runPrintQueue = async () => {
-    if (isProcessing.value) {
-      return;
-    }
-
-    isProcessing.value = true;
-
-    while (printQueue.value.length > 0) {
-      // 当前出队并上传的打印任务
-      const task = printQueue.value.shift()!;
-
-      // 当前任务关联的文档
-      const doc = docStore.getDoc(task.docId);
-
-      try {
-        if (!doc) {
-          throw new Error('文档已不存在');
-        }
-
-        task.start && task.start();
-        await ipc.print(toRaw(doc), toRaw(task.config), task.phase);
-        task.end && task.end();
-      } catch (error) {
-        console.error(error);
-        task.error && task.error(error);
-      }
-    }
-
-    isProcessing.value = false;
-  };
-
-  // 新增一个冻结配置的打印任务
+  // 向队列末尾添加打印任务
   const addPrintQueue = (task: Omit<PrintQueue, 'id'>) => {
     // 新增任务唯一标识
     const id = nanoid();
-    // 包含唯一标识的完整打印任务
-    const printTask = { ...task, id };
 
-    printQueue.value.push(printTask);
-
-    runPrintQueue();
+    printQueue.value.push({ ...task, id });
 
     return id;
   };
 
+  // 取出队列头部的打印任务
+  const takePrintQueue = () => {
+    return printQueue.value.shift();
+  };
+
+  // 更新队列消费状态
+  const setProcessing = (value: boolean) => {
+    isProcessing.value = value;
+  };
+
   // 移除尚未开始的指定打印任务
   const removePrintQueue = (queueId: string) => {
-    // 移除后的待上传任务
-    const nextPrintQueue = printQueue.value.filter((task) => {
+    printQueue.value = printQueue.value.filter((task) => {
       return task.id !== queueId;
     });
-
-    if (nextPrintQueue.length === printQueue.value.length) {
-      return;
-    }
-
-    printQueue.value = nextPrintQueue;
   };
 
   // 移除指定文档全部尚未开始的打印任务
@@ -80,7 +45,10 @@ export const usePrintQueueStore = defineStore('print-queue', () => {
 
   return {
     printQueue,
+    isProcessing,
     addPrintQueue,
+    takePrintQueue,
+    setProcessing,
     removePrintQueue,
     removePrintQueueFromDoc,
   };
