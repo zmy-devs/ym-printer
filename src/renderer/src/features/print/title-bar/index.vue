@@ -24,22 +24,24 @@
       </Button>
     </Tooltip>
 
-    <Tooltip label="用默认方式打开" side="bottom">
-      <Button variant="ghost" size="icon-xs" @click="handleOpenDefault">
-        <PlayIcon class="size-4" />
-      </Button>
-    </Tooltip>
-
     <Tooltip label="重新加载文档" side="bottom">
       <Button
         variant="ghost"
         size="icon-xs"
-        :disabled="reloadLock"
-        @click="reloadLock || handleReload()"
+        :disabled="disabledControls.includes('reload') || reloadLock"
+        @click="
+          disabledControls.includes('reload') || reloadLock || handleReload()
+        "
       >
         <Spinner class="size-4" v-if="reloadLock" />
 
         <RotateCwIcon class="size-4" v-else />
+      </Button>
+    </Tooltip>
+
+    <Tooltip label="用默认方式打开" side="bottom">
+      <Button variant="ghost" size="icon-xs" @click="handleOpenDefault">
+        <PlayIcon class="size-4" />
       </Button>
     </Tooltip>
 
