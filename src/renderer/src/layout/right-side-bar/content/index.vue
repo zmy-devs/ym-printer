@@ -12,7 +12,7 @@ import { useSelectionStore } from '@/stores/selection.store';
 // 当前选中分组的打印机信息
 const { selectedGroup } = storeToRefs(useSelectionStore());
 // 右侧栏独立维护的打印机任务服务实例
-const { printerTasks, getPrinterTasks, removePrinterTask } =
+const { printerTasks, getPrinterTasks, removePrinterTask, clearPrinterTasks } =
   usePrinterTaskService();
 // 当前分组绑定的打印机
 const selectedPrinter = ref('');
@@ -53,6 +53,7 @@ watchEffect(() => {
 
   selectedPrinter.value = printer;
 
+  clearPrinterTasks();
   handleRefreshPrinterTasks();
 });
 

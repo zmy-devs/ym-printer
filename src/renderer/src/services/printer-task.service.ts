@@ -27,9 +27,15 @@ export const usePrinterTaskService = () => {
     });
   };
 
+  //清空打印机任务列表
+  const clearPrinterTasks = () => {
+    printerTasks.value = [];
+  };
+
   return {
     printerTasks,
     getPrinterTasks,
     removePrinterTask,
+    clearPrinterTasks,
   };
 };
