@@ -1,7 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Workspace from '@/views/workspace/index.vue';
 import InitialSetup from '@/views/initial-setup/index.vue';
-import WordNotInstalled from '@/views/word-not-installed.vue';
+import Tip from '@/views/tip/index.vue';
+import WordNotInstalled from '@/views/tip/word-not-installed.vue';
 import { hasPendingInitialSetup } from '@/views/initial-setup/steps';
 
 // 应用路由控制器
@@ -10,17 +11,20 @@ const router = createRouter({
   routes: [
     {
       path: '/setup',
-      name: 'initial-setup',
       component: InitialSetup,
     },
     {
-      path: '/word-not-installed',
-      name: 'word-not-installed',
-      component: WordNotInstalled,
+      path: '/tip',
+      component: Tip,
+      children: [
+        {
+          path: 'word-not-installed',
+          component: WordNotInstalled,
+        },
+      ],
     },
     {
       path: '/',
-      name: 'documents',
       component: Workspace,
     },
   ],
@@ -32,24 +36,24 @@ router.beforeEach(async (to) => {
   const isWordInstalled = await ipc.checkWordInstalled();
 
   if (!isWordInstalled) {
-    return to.name === 'word-not-installed'
+    return to.path === '/tip/word-not-installed'
       ? true
-      : { name: 'word-not-installed' };
+      : '/tip/word-not-installed';
   }
 
   // 当前是否仍需完成首次配置
   const needsInitialSetup = hasPendingInitialSetup();
 
-  if (to.name === 'word-not-installed') {
-    return { name: needsInitialSetup ? 'initial-setup' : 'documents' };
+  if (to.path === '/tip/word-not-installed') {
+    return needsInitialSetup ? '/setup' : '/';
   }
 
-  if (needsInitialSetup && to.name !== 'initial-setup') {
-    return { name: 'initial-setup' };
+  if (needsInitialSetup && to.path !== '/setup') {
+    return '/setup';
   }
 
-  if (!needsInitialSetup && to.name === 'initial-setup') {
-    return { name: 'documents' };
+  if (!needsInitialSetup && to.path === '/setup') {
+    return '/';
   }
 
   return true;

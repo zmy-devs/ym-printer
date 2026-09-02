@@ -5,7 +5,7 @@
         class="app-no-drag"
         variant="ghost"
         size="icon-xs"
-        @click="toggleSilderbar"
+        @click="toggleSidebar"
       >
         <PanelLeftCloseIcon v-if="panelRef?.isExpanded" />
 
@@ -37,12 +37,11 @@ import {
   PanelRightCloseIcon,
   PanelRightIcon,
 } from '@lucide/vue';
-import {
-  panelRef,
-  rightPanelRef,
-  toggleRightSidebar,
-  toggleSilderbar,
-} from '../index';
+import { useWorkspaceContext } from '../index';
+
+// 当前工作区的边栏面板实例与切换操作
+const { panelRef, rightPanelRef, toggleRightSidebar, toggleSidebar } =
+  useWorkspaceContext();
 </script>
 
 <style scoped lang="scss"></style>

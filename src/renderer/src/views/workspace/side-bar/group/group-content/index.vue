@@ -26,10 +26,13 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Item from './item.vue';
 import { VueDraggable } from 'vue-draggable-plus';
-import GroupContextMenu from '@/features/context-menu/group-context-menu.vue';
-import { cancelCheckAll } from '@/views/workspace/content/check';
+import { GroupContextMenu } from '@/features/group';
+import { useDocumentCheckContext } from '@/features/document';
 import { useGroupService } from '@/services/group.service';
 import { useSelectionStore } from '@/stores/selection.store';
+
+// 当前功能范围的文档勾选操作
+const { cancelCheckAll } = useDocumentCheckContext();
 
 // 当前选中的分组标识
 const { groupId } = storeToRefs(useSelectionStore());

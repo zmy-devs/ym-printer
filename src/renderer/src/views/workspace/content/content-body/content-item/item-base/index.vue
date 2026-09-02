@@ -96,11 +96,7 @@ import ItemBaseDescription from './item-base-description.vue';
 import FileIcon from '@/components/features/file-icon.vue';
 import { Button } from '@/components/ui/button';
 import type { Doc } from '@type';
-import {
-  checked,
-  isChecking,
-  toggleCheck,
-} from '@/views/workspace/content/check';
+import { useDocumentCheckContext } from '@/features/document';
 import { SquareArrowOutUpRightIcon } from '@lucide/vue';
 import Tooltip from '@/components/common/tooltip.vue';
 import {
@@ -114,6 +110,9 @@ import { Separator } from '@/components/ui/separator';
 import { usePrintConfigStore } from '@/stores/print-config.store';
 import { useSelectionStore } from '@/stores/selection.store';
 import { eventBus } from '@/utils/event-bus';
+
+// 当前功能范围的文档勾选状态与操作
+const { checked, isChecking, toggleCheck } = useDocumentCheckContext();
 
 // 文档卡片显示参数
 const props = defineProps<{

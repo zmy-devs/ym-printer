@@ -94,13 +94,12 @@ import {
 } from '@lucide/vue';
 import { useDocStore } from '@/stores/doc.store';
 import { showSuccessToast } from '@/utils/toast';
-import {
-  cancelCheckAll,
-  checked,
-  isChecking,
-} from '@/views/workspace/content/check';
+import { useDocumentCheckContext } from '../context/document-check.context';
 import { useDocumentService } from '@/services/document.service';
 import Tooltip from '@/components/common/tooltip.vue';
+
+// 当前功能范围的文档勾选状态与操作
+const { cancelCheckAll, checked, isChecking } = useDocumentCheckContext();
 
 const docStore = useDocStore();
 const { getDoc } = docStore;

@@ -6,13 +6,13 @@
 
     <DialogSetting />
 
-    <DialogGroup />
+    <GroupDialog />
 
-    <DialogPreset />
+    <PresetDialog />
 
-    <DialogWorkspace />
+    <WorkspaceDialog />
 
-    <DialogPrinterTask />
+    <PrinterTaskDialog />
   </TooltipProvider>
 
   <Toaster class="dark" />
@@ -21,10 +21,10 @@
 <script setup lang="ts">
 import Print from '@/features/print/index.vue';
 import DialogSetting from '@/features/settings/index.vue';
-import DialogGroup from '@/features/dialog/group/index.vue';
-import DialogPreset from '@/features/dialog/preset/index.vue';
-import DialogWorkspace from '@/features/dialog/workspace/index.vue';
-import DialogPrinterTask from '@/features/dialog/printer-task/index.vue';
+import { GroupDialog } from '@/features/group';
+import PresetDialog from '@/features/preset/index.vue';
+import WorkspaceDialog from '@/features/workspace/index.vue';
+import PrinterTaskDialog from '@/features/printer-task/index.vue';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
 import { usePrinterStore } from '@/stores/printer.store';

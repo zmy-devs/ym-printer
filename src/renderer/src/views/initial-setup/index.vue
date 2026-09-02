@@ -162,7 +162,7 @@ const handleComplete = async () => {
     });
   }
 
-  await router.replace({ name: 'documents' });
+  await router.replace('/');
 };
 
 // 校验当前步骤并继续或完成首次配置

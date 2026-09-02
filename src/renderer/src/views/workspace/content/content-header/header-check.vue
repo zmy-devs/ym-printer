@@ -24,13 +24,16 @@
 import { useSelectionStore } from '@/stores/selection.store';
 import { Button } from '@/components/ui/button';
 import { SquareCheckIcon, SquareIcon } from '@lucide/vue';
-import { cancelCheckAll, checkAll, checked } from '../check';
+import { useDocumentCheckContext } from '@/features/document';
 import { useDocStore } from '@/stores/doc.store';
 import { useSettingsStore } from '@/stores/settings.store';
 import { getPrice } from '@/utils/price';
 import { usePrintConfigStore } from '@/stores/print-config.store';
 import Tooltip from '@/components/common/tooltip.vue';
 import { total } from '@/utils/total';
+
+// 当前功能范围的文档勾选状态与操作
+const { cancelCheckAll, checkAll, checked } = useDocumentCheckContext();
 
 // 文档状态仓库
 const docStore = useDocStore();

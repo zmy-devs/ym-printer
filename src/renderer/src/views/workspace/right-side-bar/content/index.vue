@@ -4,8 +4,8 @@
 
 <script setup lang="ts">
 import { useIntervalFn } from '@vueuse/core';
-import TaskContent from '@/features/dialog/printer-task/content/index.vue';
-import { printTaskContextKey } from '@/features/dialog/printer-task/context';
+import TaskContent from '@/features/printer-task/content/index.vue';
+import { printTaskContextKey } from '@/features/printer-task/context';
 import { usePrinterTaskService } from '@/services/printer-task.service';
 import { useSelectionStore } from '@/stores/selection.store';
 

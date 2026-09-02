@@ -70,12 +70,21 @@ import UpdateNotification from '@/components/features/update-notification.vue';
 import vDrag from '@/hooks/use-drag';
 import { useDocumentService } from '@/services/document.service';
 import Overlay from '@/components/common/overlay.vue';
-//@ts-ignore
-import { panelRef, rightPanelRef } from '.';
+import { provideWorkspaceContext } from '.';
+import { SplitterPanel } from 'reka-ui';
+import { provideDocumentCheckContext } from '@/features/document';
 
 // 当前分组文档导入能力
 const { addDocs } = useDocumentService();
 
+// 左侧边栏面板实例
+const panelRef = useTemplateRef<InstanceType<typeof SplitterPanel>>('panelRef');
+
+// 右侧边栏面板实例
+const rightPanelRef =
+  useTemplateRef<InstanceType<typeof SplitterPanel>>('rightPanelRef');
+
+// 当前是否正在向工作区拖入文件
 const isDragging = ref(false);
 
 //拖拽配置
@@ -87,11 +96,16 @@ const dragOption = {
   onDrop: (e: DragEvent) => {
     const files = e.dataTransfer?.files;
 
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) {
+      return;
+    }
 
     addDocs(undefined, Array.from(files));
   },
 };
+
+provideWorkspaceContext({ panelRef, rightPanelRef });
+provideDocumentCheckContext();
 </script>
 
 <style lang="scss"></style>

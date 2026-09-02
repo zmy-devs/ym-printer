@@ -21,7 +21,7 @@ import { useSelectionStore } from '@/stores/selection.store';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ContentItem from './content-item/index.vue';
 import { VueDraggable } from 'vue-draggable-plus';
-import DocContextMenu from '@/features/context-menu/doc-context-menu.vue';
+import { DocContextMenu } from '@/features/document';
 import { cn } from '@/lib/utils';
 import { ClassValue } from 'vue';
 

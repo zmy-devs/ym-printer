@@ -17,8 +17,11 @@
 <script setup lang="ts">
 import { PrinterIcon, XIcon } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
-import { rightPanelRef } from '../../index';
 import Tooltip from '@/components/common/tooltip.vue';
+import { useWorkspaceContext } from '../../index';
+
+// 当前工作区的右侧边栏面板实例
+const { rightPanelRef } = useWorkspaceContext();
 </script>
 
 <style scoped lang="scss"></style>
